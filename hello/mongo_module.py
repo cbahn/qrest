@@ -5,11 +5,12 @@ from config import Config #My own config file
 DATABASE_NAME = Config.DATABASE_NAME
 
 class DatabaseManager:
-    def __init__(self):
-        # Create a client connection
-        self.client = MongoClient(Config.MONGO_URI, tls=True, tlsCertificateKeyFile=Config.MONGO_CERT_PATH)
-        self.users_collection = self.client[DATABASE_NAME]['users']
-        self.locations_collection = self.client[DATABASE_NAME]['locations']
+    def __init__(self, database):
+        # <- make sure to hand the database to DatabaseManager, not the client.
+        # Call `client['database_name']` first
+
+        self.users_collection = database.users
+        self.locations_collection = database.locations
 
     def print_users(self):
         # Verify by retrieving and printing all documents
@@ -46,6 +47,15 @@ class DatabaseManager:
             {'$set':{'status': new_status}}
         )
         return
+
+    def get_location_info(self, locationID):
+        location_data = self.locations_collection.find_one({"locationID": locationID})
+        if location_data and "visitors" in location_data:
+            # Extract the Visitor array and sort it by VisitOrder
+            sorted_visitors = sorted(location_data["visitors"], key=lambda x: x["visitOrder"])
+            return sorted_visitors
+        else:
+            return []  # Return an empty list if no document found or no Visitor array
 
 
 """ # Access or create a new database (e.g., 'exampledb')

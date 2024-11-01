@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 import click
 from flask import Flask, make_response, request
+from pymongo import MongoClient
 from crypto_module import CryptoManager, DecryptionError
 from mongo_module import DatabaseManager
+from config import Config
+from html import escape # this is being used for bebugging
+
 
 app = Flask(__name__)
-cm = CryptoManager()
-cm.init("Io4blYZxtHCXW2X2OMUTaPgQH7kYxR+ibRGZm3O2LRk=") # Placeholder key while testing
+crypto_mgr = CryptoManager()
+crypto_mgr.init(Config.COOKIE_ENCRYPTION_KEY)
 
-db = DatabaseManager()
 
-valid_codes = {"FG42CPCM":"valid", "B8H47AY4":"valid"}
-COOKIE_NAME = 'qd'
+mongoDB_client = MongoClient(Config.MONGO_URI, tls=True, tlsCertificateKeyFile=Config.MONGO_CERT_PATH)
+db = DatabaseManager(mongoDB_client[Config.DATABASE_NAME])
 
 
 # function for checking that cookie decoding is successful
@@ -19,7 +22,7 @@ class NoCookieError(Exception):
     pass
 def read_cookie(cookie_raw):
     if cookie_raw:
-        cookie = cm.decrypt_message(cookie_raw)
+        cookie = crypto_mgr.decrypt_message(cookie_raw)
         return cookie
     else:
         raise NoCookieError()
@@ -29,12 +32,12 @@ def read_cookie(cookie_raw):
 @app.route('/')
 def index():
     try:
-        cookie = read_cookie(request.cookies.get(COOKIE_NAME))
+        cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
     except NoCookieError:
         return 'SadPanda: No cookie'
     except DecryptionError:
         response = make_response('SadPanda: Cookie invalid')
-        response.set_cookie(COOKIE_NAME, '', expires=0) #Delete the cookie
+        response.set_cookie(Config.COOKIE_NAME, '', expires=0) #Delete the cookie
         return response
     
     return '<h1>Hello, %s</h1>' % cookie
@@ -55,11 +58,31 @@ def user_lookup(userID):
     else:
         return '<h1> Returned None </h1>'
 
+@app.route("/loc/<locationID>")
+def loc_info(locationID):
+    location_leaderboard_data = db.get_location_info(locationID)
+
+    def generate_html_table(data):
+        # Start table and headers
+        table_html = "<table border='1'>"
+        table_html += "<tr><th>Visitor ID</th><th>Visit Order</th></tr>"
+
+        # Add each row
+        for entry in data:
+            table_html += f"<tr><td>{escape(entry['visitorID'])}</td><td>{entry['visitOrder']}</td></tr>"
+
+        # Close table
+        table_html += "</table>"
+        return table_html
+
+
+    return '<h1> Leaderboard </h1><br>'+generate_html_table(location_leaderboard_data)
+
 @app.route("/l/<location_code>")
 def new_loc(location_code):
     # Check if user is logged in
     try:
-        cookie = read_cookie(request.cookies.get(COOKIE_NAME))
+        cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
     except NoCookieError:
         cookie = ""
     except DecryptionError:
@@ -85,7 +108,7 @@ def new_loc(location_code):
 @app.route("/i/<invite_code>")
 def new_invite(invite_code):
     try:
-        cookie = read_cookie(request.cookies.get(COOKIE_NAME))
+        cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
     except NoCookieError:
         cookie = "" # it's expected that user won't have a cookie yet
     except DecryptionError:
@@ -103,9 +126,9 @@ def new_invite(invite_code):
             db.update_user_status(user_data['userID'], 'used')
 
             #Set a cookie
-            cookie = cm.encrypt_message(user_data['userID'])
+            cookie = crypto_mgr.encrypt_message(user_data['userID'])
             response = make_response('<h1>Welcome newcomer: %s</h1>' % user_data['friendly_name'])
-            response.set_cookie(COOKIE_NAME, cookie, max_age=60 * 60 * 24 * 10)  # Expires in 10 days
+            response.set_cookie(Config.COOKIE_NAME, cookie, max_age=60 * 60 * 24 * 10)  # Expires in 10 days
             return response
         else:
             return 'That Invite code has already been used'

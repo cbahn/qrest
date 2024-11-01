@@ -2,16 +2,16 @@ import pytest
 from pymongo import MongoClient
 from datetime import datetime
 from config import Config
-#from my_project.db_module import log_visit
+from mongo_module import DatabaseManager
 
 
-DATABASE_NAME = 'test-db-1'
+TESTING_DATABASE_NAME = 'test-db-1'
 # Fixture to set up and tear down a test database
 @pytest.fixture(scope="module")
 def test_db():
     # Connect to MongoDB and create a new test database
     client = MongoClient(Config.MONGO_URI, tls=True, tlsCertificateKeyFile=Config.MONGO_CERT_PATH)
-    db = client[DATABASE_NAME]
+    db = client[TESTING_DATABASE_NAME]
 
     # Ensure that the test database is empty
     db.locations.drop()
@@ -20,8 +20,13 @@ def test_db():
     # Set up initial data in the test database
     db.locations.insert_many([
         {
-            "name": "Grand Canyon",
-            "visitors": []
+            "locationID":"L5235",
+            "friendlyName": "Grand Canyon",
+            "totalVisitors": 2,
+            "visitors": [
+                {"visitorID": "U12345","visitOrder": 1 },
+                {"visitorID": "U67890","visitOrder": 2 }
+            ]
         },
         {
             "name": "Yosemite",
@@ -49,10 +54,19 @@ def test_db():
     db.users.drop()
     client.close()
 
-def test_some_dumb_bullshit(test_db):
-    location = test_db.locations.find_one({"name":"Grand Canyon"})
-    assert location is not None
-    assert len(location["visitors"]) == 0
+# def test_some_dumb_bullshit(test_db):
+#     location = test_db.locations.find_one({"name":"Grand Canyon"})
+#     assert location is not None
+#     assert len(location["visitors"]) == 0
+
+def test_location_info(test_db):
+    my_db = DatabaseManager(test_db)
+    leaderboard = my_db.get_location_info("L5235")
+
+    assert leaderboard is not None
+    assert len(leaderboard) == 2
+    assert leaderboard[0]['visitorID'] == 'U12345'
+
 
 # # Example test: log visit to a location
 # def test_log_visit_success(test_db):
