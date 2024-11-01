@@ -1,17 +1,13 @@
 from pymongo import MongoClient, ReturnDocument
+from config import Config #My own config file
 
-# Define the connection details
-uri = "mongodb+srv://quest-cluster.rdm3o.mongodb.net/?authSource=$external&authMechanism=MONGODB-X509"
 
-# Path to the certificate file
-certificate_path = "/Users/barry/Downloads/X509-cert-8316495671987192482.pem"
-
-DATABASE_NAME = 'exampledb'
+DATABASE_NAME = Config.DATABASE_NAME
 
 class DatabaseManager:
     def __init__(self):
         # Create a client connection
-        self.client = MongoClient(uri, tls=True, tlsCertificateKeyFile=certificate_path)
+        self.client = MongoClient(Config.MONGO_URI, tls=True, tlsCertificateKeyFile=Config.MONGO_CERT_PATH)
         self.users_collection = self.client[DATABASE_NAME]['users']
         self.locations_collection = self.client[DATABASE_NAME]['locations']
 
