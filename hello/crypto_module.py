@@ -73,8 +73,11 @@ class CryptoManager:
         if self.key is None:
             raise ValueError("Decryption key has not been set. Call init() first.")
         
-        # Decode the base64 data
-        encrypted_data = base64.b64decode(encrypted_base64)
+        try:
+            # Decode the base64 data
+            encrypted_data = base64.b64decode(encrypted_base64)
+        except Exception as e:
+            raise DecryptionError("base64 padding error")
         
         # Extract nonce, tag, and ciphertext
         nonce = encrypted_data[:12]
