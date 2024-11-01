@@ -55,6 +55,31 @@ def user_lookup(userID):
     else:
         return '<h1> Returned None </h1>'
 
+@app.route("/l/<location_code>")
+def new_loc(location_code):
+    # Check if user is logged in
+    try:
+        cookie = read_cookie(request.cookies.get(COOKIE_NAME))
+    except NoCookieError:
+        cookie = ""
+    except DecryptionError:
+        cookie = ""
+
+    user_data = db.get_user(cookie)
+    if user_data is None:
+    # If not logged in, create a new account for them
+        # user_data = db.create_user()
+        # create a cookie for user
+        pass
+
+    # Check if user has seen this location
+        # Mark this location as seen by them
+        # Update location data with who saw it
+        # Update user data with what they saw
+    db.user_visits_location("hi","bye")
+    return "<h1>You saw a new location</h1>"
+    # else
+    return "<h1>You've already seen this location</h1>"
 
 
 @app.route("/i/<invite_code>")
