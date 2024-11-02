@@ -12,6 +12,12 @@ class DatabaseManager:
         self.users_collection = database.users
         self.locations_collection = database.locations
 
+    def create_new_user(self, userID):
+        new_user = {
+            "userID": userID
+        }
+        self.users_collection.insert_one(new_user)
+
     def print_users(self):
         # Verify by retrieving and printing all documents
         for doc in self.users_collection.find():
@@ -56,28 +62,3 @@ class DatabaseManager:
             return sorted_visitors
         else:
             return []  # Return an empty list if no document found or no Visitor array
-
-
-""" # Access or create a new database (e.g., 'exampledb')
-db = client['exampledb']
-
-# Access or create a new collection (e.g., 'users')
-collection = db['users']
-
-# Insert some example data
-example_data = [
-    {"userID": 1, "name": "Alice", "email": "alice@example.com"},
-    {"userID": 2, "name": "Bob", "email": "bob@example.com"},
-    {"userID": 3, "name": "Charlie", "email": "charlie@example.com"}
-]
-
-# Insert data into the collection
-collection.insert_many(example_data)
-print("Example data inserted successfully.")
-
-# Verify by retrieving and printing all documents
-for doc in collection.find():
-    print(doc)
-
-# Close the connection
-client.close() """

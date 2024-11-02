@@ -5,6 +5,7 @@ from pymongo import MongoClient
 from crypto_module import CryptoManager, DecryptionError
 from mongo_module import DatabaseManager
 from config import Config
+from util_module import Util
 from html import escape # this is being used for bebugging
 
 
@@ -90,7 +91,25 @@ def new_loc(location_code):
 
     user_data = db.get_user(cookie)
     if user_data is None:
-    # If not logged in, create a new account for them
+        # If not logged in, create a new account for them
+        
+        #Keep trying to generate a new ID until one is found that's not in use
+        is_taken = "id already in use"
+        while is_taken is not None:
+            new_userID = Util.generate_new_userID()
+            is_taken = db.get_user(new_userID)
+
+        db.create_new_user(new_userID)
+
+        # Set a new cookie for them
+        cookie = crypto_mgr.encrypt_message(new_userID)
+        response = make_response('placeholder text')
+        response.set_cookie(Config.COOKIE_NAME, cookie, max_age=60 * 60 * 24 * 10)  # Expires in 10 days
+
+
+        response.set_data("congrats, you're a new user now")
+        return response
+
         # user_data = db.create_user()
         # create a cookie for user
         pass
@@ -99,7 +118,7 @@ def new_loc(location_code):
         # Mark this location as seen by them
         # Update location data with who saw it
         # Update user data with what they saw
-    db.user_visits_location("hi","bye")
+    # db.user_visits_location("hi","bye")
     return "<h1>You saw a new location</h1>"
     # else
     return "<h1>You've already seen this location</h1>"
