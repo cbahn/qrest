@@ -14,3 +14,10 @@ pip install -r requirements.txt
 ```bash
 pytest test_mongo_module.py
 ```
+
+### Troubleshooting notes
+I needed to install a python environmental thing
+```bash
+python -m pip install python-dotenv
+```
+

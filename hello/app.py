@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import click
+import os
 from flask import Flask, make_response, request
 from pymongo import MongoClient
 from crypto_module import CryptoManager, DecryptionError
@@ -13,6 +14,9 @@ app = Flask(__name__)
 crypto_mgr = CryptoManager()
 crypto_mgr.init(Config.COOKIE_ENCRYPTION_KEY)
 
+# Throw an exception if the cert file is missing
+if not os.path.isfile(Config.MONGO_CERT_PATH):
+    raise FileNotFoundError(f"Certificate file '{Config.MONGO_CERT_PATH}' does not exist.")
 
 mongoDB_client = MongoClient(Config.MONGO_URI, tls=True, tlsCertificateKeyFile=Config.MONGO_CERT_PATH)
 db = DatabaseManager(mongoDB_client[Config.DATABASE_NAME])
