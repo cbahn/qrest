@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Your Username</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}  
+        {% if messages %}  
+            {% for message in messages %}  
+               <p>{{ message }}</p>  
+            {% endfor %}  
+        {% endif %}  
+    {% endwith %}  
+    <div class="container">
+        <h1>Welcome Home</h1>
+    </div>
+
+</body>
+</html>

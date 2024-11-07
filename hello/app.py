@@ -27,6 +27,7 @@ db = DatabaseManager(mongoDB_client[Config.DATABASE_NAME])
 # function for checking that cookie decoding is successful
 class NoCookieError(Exception):
     pass
+
 def read_cookie(cookie_raw):
     if cookie_raw:
         cookie = crypto_mgr.decrypt_message(cookie_raw)
@@ -49,23 +50,51 @@ def index():
 
 @app.route('/home')
 def home():
-    return '<h1>Home info</h1>'
+    return render_template('home.html')
 
 @app.route('/welcome')
 def welcome():
-    return render_template('welcome.html')
+
+    # Check cookie
+    try:
+        cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
+    except (NoCookieError, DecryptionError) as e:
+        return redirect('http://localhost:5000', code=303)
+    user_data = db.get_user(cookie)
+    if user_data == None:
+        return redirect('http://localhost:5000', code=303)
+
+    if user_data['friendly_name'] == None:
+        return render_template('welcome_set_username.html')
+    
+    return render_template('welcome.html', friendly_name = user_data['friendly_name'])
 
 @app.route('/set_username', methods=['POST'])
 def receive_username():
+
+    # Check cookie
+    try:
+        cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
+    except (NoCookieError, DecryptionError) as e:
+        return redirect('http://localhost:5000', code=303)
+    user_data = db.get_user(cookie)
+    if user_data == None:
+        return redirect('http://localhost:5000', code=303)
+
     new_username = request.form.get('new_username')
 
+    # Usernames can only have letters, numbers, and underscores
+    # they have to be between 1 and 25 characters long
     if re.fullmatch( r'^[a-zA-Z0-9_]{1,25}$', new_username) is None:
         flash("username wasn't allowed for some reason")
-        return redirect('http://localhost:5000/welcome')
+        return redirect('http://localhost:5000/welcome', code=303)
     
-    flash("username set: {}".format(new_username))
-    return redirect('http://localhost:5000/home')
+    # !security there's no check that users are allowed to update their name
+    # We're relying entirely on them not resubmitting the POST request
+    db.set_user_friendly_name(user_data['userID'], new_username)
 
+    flash("username set: {}".format(new_username))
+    return redirect('http://localhost:5000/home', code=303)
 
 @app.route('/leaderboard')
 def leaderboard():
@@ -88,18 +117,6 @@ def loc_info(loc_slug):
     if loc_data == None:
         return '<h1>Location not found</h1>'
 
-    def generate_html_table(data):
-        # Start table and headers
-        table_html = "<table border='1'>"
-        table_html += "<tr><th>Visitor ID</th><th>Visit Order</th></tr>"
-
-        # Add each row
-        for entry in data:
-            table_html += f"<tr><td>{escape(entry['visitorID'])}</td><td>{entry['visitOrder']}</td></tr>"
-
-        # Close table
-        table_html += "</table>"
-        return table_html
     return '<h1> Location name: {} </h1><br>'.format(loc_data["friendlyName"])
 
 # Logging a new location

@@ -46,13 +46,6 @@ class DatabaseManager:
         # check if user has visited that location yet
         # update location info
         # update user's info
-    
-    def update_user_status(self, userID, new_status):
-        self.users_collection.update_one(
-            {'userID': userID},
-            {'$set':{'status': new_status}}
-        )
-        return
 
     def get_location_info(self, locationID):
         location_data = self.locations_collection.find_one({"locationID": locationID})
@@ -71,3 +64,13 @@ class DatabaseManager:
             return {"friendlyName": location_data['friendlyName'], "slug":location_data['slug'], "sorted_visitors":sorted_visitors}
         else:
             return None  # no match found, return None
+
+    def set_user_friendly_name(self, userID, friendly_name):
+        result = self.users_collection.update_one(
+            {'userID': userID},
+            {'$set':{'friendly_name':friendly_name}}
+        )
+        if result.modified_count > 0:
+            return self.users_collection.find_one({"userID": userID})
+        else:
+            return None

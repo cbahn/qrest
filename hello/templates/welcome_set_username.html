@@ -96,8 +96,38 @@
         {% endif %}  
     {% endwith %}  
     <div class="container">
-        <h1>Welcome! Your username: {{ friendly_name }}</h1>
+        <h1>Welcome! Set Your Username</h1>
+        <form action="/set_username" method="POST">
+            <input type="text" id="username" name="new_username" placeholder="Enter your username" required oninput="validateInput(event)">
+            <div id="warningChars" class="warning">Only letters, numbers, and underscores allowed</div>
+            <div id="warningLength" class="warning">Username must be 25 characters or less</div>
+            <button type="submit">Submit</button>
+        </form>
     </div>
 
+    <script>
+        function validateInput(event) {
+            const input = event.target;
+            const warningChars = document.getElementById('warningChars');
+            const warningLength = document.getElementById('warningLength');
+            const validPattern = /^[a-zA-Z0-9_]*$/;
+
+            // Validate characters
+            if (!validPattern.test(input.value)) {
+                warningChars.style.display = 'block';
+                input.value = input.value.replace(/[^a-zA-Z0-9_]/g, ''); // Remove invalid characters
+            } else {
+                warningChars.style.display = 'none';
+            }
+
+            // Validate length
+            if (input.value.length > 25) {
+                warningLength.style.display = 'block';
+                input.value = input.value.slice(0, 25); // Trim to 20 characters
+            } else {
+                warningLength.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

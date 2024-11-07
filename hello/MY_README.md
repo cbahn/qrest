@@ -10,6 +10,15 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
+For now I'm doing these updates manually
+bash```
+pip install flask
+pip install pymongo
+pip install pycryptodome
+```
+
+### Don't forget to create the config file.
+
 ### To run tests
 ```bash
 pytest test_mongo_module.py
