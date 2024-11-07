@@ -12,9 +12,10 @@ class DatabaseManager:
         self.users_collection = database.users
         self.locations_collection = database.locations
 
-    def create_new_user(self, userID):
+    def create_new_user(self, userID, sessionID):
         new_user = {
-            "userID": userID
+            'userID': userID,
+            'sessionID': sessionID
         }
         self.users_collection.insert_one(new_user)
 
@@ -25,6 +26,9 @@ class DatabaseManager:
 
     def get_user(self, userID):
         return self.users_collection.find_one({"userID": userID})
+    
+    def get_session(self, sessionID):
+        return self.users_collection.find_one({"sessionID": sessionID})
     
     def user_visits_location(self,userID,locationID):
         with self.client.start_session() as session:

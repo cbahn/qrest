@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import click
 import os
-from flask import Flask, flash, make_response, request, render_template, redirect, url_for
+from flask import Flask, g, flash, make_response, request, render_template, redirect, url_for
 from pymongo import MongoClient
 from crypto_module import CryptoManager, DecryptionError
 from mongo_module import DatabaseManager
@@ -9,6 +9,7 @@ from config import Config
 from util_module import Util
 from html import escape # this is being used for bebugging
 import re
+import datetime
 
 
 app = Flask(__name__)
@@ -23,6 +24,7 @@ if not os.path.isfile(Config.MONGO_CERT_PATH):
 mongoDB_client = MongoClient(Config.MONGO_URI, tls=True, tlsCertificateKeyFile=Config.MONGO_CERT_PATH)
 db = DatabaseManager(mongoDB_client[Config.DATABASE_NAME])
 
+START_TIME = datetime.datetime.strptime(Config.START_TIME, "%Y-%m-%d %H:%M:%S")
 
 # function for checking that cookie decoding is successful
 class NoCookieError(Exception):
@@ -35,6 +37,30 @@ def read_cookie(cookie_raw):
     else:
         raise NoCookieError()
 
+@app.before_request
+def check_session():
+
+
+
+    # Skip validation for specific endpoints if needed
+    # (endpoint referrs to the name of the view function, not the URL path)
+    if request.endpoint in ('index', 'static', 'new_loc', 'wait'):
+        return
+    
+    try:
+        cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
+    except (NoCookieError, DecryptionError) as e:
+        return redirect('http://localhost:5000', code=303)
+    
+    user_data = db.get_session(cookie)
+    if user_data == None:
+        return redirect('http://localhost:5000', code=303)
+
+    # Store user data in g, a global variable tied to this one request
+    g.user_data = user_data
+    return
+
+
 @app.route('/')
 def index():
     try:
@@ -46,11 +72,15 @@ def index():
         response.set_cookie(Config.COOKIE_NAME, '', expires=0) #Delete the cookie
         return response
     
-    return '<h1>Hello, %s</h1>' % cookie
+    return '<h1>Hello, {}<br>Starttime: {}</h1>'.format(cookie, START_TIME)
 
 @app.route('/home')
 def home():
     return render_template('home.html')
+
+@app.route('/wait')
+def wait():
+    return render_template('wait.html', start_time = '2024-11-07T13:34:40', redirect_to = 'http://localhost:5000')
 
 @app.route('/welcome')
 def welcome():
@@ -72,15 +102,6 @@ def welcome():
 @app.route('/set_username', methods=['POST'])
 def receive_username():
 
-    # Check cookie
-    try:
-        cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
-    except (NoCookieError, DecryptionError) as e:
-        return redirect('http://localhost:5000', code=303)
-    user_data = db.get_user(cookie)
-    if user_data == None:
-        return redirect('http://localhost:5000', code=303)
-
     new_username = request.form.get('new_username')
 
     # Usernames can only have letters, numbers, and underscores
@@ -91,7 +112,7 @@ def receive_username():
     
     # !security there's no check that users are allowed to update their name
     # We're relying entirely on them not resubmitting the POST request
-    db.set_user_friendly_name(user_data['userID'], new_username)
+    db.set_user_friendly_name(g.user_data['userID'], new_username)
 
     flash("username set: {}".format(new_username))
     return redirect('http://localhost:5000/home', code=303)
@@ -99,15 +120,6 @@ def receive_username():
 @app.route('/leaderboard')
 def leaderboard():
     return '<h1>Leaderboard</h1>'
-
-@app.route('/user/<userID>')
-def user_lookup(userID):
-    click.echo("looking for user -"+userID+"-")
-    user_data = db.get_user(userID)
-    if user_data is not None:
-        return '<h1> Welcome back: %s</h1>' % user_data['friendly_name']
-    else:
-        return '<h1> Returned None </h1>'
 
 # Location information
 @app.route("/location/<loc_slug>")
@@ -122,6 +134,7 @@ def loc_info(loc_slug):
 # Logging a new location
 @app.route("/n/<location_code>")
 def new_loc(location_code):
+
     # Check if user is logged in
     try:
         cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
@@ -130,7 +143,7 @@ def new_loc(location_code):
     except DecryptionError:
         cookie = ""
 
-    user_data = db.get_user(cookie)
+    user_data = db.get_session(cookie)
     if user_data is None:
         # If not logged in, create a new account for them
         
@@ -139,11 +152,12 @@ def new_loc(location_code):
         while is_taken is not None:
             new_userID = Util.generate_new_userID()
             is_taken = db.get_user(new_userID)
-
-        db.create_new_user(new_userID)
+        
+        sessionID = Util.generate_session_code()
+        db.create_new_user(new_userID, sessionID)
 
         # Set a new cookie for them
-        cookie = crypto_mgr.encrypt_message(new_userID)
+        cookie = crypto_mgr.encrypt_message(sessionID)
         response = make_response('placeholder text')
         response.set_cookie(Config.COOKIE_NAME, cookie, max_age=60 * 60 * 24 * 10)  # Expires in 10 days
 

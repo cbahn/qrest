@@ -7,11 +7,13 @@ class Util(object):
     def generate_random_code(length):
 
         # Define the character set, excluding the specified characters
-        char_set = "2346789BCDEFGHJKMNPQRTVWXYZ"  # Avoided characters: I, L, 1, 0, O, A
+        char_set = "2346789BCDEFGHJKMNPQRTVWXYZ"  # Avoided characters: I, L, 1, 0, O, A, S
 
         random_code = ''.join(random.choice(char_set) for _ in range(length))
         return random_code
 
+    def generate_session_code():
+        return 'S' + Util.generate_random_code(10)
 
     def generate_new_userID():
         return 'A' + Util.generate_random_code(6)
