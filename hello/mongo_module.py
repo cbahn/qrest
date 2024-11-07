@@ -62,3 +62,12 @@ class DatabaseManager:
             return sorted_visitors
         else:
             return []  # Return an empty list if no document found or no Visitor array
+
+    def get_location_by_slug(self, location_slug):
+        location_data = self.locations_collection.find_one({"slug": location_slug})
+        if location_data and "visitors" in location_data:
+            # Extract the Visitor array and sort it by VisitOrder
+            sorted_visitors = sorted(location_data["visitors"], key=lambda x: x["visitOrder"])
+            return {"friendlyName": location_data['friendlyName'], "slug":location_data['slug'], "sorted_visitors":sorted_visitors}
+        else:
+            return None  # no match found, return None
