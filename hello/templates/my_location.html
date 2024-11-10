@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>My Locations</h2>
+<div class="locations-list">
+    {% for location in locations %}
+        <div class="location-item">
+            <a href="{{ url_for('location_detail', location_id=location.id) }}">
+                <img src="{{ location.thumbnail_url }}" alt="{{ location.name }}" class="thumbnail">
+                <p>{{ location.name }}</p>
+            </a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

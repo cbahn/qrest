@@ -82,6 +82,10 @@ def home():
 def wait():
     return render_template('wait.html', start_time = '2024-11-07T13:34:40', redirect_to = 'http://localhost:5000')
 
+@app.route('/pico')
+def pico():
+    return render_template('pico_trial.html')
+
 @app.route('/welcome')
 def welcome():
 
