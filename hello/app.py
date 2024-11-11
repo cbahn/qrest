@@ -40,8 +40,6 @@ def read_cookie(cookie_raw):
 @app.before_request
 def check_session():
 
-
-
     # Skip validation for specific endpoints if needed
     # (endpoint referrs to the name of the view function, not the URL path)
     if request.endpoint in ('index', 'static', 'new_loc', 'wait'):
@@ -102,6 +100,14 @@ def welcome():
         return render_template('welcome_set_username.html')
     
     return render_template('welcome.html', friendly_name = user_data['friendly_name'])
+
+@app.route('/settings')
+def settings():
+    return '<h1>Settings page</h1>'
+
+@app.route('/locations')
+def locations():
+    return '<h1>locations page</h1>'
 
 @app.route('/set_username', methods=['POST'])
 def receive_username():

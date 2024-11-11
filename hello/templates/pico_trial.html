@@ -13,13 +13,12 @@
     <header class="container">
         <nav>
             <ul>
-                <li><strong><a href="#home">MySite</a></strong></li>
+                <li><strong><a href="/">MySite</a></strong></li>
             </ul>
             <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="{{ url_for('settings') }}">Settings</a></li>
+                <li><a href="{{ url_for('locations') }}">Locations</a></li>
+                <li><a href="{{ url_for('leaderboard') }}">Leaderboard</a></li>
             </ul>
         </nav>
     </header>
@@ -27,7 +26,8 @@
     <!-- Main Content -->
     <main class="container">
         <section id="home">
-            <h1>Welcome to MySite</h1>
+            <h1>This is a test of a relative link</h1>
+            <a href="{{ url_for('home') }}"> Link To home</a>
             <p>This is a modern, mobile-friendly website template using PicoCSS.</p>
         </section>
         <section id="about">
