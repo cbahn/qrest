@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import click
 import os
 from flask import Flask, g, flash, make_response, request, render_template, redirect, url_for
@@ -10,6 +9,7 @@ from util_module import Util
 from html import escape # this is being used for bebugging
 import re
 import datetime
+import json
 
 
 app = Flask(__name__)
@@ -21,18 +21,19 @@ crypto_mgr.init(Config.COOKIE_ENCRYPTION_KEY)
 if not os.path.isfile(Config.MONGO_CERT_PATH):
     raise FileNotFoundError(f"Certificate file '{Config.MONGO_CERT_PATH}' does not exist.")
 
+# Connect to database using mongo_module.py module
 mongoDB_client = MongoClient(Config.MONGO_URI, tls=True, tlsCertificateKeyFile=Config.MONGO_CERT_PATH)
 db = DatabaseManager(mongoDB_client[Config.DATABASE_NAME])
 
 START_TIME = datetime.datetime.strptime(Config.START_TIME, "%Y-%m-%d %H:%M:%S")
 
-# function for checking that cookie decoding is successful
+# a custom exception for when no cookie is found
 class NoCookieError(Exception):
     pass
 
 def read_cookie(cookie_raw):
     if cookie_raw:
-        cookie = crypto_mgr.decrypt_message(cookie_raw)
+        cookie = json.loads(crypto_mgr.decrypt_message(cookie_raw))
         return cookie
     else:
         raise NoCookieError()
@@ -47,10 +48,10 @@ def check_session():
     
     try:
         cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
-    except (NoCookieError, DecryptionError) as e:
+    except (NoCookieError, DecryptionError, json.JSONDecodeError) as e:
         return redirect('http://localhost:5000', code=303)
     
-    user_data = db.get_session(cookie)
+    user_data = db.get_session(cookie['sessionID'])
     if user_data == None:
         return redirect('http://localhost:5000', code=303)
 
@@ -65,12 +66,13 @@ def index():
         cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
     except NoCookieError:
         return 'SadPanda: No cookie'
-    except DecryptionError:
+    except (DecryptionError, json.JSONDecodeError) as e:
         response = make_response('SadPanda: Cookie invalid')
         response.set_cookie(Config.COOKIE_NAME, '', expires=0) #Delete the cookie
         return response
     
-    return '<h1>Hello, {}<br>Starttime: {}</h1>'.format(cookie, START_TIME)
+    return '<h1>Your cookie:{}<br>Starttime: {}</h1>'.format(cookie, START_TIME)
+    # This should return the index.html template soon
 
 @app.route('/home')
 def home():
@@ -78,12 +80,9 @@ def home():
 
 @app.route('/wait')
 def wait():
-    return render_template('wait.html', start_time = '2024-11-07T13:34:40', redirect_to = 'http://localhost:5000')
+    return render_template('wait.html', start_time = '2024-11-07T13:34:40', redirect_to = url_for('index'))
 
-@app.route('/pico')
-def pico():
-    return render_template('pico_trial.html')
-
+# This page is should only be hit when a user without an account scans a qr to kick off the game
 @app.route('/welcome')
 def welcome():
 
@@ -92,7 +91,7 @@ def welcome():
         cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
     except (NoCookieError, DecryptionError) as e:
         return redirect('http://localhost:5000', code=303)
-    user_data = db.get_user(cookie)
+    user_data = db.get_user(cookie['sessionID'])
     if user_data == None:
         return redirect('http://localhost:5000', code=303)
 
@@ -105,6 +104,7 @@ def welcome():
 def settings():
     return '<h1>Settings page</h1>'
 
+# A list of all locations a user has found / solved
 @app.route('/locations')
 def locations():
     return '<h1>locations page</h1>'
@@ -131,7 +131,8 @@ def receive_username():
 def leaderboard():
     return '<h1>Leaderboard</h1>'
 
-# Location information
+# Information about a specific location
+# Cannot be accessed until the user has found the location
 @app.route("/location/<loc_slug>")
 def loc_info(loc_slug):
     loc_data = db.get_location_by_slug(loc_slug)
@@ -149,11 +150,11 @@ def new_loc(location_code):
     try:
         cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
     except NoCookieError:
-        cookie = ""
+        cookie = {'sessionID':''}
     except DecryptionError:
-        cookie = ""
+        cookie = {'sessionID':''}
 
-    user_data = db.get_session(cookie)
+    user_data = db.get_session(cookie['sessionID'])
     if user_data is None:
         # If not logged in, create a new account for them
         
@@ -167,12 +168,17 @@ def new_loc(location_code):
         db.create_new_user(new_userID, sessionID)
 
         # Set a new cookie for them
-        cookie = crypto_mgr.encrypt_message(sessionID)
+        cookie_data = {
+            'sessionID': sessionID
+
+        }
+
+        cookie = crypto_mgr.encrypt_message(json.dumps(cookie_data))
         response = make_response('placeholder text')
-        response.set_cookie(Config.COOKIE_NAME, cookie, max_age=60 * 60 * 24 * 10)  # Expires in 10 days
+        response.set_cookie(Config.COOKIE_NAME, cookie, max_age=60 * 60 * 24 * 15)  # Expires in 15 days
 
 
-        response.set_data("congrats, you're a new user now")
+        response.set_data(render_template('simple_notice.html', notice='New cookie set!'))
         return response
 
         # user_data = db.create_user()
@@ -184,6 +190,6 @@ def new_loc(location_code):
         # Update location data with who saw it
         # Update user data with what they saw
     # db.user_visits_location("hi","bye")
-    return "<h1>You saw a new location</h1>"
+    return render_template('simple_notice.html', notice='You saw a new location')
     # else
     return "<h1>You've already seen this location</h1>"

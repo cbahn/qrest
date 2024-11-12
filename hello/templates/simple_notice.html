@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark" />    
+    <title>Modern Mobile Website with PicoCSS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.jade.min.css">
+    <link rel="stylesheet" href="http://localhost:5000/static/pico_addons.css">
+</head>
+<body>
+    <!-- Header and Navigation -->
+    <header class="container">
+        <nav>
+            <ul>
+                <li><strong><a href="/">MySite</a></strong></li>
+            </ul>
+            <ul>
+                <li><a href="{{ url_for('settings') }}">Settings</a></li>
+                <li><a href="{{ url_for('locations') }}">Locations</a></li>
+                <li><a href="{{ url_for('leaderboard') }}">Leaderboard</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section id="home">
+            <h1>{{ notice }}</h1>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container">
+        <p>&copy; 2024 MySite. All rights reserved.</p>
+    </footer>
+</body>
+</html>
