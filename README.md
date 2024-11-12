@@ -31,7 +31,7 @@ python -m pip install python-dotenv
 ```
 
 ## STRUCTURE
-Here's an example of what the part that explains the file structure could look like
+Here's an example of what the part that explains the file structure could look like. Inspired by https://github.com/imwilsonxu/fbone
 
 ## STRUCTURE
 

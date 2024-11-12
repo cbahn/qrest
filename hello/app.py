@@ -100,6 +100,10 @@ def welcome():
     
     return render_template('welcome.html', friendly_name = user_data['friendly_name'])
 
+@app.route('/pico')
+def pico():
+    return render_template('index.html')
+
 @app.route('/settings')
 def settings():
     return '<h1>Settings page</h1>'
