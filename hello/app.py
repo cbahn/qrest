@@ -25,6 +25,7 @@ if not os.path.isfile(Config.MONGO_CERT_PATH):
 mongoDB_client = MongoClient(Config.MONGO_URI, tls=True, tlsCertificateKeyFile=Config.MONGO_CERT_PATH)
 db = DatabaseManager(mongoDB_client[Config.DATABASE_NAME])
 
+
 START_TIME = datetime.datetime.strptime(Config.START_TIME, "%Y-%m-%d %H:%M:%S")
 
 # a custom exception for when no cookie is found
@@ -41,22 +42,25 @@ def read_cookie(cookie_raw):
 @app.before_request
 def check_session():
 
-    # Skip validation for specific endpoints if needed
-    # (endpoint referrs to the name of the view function, not the URL path)
-    if request.endpoint in ('index', 'static', 'new_loc', 'wait'):
-        return
-    
+    valid_cookie = True
     try:
         cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
     except (NoCookieError, DecryptionError, json.JSONDecodeError) as e:
-        return redirect('http://localhost:5000', code=303)
+        valid_cookie = False
     
-    user_data = db.get_session(cookie['sessionID'])
-    if user_data == None:
-        return redirect('http://localhost:5000', code=303)
+    if valid_cookie:
+        user_data = db.get_session(cookie['sessionID'])
+        if user_data == None:
+            valid_cookie = False
+        g.user_data = user_data
 
-    # Store user data in g, a global variable tied to this one request
-    g.user_data = user_data
+    if not valid_cookie:
+        g.user_data = None
+    
+    # Valid Cookie is manditory unless one of these paths are used
+    whitelisted_paths = ('new_loc', 'submit_new_user')
+    if (not valid_cookie) and (request.endpoint not in whitelisted_paths):
+        return "<h1> Cookie error in @app.before_request function</h1>"
     return
 
 
@@ -100,20 +104,44 @@ def submit_new_user():
 
     new_username = request.form.get('new_username')
 
-    
     # # Usernames can only have letters, numbers, and underscores
     # # they have to be between 1 and 25 characters long
     # if re.fullmatch( r'^[a-zA-Z0-9_]{1,25}$', new_username) is None:
     #     flash("username wasn't allowed for some reason")
     #     return redirect('http://localhost:5000/welcome', code=303)
     
+    # If not logged in, create a new account for them
+    
+    #Keep trying to generate a new ID until one is found that's not in use
+    is_taken = "placeholder text"
+    while is_taken is not None:
+        new_userID = Util.generate_new_userID()
+        is_taken = db.get_user(new_userID)
+    
+    sessionID = Util.generate_session_code()
+    db.create_new_user(new_userID, sessionID)
+
+    # Set the cookie
+    cookie_data = { 'sessionID': sessionID }
+    cookie = crypto_mgr.encrypt_message(json.dumps(cookie_data))
+
+    # We have to define the response before setting the cookie
+    response = redirect('http://localhost:5000/welcome', code=303)
+    response.set_cookie(Config.COOKIE_NAME, cookie, max_age=60 * 60 * 24 * 15)  # Expires in 15 days
+
     # !security there's no check that users are allowed to update their name
     # We're relying entirely on them not resubmitting the POST request
-    db.set_user_friendly_name(g.user_data['userID'], new_username)
+    db.set_user_friendly_name(new_userID, new_username)
 
-    # flash("username set: {}".format(new_username))
-    
-    return redirect('http://localhost:5000/home', code=303)
+    return response
+
+@app.route('/welcome')
+def welcome():
+    return '<h1>WELCOME NEW USER</h1>'
+
+@app.route('/login')
+def login():
+    return '<h1>login</h1>'
 
 @app.route('/leaderboard')
 def leaderboard():
@@ -136,48 +164,13 @@ def new_loc(location_code):
 
     # Check if user is logged in
     try:
-        cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
+        cookie_json = read_cookie(request.cookies.get(Config.COOKIE_NAME))
     except NoCookieError:
-        cookie = {'sessionID':''}
+        cookie_json = {'sessionID':''}
     except DecryptionError:
-        cookie = {'sessionID':''}
+        cookie_json = {'sessionID':''}
 
-    user_data = db.get_session(cookie['sessionID'])
+    user_data = db.get_session(cookie_json['sessionID'])
     if user_data is None:
-        # If not logged in, create a new account for them
-        
-        #Keep trying to generate a new ID until one is found that's not in use
-        is_taken = "id already in use"
-        while is_taken is not None:
-            new_userID = Util.generate_new_userID()
-            is_taken = db.get_user(new_userID)
-        
-        sessionID = Util.generate_session_code()
-        db.create_new_user(new_userID, sessionID)
 
-        # Set a new cookie for them
-        cookie_data = {
-            'sessionID': sessionID
-
-        }
-
-        cookie = crypto_mgr.encrypt_message(json.dumps(cookie_data))
-        response = make_response('placeholder text')
-        response.set_cookie(Config.COOKIE_NAME, cookie, max_age=60 * 60 * 24 * 15)  # Expires in 15 days
-
-
-        response.set_data(render_template('simple_notice.html', notice='New cookie set!'))
-        return response
-
-        # user_data = db.create_user()
-        # create a cookie for user
-        pass
-
-    # Check if user has seen this location
-        # Mark this location as seen by them
-        # Update location data with who saw it
-        # Update user data with what they saw
-    # db.user_visits_location("hi","bye")
-    return render_template('simple_notice.html', notice='You saw a new location')
-    # else
-    return "<h1>You've already seen this location</h1>"
+        return render_template('new_adventurer.html',location=location_code)
