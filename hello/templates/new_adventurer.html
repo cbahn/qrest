@@ -5,9 +5,9 @@
     <h1>You Found your First Location</h1>
     <p>Pick a name to save your progress and start your adventure.</p>
     
-    <form id="userForm">
+    <form action="/submit_new_user" method="POST">
         <label for="username">What's your adventuring name?</label>
-        <input type="text" maxlength="20" id="username" name="username" placeholder="Enter a username" required>
+        <input type="text" maxlength="20" id="username" name="new_username" placeholder="Enter a username" required>
         <small>Usernames only use letters, numbers, and underscores.</small>
         <button type="submit" id="submitBtn" disabled>Create Account</button>
     </form>

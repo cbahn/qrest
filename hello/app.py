@@ -118,6 +118,26 @@ def settings():
 def locations():
     return '<h1>locations page</h1>'
 
+@app.route('/submit_new_user', methods=['POST'])
+def submit_new_user():
+
+    new_username = request.form.get('new_username')
+
+    
+    # # Usernames can only have letters, numbers, and underscores
+    # # they have to be between 1 and 25 characters long
+    # if re.fullmatch( r'^[a-zA-Z0-9_]{1,25}$', new_username) is None:
+    #     flash("username wasn't allowed for some reason")
+    #     return redirect('http://localhost:5000/welcome', code=303)
+    
+    # !security there's no check that users are allowed to update their name
+    # We're relying entirely on them not resubmitting the POST request
+    db.set_user_friendly_name(g.user_data['userID'], new_username)
+
+    # flash("username set: {}".format(new_username))
+    
+    return redirect('http://localhost:5000/home', code=303)
+
 @app.route('/set_username', methods=['POST'])
 def receive_username():
 
