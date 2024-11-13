@@ -78,7 +78,6 @@ def index():
 def home():
     return render_template('home.html')
 
-
 @app.route('/new_adventurer')
 def new_adventurer():
     return render_template('new_adventurer.html')
@@ -87,31 +86,9 @@ def new_adventurer():
 def wait():
     return render_template('wait.html', start_time = '2024-11-07T13:34:40', redirect_to = url_for('index'))
 
-# This page is should only be hit when a user without an account scans a qr to kick off the game
-@app.route('/welcome')
-def welcome():
-
-    # Check cookie
-    try:
-        cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
-    except (NoCookieError, DecryptionError) as e:
-        return redirect('http://localhost:5000', code=303)
-    user_data = db.get_user(cookie['sessionID'])
-    if user_data == None:
-        return redirect('http://localhost:5000', code=303)
-
-    if user_data['friendly_name'] == None:
-        return render_template('welcome_set_username.html')
-    
-    return render_template('welcome.html', friendly_name = user_data['friendly_name'])
-
-@app.route('/pico')
-def pico():
-    return render_template('index.html')
-
 @app.route('/settings')
 def settings():
-    return '<h1>Settings page</h1>'
+    return render_template('settings.html', login_code="A5BIGBROWNFOX")
 
 # A list of all locations a user has found / solved
 @app.route('/locations')
@@ -136,24 +113,6 @@ def submit_new_user():
 
     # flash("username set: {}".format(new_username))
     
-    return redirect('http://localhost:5000/home', code=303)
-
-@app.route('/set_username', methods=['POST'])
-def receive_username():
-
-    new_username = request.form.get('new_username')
-
-    # Usernames can only have letters, numbers, and underscores
-    # they have to be between 1 and 25 characters long
-    if re.fullmatch( r'^[a-zA-Z0-9_]{1,25}$', new_username) is None:
-        flash("username wasn't allowed for some reason")
-        return redirect('http://localhost:5000/welcome', code=303)
-    
-    # !security there's no check that users are allowed to update their name
-    # We're relying entirely on them not resubmitting the POST request
-    db.set_user_friendly_name(g.user_data['userID'], new_username)
-
-    flash("username set: {}".format(new_username))
     return redirect('http://localhost:5000/home', code=303)
 
 @app.route('/leaderboard')

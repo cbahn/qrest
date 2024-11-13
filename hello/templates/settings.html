@@ -4,7 +4,7 @@
 <!-- Main Content -->
 <main class="container">
     <section id="home">
-        <h1>This is a test of a relative link</h1>
+        <h1>Welcome to Settings</h1>
         <a href="{{ url_for('home') }}"> Link To home</a>
         <p>This is a modern, mobile-friendly website template using PicoCSS.</p>
     </section>
@@ -23,16 +23,16 @@
             Reveal Login Code
         </label>
         </fieldset>
-    <input type="text" id="login-code" name="text" class="space-mono-regular" value="*******" aria-label="Read-only input" readonly >
+    <input type="text" id="login-code" name="text" class="big-login-code-display" value="{{ '*' * login_code|length }}" aria-label="Read-only input" readonly >
 
     <script>
         // JavaScript to handle the switch toggle
         document.getElementById("reveal-login-code").addEventListener("change", function() {
             const inputField = document.getElementById("login-code");
             if (this.checked) {
-                inputField.value = "AP8F7Q7";
+                inputField.value = "{{ login_code }}";
             } else {
-                inputField.value = "*******";
+                inputField.value = "{{ '*' * login_code|length }}";
             }
         });
     </script>
