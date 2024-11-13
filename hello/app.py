@@ -78,6 +78,11 @@ def index():
 def home():
     return render_template('home.html')
 
+
+@app.route('/new_adventurer')
+def new_adventurer():
+    return render_template('new_adventurer.html')
+
 @app.route('/wait')
 def wait():
     return render_template('wait.html', start_time = '2024-11-07T13:34:40', redirect_to = url_for('index'))

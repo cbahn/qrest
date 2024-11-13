@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<main class="container">
+    <h1>You Found your First Location</h1>
+    <p>Pick a name to save your progress and start your adventure.</p>
+    
+    <form id="userForm">
+        <label for="username">What's your adventuring name?</label>
+        <input type="text" maxlength="20" id="username" name="username" placeholder="Enter a username" required>
+        <small>Usernames only use letters, numbers, and underscores.</small>
+        <button type="submit" id="submitBtn" disabled>Create Account</button>
+    </form>
+</main>
+
+<script>
+    const usernameInput = document.getElementById("username");
+    const usernameCharacterError = document.getElementById("usernameCharacterError");
+    const usernameLengthError = document.getElementById("usernameLengthError");
+    const submitBtn = document.getElementById("submitBtn");
+
+    usernameInput.addEventListener("input", () => {
+        if ( /^[a-zA-Z0-9_]+$/.test(usernameInput.value) ) {
+            usernameInput.setAttribute("aria-invalid", "false");
+            submitBtn.disabled = false;
+        } else {
+            usernameInput.setAttribute("aria-invalid", "true");
+            submitBtn.disabled = true;
+        }
+
+        // Don't show valid or invalid if no characters have been entered yet
+        if ( usernameInput.value.length < 1 ) {
+            usernameInput.removeAttribute("aria-invalid");
+            submitBtn.disabled = true;
+        }
+
+    });
+</script>
+
+{% endblock %}
