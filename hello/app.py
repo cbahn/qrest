@@ -47,7 +47,7 @@ def read_cookie(cookie_raw):
 @app.before_request
 def check_session():
     # Valid Cookie is manditory unless one of these paths are used
-    whitelisted_paths = ('new_loc', 'submit_new_user')
+    whitelisted_paths = ('index','new_loc', 'submit_new_user', 'login')
     user_data = None # Is there a better way of init
     try:
         cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
@@ -58,7 +58,7 @@ def check_session():
     except (NoCookieError, DecryptionError, json.JSONDecodeError, KeyError, SessionNotFoundError) as e:
         g.user_data = None
         if request.endpoint not in whitelisted_paths:
-            return "<h1> Cookie error in @app.before_request function</h1>"
+            return redirect('http://localhost:5000', code=303)
     
     g.user_data = user_data
     
@@ -66,17 +66,11 @@ def check_session():
 
 @app.route('/')
 def index():
-    try:
-        cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
-    except NoCookieError:
-        return 'SadPanda: No cookie'
-    except (DecryptionError, json.JSONDecodeError) as e:
-        response = make_response('SadPanda: Cookie invalid')
-        response.set_cookie(Config.COOKIE_NAME, '', expires=0) #Delete the cookie
-        return response
+
+    if g.user_data is None:
+        return render_template('sad_panda.html')
     
-    return render_template('index.html', display_text='Your cookie:{}<br>Starttime: {}'.format(cookie, START_TIME))
-    # This should return the index.html template soon
+    return render_template('index.html', display_text='Your cookie:{}<br>Starttime: {}'.format(str(g.user_data), START_TIME))
 
 @app.route('/new_adventurer')
 def new_adventurer():
@@ -135,9 +129,9 @@ def submit_new_user():
 def welcome():
     return render_template('welcome.html', username = g.user_data['friendly_name'])
 
-@app.route('/login')
+@app.route('/login', methods=['GET'])
 def login():
-    return render_template('login.html');
+    return render_template('login.html')
 
 @app.route('/leaderboard')
 def leaderboard():
