@@ -11,6 +11,7 @@ class DatabaseManager:
 
         self.users_collection = database.users
         self.locations_collection = database.locations
+        self.visits_collection = database.visits
 
     def create_new_user(self, userID, sessionID):
         new_user = {
@@ -30,35 +31,32 @@ class DatabaseManager:
     def get_session(self, sessionID):
         return self.users_collection.find_one({"sessionID": sessionID})
     
-    def user_visits_location(self,userID,locationID):
-        with self.client.start_session() as session:
-            with session.start_transaction():
-                loc_data = self.locations_collection.find_one({"locationID":"25DD"},session=session)
-                visitor_count = loc_data['totalVisitors']
-
-                new_visitor_data = {
-                    "visitorID":"v1442",
-                    "name":"johh",
-                    "VisitOrder": visitor_count + 1
-                }
-
-                self.locations_collection.update_one(
-                    {"locationID":"25DD"},
-                    {"$push":{"visitors":new_visitor_data}},
-                    session=session
-                )
-        # check if user has visited that location yet
-        # update location info
-        # update user's info
+    def log_visit(self, userID, locationID, TEST_number):
+        # Construct the filter to find an existing check-in by username and location_id
+        filter_query = {
+            "userID": userID,
+            "locationID": locationID,
+        }
+        
+        # Define the data to upsert
+        update_data = {
+            "$set": {
+                "TEST_number": TEST_number
+            },
+            "$setOnInsert": {
+                "userID": userID,
+                "locationID": locationID,
+                "note": "First time here!"  # Optional: only set if it's a new document
+            }
+        }
+        result = self.visits_collection.update_one(filter_query, update_data, upsert=True) # hashtag upsert
+        
+        if result.upserted_id: # if upserted_id exists, it means a new document was created
+            return result
+        return None
 
     def get_location_info(self, locationID):
-        location_data = self.locations_collection.find_one({"locationID": locationID})
-        if location_data and "visitors" in location_data:
-            # Extract the Visitor array and sort it by VisitOrder
-            sorted_visitors = sorted(location_data["visitors"], key=lambda x: x["visitOrder"])
-            return sorted_visitors
-        else:
-            return []  # Return an empty list if no document found or no Visitor array
+        return self.locations_collection.find_one({"locationID": locationID})
 
     def get_location_by_slug(self, location_slug):
         location_data = self.locations_collection.find_one({"slug": location_slug})

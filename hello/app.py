@@ -97,6 +97,7 @@ def test_qr():
 def submit_new_user():
 
     new_username = request.form.get('new_username')
+    visited_locationID = request.form.get('locationID')
 
     # # Usernames can only have letters, numbers, and underscores
     # # they have to be between 1 and 25 characters long
@@ -126,7 +127,7 @@ def submit_new_user():
     # !security there's no check that users are allowed to update their name
     # We're relying entirely on them not resubmitting the POST request
     db.set_user_friendly_name(new_userID, new_username)
-
+    db.log_visit(new_userID, visited_locationID, TEST_number="52333")
     return response
 
 @app.route('/welcome')
@@ -156,7 +157,20 @@ def loc_info(loc_slug):
 @app.route("/n/<location_code>")
 def new_loc(location_code):
 
+    # I am having trouble finding documentation related to what type of input
+    #  sanitation is needed for pymongo queries. I'll do a basic character
+    #  filter here and hope it's good enough.
+    remove_chars = {'{': None, '}': None, ',': None, '$': None, ';': None}
+    location_code = location_code.translate(str.maketrans(remove_chars))
+
+    location_info = db.get_location_info(location_code)
+    if location_info is None:
+        return "Location does not exist 404: your " + location_code
+
     if g.user_data is None:
-        return render_template('new_adventurer.html',location=location_code)
+        return render_template('new_adventurer.html',locationID=location_code)
     else:
-        return "You've already visited, loser"
+        result = db.log_visit(g.user_data['userID'], location_code, "92")
+        if result is None:
+            return "You've already visited, loser"
+        return "New location visited, loser"

@@ -8,6 +8,7 @@
     <form action="/submit_new_user" method="POST">
         <label for="username">What's your adventuring name?</label>
         <input type="text" maxlength="20" id="username" name="new_username" placeholder="Enter a username" required>
+        <input type="hidden" name="locationID" value="{{ locationID }}">
         <small>Usernames only use letters, numbers, and underscores.</small>
         <button type="submit" id="submitBtn" disabled>Create Account</button>
     </form>
