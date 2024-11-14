@@ -89,6 +89,10 @@ def settings():
 def locations():
     return render_template('locations.html')
 
+@app.route('/TEST_qr')
+def test_qr():
+    return render_template('TEST_qr.html')
+
 @app.route('/submit_new_user', methods=['POST'])
 def submit_new_user():
 

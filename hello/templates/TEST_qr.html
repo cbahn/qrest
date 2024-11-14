@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!-- Main Content -->
+<main class="container">
+
+<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+
+<input type="text" id="textInput" placeholder="type something...">
+<button onclick="updateQR()">Update QR</button>
+
+<div id="qrcode" style="padding-top: 30;" style="padding-left: 30;"></div>
+
+<script>
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: "placeholder",
+        width: 128,
+        height: 128,
+        colorDark : '#000',
+        colorLight : '#FFF',
+        correctLevel : QRCode.CorrectLevel.L
+    })
+
+    function updateQR() {
+        const text = document.getElementById("textInput").value;
+        
+        qrcode.makeCode(text);
+        const qrCodeImage = document.querySelector("#qrcode img");
+        qrCodeImage.style.transform = "rotate(225deg)";
+    }
+</script>
+
+{% endblock %}
