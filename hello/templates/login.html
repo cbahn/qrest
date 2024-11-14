@@ -1,0 +1,17 @@
+{% extends "unauth_layout.html" %}
+
+{% block content %}
+<!-- Main Content -->
+<main class="container">
+
+    <h1>Already got an account?</h1>
+    <p>Sign in here.</p>
+    
+    <form action="/login" method="POST">
+        <input type="text" id="username" name="new_username" placeholder="Login Code" required>
+        <small>(case insensitive)</small>
+        <button type="submit" id="submitBtn">Login</button>
+    </form>
+
+</main>
+{% endblock %}

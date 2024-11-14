@@ -11,13 +11,15 @@ pip install -r requirements.txt
 ```
 
 For now I'm doing these updates manually
-bash```
+```bash
 pip install flask
 pip install pymongo
 pip install pycryptodome
 ```
 
 ### Don't forget to create the config file.
+
+### Also don't forget to whitelist the IP on mongodb.com
 
 ### To run tests
 ```bash

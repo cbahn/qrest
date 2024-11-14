@@ -20,6 +20,7 @@ jinja2==2.11.3
 jsmin==2.2.2
 mako==1.1.4
 markupsafe==1.1.1
+pycryptodome==3.21.0
 python-dateutil==2.8.1
 python-dotenv==0.10.3
 python-editor==1.0.4
