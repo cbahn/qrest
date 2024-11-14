@@ -32,6 +32,11 @@ START_TIME = datetime.datetime.strptime(Config.START_TIME, "%Y-%m-%d %H:%M:%S")
 class NoCookieError(Exception):
     pass
 
+# a custom exception for when a user session can't be found
+class SessionNotFoundError(Exception):
+    pass
+
+
 def read_cookie(cookie_raw):
     if cookie_raw:
         cookie = json.loads(crypto_mgr.decrypt_message(cookie_raw))
@@ -41,27 +46,22 @@ def read_cookie(cookie_raw):
 
 @app.before_request
 def check_session():
-
-    valid_cookie = True
-    try:
-        cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
-    except (NoCookieError, DecryptionError, json.JSONDecodeError) as e:
-        valid_cookie = False
-    
-    if valid_cookie:
-        user_data = db.get_session(cookie['sessionID'])
-        if user_data == None:
-            valid_cookie = False
-        g.user_data = user_data
-
-    if not valid_cookie:
-        g.user_data = None
-    
     # Valid Cookie is manditory unless one of these paths are used
     whitelisted_paths = ('new_loc', 'submit_new_user')
-    if (not valid_cookie) and (request.endpoint not in whitelisted_paths):
-        return "<h1> Cookie error in @app.before_request function</h1>"
-    return
+    user_data = None # Is there a better way of init
+    try:
+        cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
+        user_data = db.get_session(cookie['sessionID'])
+        if user_data == None:
+            raise SessionNotFoundError()
+
+    except (NoCookieError, DecryptionError, json.JSONDecodeError, KeyError, SessionNotFoundError) as e:
+        g.user_data = None
+        if request.endpoint not in whitelisted_paths:
+            return "<h1> Cookie error in @app.before_request function</h1>"
+    
+    g.user_data = user_data
+    
 
 
 @app.route('/')
@@ -75,12 +75,8 @@ def index():
         response.set_cookie(Config.COOKIE_NAME, '', expires=0) #Delete the cookie
         return response
     
-    return '<h1>Your cookie:{}<br>Starttime: {}</h1>'.format(cookie, START_TIME)
+    return render_template('index.html', display_text='Your cookie:{}<br>Starttime: {}'.format(cookie, START_TIME))
     # This should return the index.html template soon
-
-@app.route('/home')
-def home():
-    return render_template('home.html')
 
 @app.route('/new_adventurer')
 def new_adventurer():
@@ -97,7 +93,7 @@ def settings():
 # A list of all locations a user has found / solved
 @app.route('/locations')
 def locations():
-    return '<h1>locations page</h1>'
+    return render_template('locations.html')
 
 @app.route('/submit_new_user', methods=['POST'])
 def submit_new_user():
@@ -137,15 +133,15 @@ def submit_new_user():
 
 @app.route('/welcome')
 def welcome():
-    return '<h1>WELCOME NEW USER</h1>'
+    return render_template('welcome.html', username = g.user_data['friendly_name'])
 
 @app.route('/login')
 def login():
-    return '<h1>login</h1>'
+    return render_template('login.html');
 
 @app.route('/leaderboard')
 def leaderboard():
-    return '<h1>Leaderboard</h1>'
+    return render_template('leaderboard.html')
 
 # Information about a specific location
 # Cannot be accessed until the user has found the location
@@ -162,15 +158,7 @@ def loc_info(loc_slug):
 @app.route("/n/<location_code>")
 def new_loc(location_code):
 
-    # Check if user is logged in
-    try:
-        cookie_json = read_cookie(request.cookies.get(Config.COOKIE_NAME))
-    except NoCookieError:
-        cookie_json = {'sessionID':''}
-    except DecryptionError:
-        cookie_json = {'sessionID':''}
-
-    user_data = db.get_session(cookie_json['sessionID'])
-    if user_data is None:
-
+    if g.user_data is None:
         return render_template('new_adventurer.html',location=location_code)
+    else:
+        return "You've already visited, loser"
