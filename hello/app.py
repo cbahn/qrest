@@ -87,7 +87,9 @@ def settings():
 # A list of all locations a user has found / solved
 @app.route('/locations')
 def locations():
-    return render_template('locations.html')
+
+    result = db.list_user_visits(g.user_data['userID'])
+    return render_template('locations.html', locations=result)
 
 @app.route('/TEST_qr')
 def test_qr():
@@ -151,7 +153,7 @@ def loc_info(loc_slug):
     if loc_data == None:
         return '<h1>Location not found</h1>'
 
-    return '<h1> Location name: {} </h1><br>'.format(loc_data["friendlyName"])
+    return render_template('location.html', location=loc_data)
 
 # Logging a new location
 @app.route("/n/<location_code>")
@@ -163,10 +165,12 @@ def new_loc(location_code):
     remove_chars = {'{': None, '}': None, ',': None, '$': None, ';': None}
     location_code = location_code.translate(str.maketrans(remove_chars))
 
+    # Check that location code is valid
     location_info = db.get_location_info(location_code)
     if location_info is None:
         return "Location does not exist 404: your " + location_code
 
+    # Check if user is logged in
     if g.user_data is None:
         return render_template('new_adventurer.html',locationID=location_code)
     else:

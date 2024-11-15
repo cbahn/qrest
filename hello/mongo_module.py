@@ -55,17 +55,19 @@ class DatabaseManager:
             return result
         return None
 
+    # returns a list of documents (sorted alphabeticaly by friendlyName)
+    # for each location the user has visited
+    def list_user_visits(self, userID):
+        visits = self.visits_collection.find({"userID": userID})
+        visited_locationIDs = [s['locationID'] for s in visits]
+        locations = self.locations_collection.find({"locationID": {"$in": visited_locationIDs}})
+        return sorted(locations, key=lambda d: d['friendlyName'])
+    
     def get_location_info(self, locationID):
         return self.locations_collection.find_one({"locationID": locationID})
 
     def get_location_by_slug(self, location_slug):
-        location_data = self.locations_collection.find_one({"slug": location_slug})
-        if location_data and "visitors" in location_data:
-            # Extract the Visitor array and sort it by VisitOrder
-            sorted_visitors = sorted(location_data["visitors"], key=lambda x: x["visitOrder"])
-            return {"friendlyName": location_data['friendlyName'], "slug":location_data['slug'], "sorted_visitors":sorted_visitors}
-        else:
-            return None  # no match found, return None
+        return self.locations_collection.find_one({"slug": location_slug})
 
     def set_user_friendly_name(self, userID, friendly_name):
         result = self.users_collection.update_one(

@@ -5,7 +5,28 @@
 <main class="container">
     <section id="home">
         <h1>List of Locations</h1>
-        <p>Eventually this will be a list of locations that you've visited</p>
+        <p>Where you've visited.</p>
+
+        {% if locations %}
+        <table role="grid">
+            <thead>
+                <tr>
+                    <th>locatoinID</th>
+                    <th>Location Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for loc in locations %}
+                <tr>
+                    <td>{{ loc.locationID }}</td>
+                    <td><a href="/location/{{ loc.slug }}">{{ loc.friendlyName }}</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>You haven't found any locations 🤣.</p>
+        {% endif %}
     </section>
 </main>
 {% endblock %}
