@@ -93,7 +93,7 @@ def locations():
 
 @app.route('/TEST_qr')
 def test_qr():
-    return render_template('TEST_qr.html')
+    return render_template('TEST_qr.html', qr_code=Util.generate_qr_code("https://qrest.xyz/n/ABX235235"))
 
 @app.route('/submit_new_user', methods=['POST'])
 def submit_new_user():

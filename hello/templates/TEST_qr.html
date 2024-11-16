@@ -4,30 +4,34 @@
 <!-- Main Content -->
 <main class="container">
 
-<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
 
-<input type="text" id="textInput" placeholder="type something...">
-<button onclick="updateQR()">Update QR</button>
-
-<div id="qrcode" style="padding-top: 30;" style="padding-left: 30;"></div>
-
-<script>
-    var qrcode = new QRCode(document.getElementById("qrcode"), {
-        text: "placeholder",
-        width: 128,
-        height: 128,
-        colorDark : '#000',
-        colorLight : '#FFF',
-        correctLevel : QRCode.CorrectLevel.L
-    })
-
-    function updateQR() {
-        const text = document.getElementById("textInput").value;
-        
-        qrcode.makeCode(text);
-        const qrCodeImage = document.querySelector("#qrcode img");
-        qrCodeImage.style.transform = "rotate(225deg)";
+<style>
+    .circle {
+        width: 300px; /* Diameter of the circle */
+        height: 300px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 10px rgba(172, 42, 42, 0.733); /* Optional for aesthetics */
+        padding-top: 10%;
+        padding-bottom: 20%; 
     }
-</script>
+
+    .circle img {
+        width: 60vw; /* 30% of the viewport width */
+        transform: rotate(225deg); /* Rotate the image 30 degrees */
+        display: block;
+        margin: 20px auto; /* Center the image */
+    }
+
+</style>
+
+
+<div class="circle">
+    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+</div>
+
 
 {% endblock %}
