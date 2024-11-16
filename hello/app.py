@@ -36,7 +36,6 @@ class NoCookieError(Exception):
 class SessionNotFoundError(Exception):
     pass
 
-
 def read_cookie(cookie_raw):
     if cookie_raw:
         cookie = json.loads(crypto_mgr.decrypt_message(cookie_raw))
@@ -47,7 +46,7 @@ def read_cookie(cookie_raw):
 @app.before_request
 def check_session():
     # Valid Cookie is manditory unless one of these paths are used
-    whitelisted_paths = ('index','new_loc', 'submit_new_user', 'login')
+    whitelisted_paths = ('index','new_loc', 'submit_new_user', 'login', 'login_action')
     user_data = None # Is there a better way of init
     try:
         cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
@@ -62,7 +61,6 @@ def check_session():
     
     g.user_data = user_data
     
-
 
 @app.route('/')
 def index():
@@ -98,8 +96,8 @@ def test_qr():
 @app.route('/submit_new_user', methods=['POST'])
 def submit_new_user():
 
-    new_username = request.form.get('new_username')
-    visited_locationID = request.form.get('locationID')
+    new_username = Util.sanitize(request.form.get('new_username'))
+    visited_locationID = Util.sanitize(request.form.get('locationID'))
 
     # # Usernames can only have letters, numbers, and underscores
     # # they have to be between 1 and 25 characters long
@@ -136,18 +134,47 @@ def submit_new_user():
 def welcome():
     return render_template('welcome.html', username = g.user_data['friendly_name'])
 
+@app.route('/admin')
+def admin():
+    if db.check_admin(g.user_data['sessionID']):
+        return "You're in 😎"
+    return "404 loser", 404
+
 @app.route('/login', methods=['GET'])
 def login():
     return render_template('login.html')
 
+@app.route('/login_action', methods=['POST'])
+def login_action():
+    userID = Util.sanitize(request.form.get('userID'))
+    user_data = db.get_user(userID)
+    if user_data is None:
+        return "<h1> Login Code not found ??? </h1>"
+    
+    sessionID = Util.generate_session_code()
+    db.set_session(userID, sessionID)
+
+    # Set the cookie
+    cookie_data = { 'sessionID': sessionID }
+    cookie = crypto_mgr.encrypt_message(json.dumps(cookie_data))
+
+    # We have to define the response before setting the cookie
+    response = redirect('http://localhost:5000', code=303)
+    response.set_cookie(Config.COOKIE_NAME, cookie, max_age=60 * 60 * 24 * 15)  # Expires in 15 days
+    return response
+
 @app.route('/leaderboard')
 def leaderboard():
-    return render_template('leaderboard.html')
+    leaderboard_data = db.calculate_leaderboard()
+    return render_template('leaderboard.html', leaderboard_data=leaderboard_data)
 
 # Information about a specific location
 # Cannot be accessed until the user has found the location
 @app.route("/location/<loc_slug>")
 def loc_info(loc_slug):
+
+    loc_slug = Util.sanitize(loc_slug)
+
     loc_data = db.get_location_by_slug(loc_slug)
 
     if loc_data == None:
@@ -159,11 +186,7 @@ def loc_info(loc_slug):
 @app.route("/n/<location_code>")
 def new_loc(location_code):
 
-    # I am having trouble finding documentation related to what type of input
-    #  sanitation is needed for pymongo queries. I'll do a basic character
-    #  filter here and hope it's good enough.
-    remove_chars = {'{': None, '}': None, ',': None, '$': None, ';': None}
-    location_code = location_code.translate(str.maketrans(remove_chars))
+    location_code = Util.sanitize(location_code)
 
     # Check that location code is valid
     location_info = db.get_location_info(location_code)

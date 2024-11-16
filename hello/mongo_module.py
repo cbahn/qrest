@@ -28,9 +28,26 @@ class DatabaseManager:
     def get_user(self, userID):
         return self.users_collection.find_one({"userID": userID})
     
+    def check_admin(self, sessionID):
+        """
+        :param sessionID: user's session
+        :result: True if user is admin, False if not admin or not found
+        """
+        result = self.users_collection.find_one({"sessionID": sessionID})
+        if result is not None:
+            if result["role"] == "admin":
+                return True
+        return False
+    
     def get_session(self, sessionID):
         return self.users_collection.find_one({"sessionID": sessionID})
     
+    def set_session(self, userID, new_sessionID):
+        return self.users_collection.update_one(
+            {"userID": userID},
+            {"$set": {"sessionID": new_sessionID}}
+        )
+
     def log_visit(self, userID, locationID, TEST_number):
         # Construct the filter to find an existing check-in by username and location_id
         filter_query = {
@@ -78,3 +95,22 @@ class DatabaseManager:
             return self.users_collection.find_one({"userID": userID})
         else:
             return None
+
+    def calculate_leaderboard(self):
+        visits_list = self.visits_collection.find()
+        leaderboard_count = {}
+        for visit in visits_list:
+            userID = visit.get("userID")
+            if userID:
+                leaderboard_count[userID] = leaderboard_count.get(userID, 0) + 1
+        
+        # I want to return a list of friendly_names not user IDs
+        leaderboard_friendly = []
+        for id, count in leaderboard_count.items():
+            user_data = self.get_user(id)
+            if user_data and "friendly_name" in user_data:
+                leaderboard_friendly.append( {
+                    "friendly_name": user_data["friendly_name"],
+                    "visit_count": count
+                })
+        return leaderboard_friendly

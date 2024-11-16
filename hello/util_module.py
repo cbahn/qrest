@@ -45,3 +45,10 @@ class Util(object):
         buffer.seek(0)
         img_base64 = base64.b64encode(buffer.read()).decode('utf-8')
         return img_base64
+    
+    def sanitize(data):
+        # I am having trouble finding documentation related to what type of input
+        #  sanitation is needed for pymongo queries. I'll do a basic character
+        #  filter here and hope it's good enough.
+        remove_chars = {'{': None, '}': None, ',': None, '$': None, ';': None, '"': None}
+        return data.translate(str.maketrans(remove_chars))
