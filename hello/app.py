@@ -7,7 +7,6 @@ from mongo_module import DatabaseManager
 from config import Config
 from util_module import Util
 from html import escape # this is being used for bebugging
-import re
 import datetime
 import json
 
@@ -80,7 +79,7 @@ def wait():
 
 @app.route('/settings')
 def settings():
-    return render_template('settings.html', login_code="A5BIGBROWNFOX")
+    return render_template('settings.html', login_code=g.user_data.get("userID", "ERROR"))
 
 # A list of all locations a user has found / solved
 @app.route('/locations')
@@ -144,12 +143,13 @@ def admin():
 def login():
     return render_template('login.html')
 
-@app.route('/login_action', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def login_action():
     userID = Util.sanitize(request.form.get('userID'))
+    userID = userID.upper() # make sure it's uppercase
     user_data = db.get_user(userID)
     if user_data is None:
-        return "<h1> Login Code not found ??? </h1>"
+        return "<h1> Login Code not found ??? :</h1>" + userID
     
     sessionID = Util.generate_session_code()
     db.set_session(userID, sessionID)
