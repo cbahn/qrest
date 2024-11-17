@@ -129,6 +129,8 @@ def submit_new_user():
 
     # !security there's no check that users are allowed to update their name
     # We're relying entirely on them not resubmitting the POST request
+
+    # !todo also, we don't check that the name isn't already in use
     db.set_user_friendly_name(new_userID, new_username)
     db.log_visit(new_userID, visited_locationID, TEST_number="52333")
     return response

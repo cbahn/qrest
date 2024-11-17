@@ -35,47 +35,42 @@ python -m pip install python-dotenv
 ## STRUCTURE
 Here's an example of what the part that explains the file structure could look like. Inspired by https://github.com/imwilsonxu/fbone
 
-## STRUCTURE
-
-    ├── CHANGES                     Change logs
-    ├── README.markdown
-    ├── fabfile.py                  Fabric file to automated managament project
-    ├── fbone.conf                  Apache config
-    ├── requirements.txt            3rd libraries
-    ├── tests.py                    Unittests
-    ├── wsgi.py                     Wsgi app
-    ├── fbone
-       ├── __init__.py
-       ├── app.py                   Main App
-       ├── config.py                Develop / Testing configs
-       ├── constants.py             Constants
-       ├── decorators.py            Customized decorators
-       ├── extensions.py            Flask extensions
-       ├── filters.py               Flask filters
-       ├── utils.py                 Python utils
-       ├── frontend                 Frontend blueprint
-       │   ├── __init__.py
-       │   ├── forms.py             Forms used in frontend modular
-       │   ├── views.py             Views used in frontend modular
-       ├── user
-       ├── api
-       ├── static                   Static files
-       │   ├── css
-       │   ├── favicon.png
-       │   ├── humans.txt
-       │   ├── img
-       │   ├── js
-       │   └── robots.txt
-       └── templates                Jinja2 templates
-           ├── errors
-           ├── frontend
-           ├── index.html
-           ├── layouts              Jinja2 layouts
-           │   ├── base.html
-           │   └── user.html
-           ├── macros               Jinja2 macros
-           ├── mails                Mail templates
-           └── user
+## STRUCTURE (work in progress)
+```
+├── requirements.txt
+├── README.md
+├── .gitignore
+├── hello
+│   ├── util_module.py
+│   ├── test_mongo_module.py
+│   ├── mongo_module.py
+│   ├── crypto_module.py
+│   ├── config.py.example
+│   ├── app.py
+│   ├── .flaskenv
+│   ├── templates
+│   │   │   ├── images
+│   │   │   └── logo.svg
+│   ├── static
+│   │   └── data.js
+│   ├── components
+│   │   ├── app
+│   │   │   ├── App.css
+│   │   │   ├── App.jsx
+│   │   │   └── App.test.js
+│   │   └── index.js
+│   ├── utils
+│   │   ├── ...
+│   │   └── index.js
+│   ├── index.css
+│   ├── index.js
+│   ├── serviceWorker.js
+│   └── setupTests.js
+├── .gitignore
+├── package.json
+└── README.md
+└── yarn.lock
+```
 
 ## To-Do List
 
@@ -87,6 +82,7 @@ Here's an example of what the part that explains the file structure could look l
 - [ ] Get a more logical favicon
 - [X] flash messages
 - [ ] Admins shouldn't appear on the leaderboard
+- [ ] fix new user server-side validation
 
 ### 🗺️ User routes to make pleasant
 - [X] When you visit a new location and you're logged in (display /location/LOCID page with a flashed message)
