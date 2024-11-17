@@ -79,12 +79,13 @@ def wait():
 
 @app.route('/settings')
 def settings():
+    flash('heres your warning', 'warning')
+    flash('heres your success','success')
     return render_template('settings.html', login_code=g.user_data.get("userID", "ERROR"))
 
 # A list of all locations a user has found / solved
 @app.route('/locations')
 def locations():
-
     result = db.list_user_visits(g.user_data['userID'])
     return render_template('locations.html', locations=result)
 

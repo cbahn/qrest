@@ -7,7 +7,8 @@
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">    
     <title>Modern Mobile Website with PicoCSS</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.sand.min.css">
-    <link rel="stylesheet" href="http://localhost:5000/static/pico_addons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
+    <link rel="stylesheet" href="/static/pico_addons.css">
 </head>
 <body>
     <!-- Header and Navigation -->
@@ -24,11 +25,25 @@
         </nav>
     </header>
 
+    
+    <main class="container">
 
-    <!-- Content -->
-    {% block content %}
-    <p>This is the default content.</p>
-    {% endblock %}
+        <!-- Flashed Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <article class="flash-{{ category }}">{{ message }}</article>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Content -->
+        {% block content %}
+        <p>This is the default content.</p>
+        {% endblock %}
+    </main>
+
+
 
     <!-- Footer -->
     <footer class="container">
