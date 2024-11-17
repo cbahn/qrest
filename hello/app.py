@@ -79,8 +79,6 @@ def wait():
 
 @app.route('/settings')
 def settings():
-    flash('heres your warning', 'warning')
-    flash('heres your success','success')
     return render_template('settings.html', login_code=g.user_data.get("userID", "ERROR"))
 
 # A list of all locations a user has found / solved
@@ -191,15 +189,22 @@ def new_loc(location_code):
     location_code = Util.sanitize(location_code)
 
     # Check that location code is valid
-    location_info = db.get_location_info(location_code)
-    if location_info is None:
-        return "Location does not exist 404: your " + location_code
+    location_data = db.get_location_info(location_code)
+    if location_data is None:
+        return "Location does not exist 404: " + location_code
 
-    # Check if user is logged in
+    # Check if user is not logged in
     if g.user_data is None:
         return render_template('new_adventurer.html',locationID=location_code)
+    
+    result = db.log_visit(g.user_data['userID'], location_code, "i should put a timestamp here")
+    if result is None: # result is none if user has already visited location
+        flash("You already found this location 😞.", 'warning')
     else:
-        result = db.log_visit(g.user_data['userID'], location_code, "92")
-        if result is None:
-            return "You've already visited, loser"
-        return "New location visited, loser"
+        flash("You have found a new location 🎉!", 'success')
+    
+    if 'slug' in location_data:
+        return redirect(f"/location/{location_data['slug']}", code=303)
+    
+    flash("Unable to view location for unknown reasons. 😬", "error")
+    redirect("/", code=303)

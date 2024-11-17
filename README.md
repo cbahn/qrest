@@ -85,10 +85,11 @@ Here's an example of what the part that explains the file structure could look l
 - [ ] Make sure the welcome page shows a reminder to remember your Login Code
 - [ ] Make the leaderboard sort correctly
 - [ ] Get a more logical favicon
+- [X] flash messages
 
 ### 🗺️ User routes to make pleasant
-- [ ] When you visit a new location and you're logged in (display /location/LOCID page with a flashed message)
-- [ ] When you visit a location you've already discovered
+- [X] When you visit a new location and you're logged in (display /location/LOCID page with a flashed message)
+- [X] When you visit a location you've already discovered
 - [ ] Make the settings read with more useful info
 
 ### 🚀 Deployment details
