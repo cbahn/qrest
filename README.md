@@ -76,3 +76,21 @@ Here's an example of what the part that explains the file structure could look l
            ├── macros               Jinja2 macros
            ├── mails                Mail templates
            └── user
+
+## To-Do List
+
+### 🔎 Implementaiton details
+- [ ] Find art for each of the locations
+- [ ] remove the locID from the leaderboard
+- [ ] Make sure the welcome page shows a reminder to remember your Login Code
+- [ ] Make the leaderboard sort correctly
+- [ ] Get a more logical favicon
+
+### 🗺️ User routes to make pleasant
+- [ ] When you visit a new location and you're logged in (display /location/LOCID page with a flashed message)
+- [ ] When you visit a location you've already discovered
+- [ ] Make the settings read with more useful info
+
+### 🚀 Deployment details
+- [ ] How to make docker gud
+- [ ] Make sure to check for any !todo or !security notes left behind

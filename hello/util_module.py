@@ -21,7 +21,7 @@ class Util(object):
         return 'A' + Util.generate_random_code(6)
 
     def generate_new_locationID():
-        return 'L' + Util.generate_random_code(6)
+        return 'L' + Util.generate_random_code(8)
 
     def generate_qr_code(data):
         """

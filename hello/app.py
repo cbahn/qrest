@@ -56,8 +56,8 @@ def check_session():
     except (NoCookieError, DecryptionError, json.JSONDecodeError, KeyError, SessionNotFoundError) as e:
         g.user_data = None
         if request.endpoint not in whitelisted_paths:
-            return redirect('http://localhost:5000', code=303)
-    
+            return redirect('/', code=303)
+        
     g.user_data = user_data
     
 
@@ -98,11 +98,12 @@ def submit_new_user():
     new_username = Util.sanitize(request.form.get('new_username'))
     visited_locationID = Util.sanitize(request.form.get('locationID'))
 
+    # !security don't forget to re-enable these checks later!
     # # Usernames can only have letters, numbers, and underscores
     # # they have to be between 1 and 25 characters long
     # if re.fullmatch( r'^[a-zA-Z0-9_]{1,25}$', new_username) is None:
     #     flash("username wasn't allowed for some reason")
-    #     return redirect('http://localhost:5000/welcome', code=303)
+    #     return redirect('/welcome', code=303)
     
     # If not logged in, create a new account for them
     
@@ -120,7 +121,7 @@ def submit_new_user():
     cookie = crypto_mgr.encrypt_message(json.dumps(cookie_data))
 
     # We have to define the response before setting the cookie
-    response = redirect('http://localhost:5000/welcome', code=303)
+    response = redirect('/welcome', code=303)
     response.set_cookie(Config.COOKIE_NAME, cookie, max_age=60 * 60 * 24 * 15)  # Expires in 15 days
 
     # !security there's no check that users are allowed to update their name
@@ -159,7 +160,7 @@ def login_action():
     cookie = crypto_mgr.encrypt_message(json.dumps(cookie_data))
 
     # We have to define the response before setting the cookie
-    response = redirect('http://localhost:5000', code=303)
+    response = redirect('/', code=303)
     response.set_cookie(Config.COOKIE_NAME, cookie, max_age=60 * 60 * 24 * 15)  # Expires in 15 days
     return response
 
