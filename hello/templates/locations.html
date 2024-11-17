@@ -4,22 +4,22 @@
 <!-- Main Content -->
 <main class="container">
     <section id="home">
-        <h1>List of Locations</h1>
-        <p>Where you've visited.</p>
+        <h1>Locations</h1>
+        <p>Places you found.</p>
 
         {% if locations %}
         <table role="grid">
             <thead>
                 <tr>
-                    <th>locatoinID</th>
-                    <th>Location Name</th>
+                    <th>Name</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 {% for loc in locations %}
                 <tr>
-                    <td>{{ loc.locationID }}</td>
                     <td><a href="/location/{{ loc.slug }}">{{ loc.friendlyName }}</a></td>
+                    <td>Discovered</td>
                 </tr>
                 {% endfor %}
             </tbody>

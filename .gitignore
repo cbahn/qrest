@@ -118,3 +118,6 @@ docs/_build/
 # Upload file
 demos/form/uploads/*
 !demos/form/uploads/.gitkeep
+
+# ignore place images
+hello/static/place_img/

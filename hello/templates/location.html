@@ -5,8 +5,23 @@
 <main class="container">
     <section id="home">
         <h1>{{ location.friendlyName }}</h1>
-        <p>locationID is {{ location.locationID }}</p>
-
+        <img src="/static/place_img/{{ location.slug }}.png" style="max-height:128px;" onerror="this.onerror=null; this.src='/static/place_error.png';">
+        
+    </section>
+    <section id="details">
+        <p>A very nice gulch with rabbits.</p>
+        <article>
+            <header>Puzzle</header>
+            What color was the white rabbit?
+            <footer>
+                <form>
+                    <fieldset role="group">
+                    <input type="text" placeholder="Enter your guess..." />
+                    <input type="submit" value="Submit" />
+                    </fieldset>
+                </form>
+            </footer>
+        </article>
     </section>
 </main>
 {% endblock %}
