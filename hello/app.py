@@ -166,6 +166,8 @@ def login_action():
 @app.route('/leaderboard')
 def leaderboard():
     leaderboard_data = db.calculate_leaderboard()
+    # Sort the data from highest to lowest visit_count
+    leaderboard_data = sorted(leaderboard_data, key=lambda x: x["visit_count"], reverse=True)
     return render_template('leaderboard.html', leaderboard_data=leaderboard_data)
 
 # Information about a specific location

@@ -83,7 +83,7 @@ Here's an example of what the part that explains the file structure could look l
 - [ ] Find art for each of the locations
 - [ ] remove the locID from the leaderboard
 - [ ] Make sure the welcome page shows a reminder to remember your Login Code
-- [ ] Make the leaderboard sort correctly
+- [X] Make the leaderboard sort correctly
 - [ ] Get a more logical favicon
 - [X] flash messages
 

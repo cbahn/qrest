@@ -3,26 +3,14 @@
 {% block content %}
 <!-- Main Content -->
 <main class="container">
-    <section id="home">
-        <h1>Welcome to Settings</h1>
-        <p>This is a modern, mobile-friendly website template using PicoCSS.</p>
-    </section>
-    <section id="about">
-        <h2>About Us</h2>
-        <p>Learn more about our mission and values.</p>
-    </section>
-    <section id="services">
-        <h2>Our Services</h2>
-        <p>Check out the services we offer.</p>
-    </section>
-
-    <fieldset>
-        <label>
-            <input id="reveal-login-code" name="reveal" type="checkbox" role="switch" />
-            Reveal Login Code
-        </label>
-        </fieldset>
-    <input type="text" id="login-code" name="text" class="big-login-code-display" value="{{ '*' * login_code|length }}" aria-label="Read-only input" readonly >
+    <h1>Settings</h1>
+    <article>
+        <header><strong>View Login Code<strong></header>
+        <p>Remember to screenshot or write this down. You'll need it if you get logged out.</p>
+        <input type="text" id="login-code" name="text" class="big-login-code-display" value="{{ '*' * login_code|length }}" aria-label="Read-only input" readonly >
+        <input id="reveal-login-code" name="reveal" type="checkbox" role="switch" />
+        Reveal Login Code
+    </article>
 
     <script>
         // JavaScript to handle the switch toggle
@@ -36,9 +24,5 @@
         });
     </script>
 
-    <section id="contact">
-        <h2>Contact Us</h2>
-        <p>Get in touch with us here.</p>
-    </section>
 </main>
 {% endblock %}
