@@ -45,7 +45,7 @@ def read_cookie(cookie_raw):
 @app.before_request
 def check_session():
     # Valid Cookie is manditory unless one of these paths are used
-    whitelisted_paths = ('index','new_loc', 'submit_new_user', 'login', 'login_action')
+    whitelisted_paths = ('static','index','new_loc', 'submit_new_user', 'login', 'login_action')
     user_data = None # Is there a better way of init
     try:
         cookie = read_cookie(request.cookies.get(Config.COOKIE_NAME))
@@ -59,6 +59,10 @@ def check_session():
             return redirect('/', code=303)
         
     g.user_data = user_data
+
+@app.errorhandler(404)
+def page_not_found():
+    return render_template('404.html'), 404
     
 
 @app.route('/')
@@ -79,7 +83,7 @@ def wait():
 
 @app.route('/settings')
 def settings():
-    return render_template('settings.html', login_code=g.user_data.get("userID", "ERROR"))
+    return render_template('settings.html', login_code=g.user_data.get("userID", "ERROR"), user_data_dump=str(g.user_data))
 
 # A list of all locations a user has found / solved
 @app.route('/locations')
@@ -131,7 +135,7 @@ def submit_new_user():
 
 @app.route('/welcome')
 def welcome():
-    return render_template('welcome.html', username = g.user_data['friendly_name'])
+    return render_template('welcome.html', username = g.user_data['friendly_name'], login_code=g.user_data['userID'])
 
 @app.route('/admin')
 def admin():
@@ -149,7 +153,8 @@ def login_action():
     userID = userID.upper() # make sure it's uppercase
     user_data = db.get_user(userID)
     if user_data is None:
-        return "<h1> Login Code not found ??? :</h1>" + userID
+        flash("Login Code not recognized.", "warning")
+        return redirect('/login', code=303)
     
     sessionID = Util.generate_session_code()
     db.set_session(userID, sessionID)
@@ -180,7 +185,7 @@ def loc_info(loc_slug):
     loc_data = db.get_location_by_slug(loc_slug)
 
     if loc_data == None:
-        return '<h1>Location not found</h1>'
+        return render_template('404.html'), 404
 
     return render_template('location.html', location=loc_data)
 
@@ -193,7 +198,7 @@ def new_loc(location_code):
     # Check that location code is valid
     location_data = db.get_location_info(location_code)
     if location_data is None:
-        return "Location does not exist 404: " + location_code
+        return render_template('404.html'), 404
 
     # Check if user is not logged in
     if g.user_data is None:

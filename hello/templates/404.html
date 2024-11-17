@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">    
+    <title>QRest</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.sand.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
+    <link rel="stylesheet" href="/static/pico_addons.css">
+</head>
+<body>
+    <!-- Header and Navigation -->
+    <header class="container" style="padding-bottom:0px;">
+        <h1 style="margin-bottom: 0px;">404: Page Not Found</h1>
+    </header>
+
+    <main class="container">
+
+        <!-- Flashed Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <article class="flash-{{ category }}">{{ message }}</article>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <img style="margin-bottom: 20px;" src="/static/place_img/dangan_map_404.jpg">
+        <br>
+        <p>Sorry, we can't find the page you were looking for.</p>
+        <a href="/">Return to Home</a>
+    </main>
+
+</body>
+</html>

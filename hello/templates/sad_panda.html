@@ -1,13 +1,27 @@
-{% extends "unauth_layout.html" %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">    
+    <title>Modern Mobile Website with PicoCSS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.sand.min.css">
+    <link rel="stylesheet" href="http://localhost:5000/static/pico_addons.css">
+</head>
+<body>
+    <!-- Header and Navigation -->
+    <header class="container">
+        <h1>You are Logged Out</h1>
+        <img src="/static/place_img/sad_panda_400x400.jpeg">
+    </header>
 
-{% block content %}
-<!-- Main Content -->
-<main class="container">
 
-    <h1>Go away</h1>
-    <p>😒</p>
-    
-    <button onclick="window.location.href='/login'">Already have an account?</button>
-
-</main>
-{% endblock %}
+    <!-- Main Content -->
+    <main class="container">
+        <p>To make an account, scan a Location code.</p>
+        
+        <p><a href="/login">Already have an account?</a></p>
+    </main>
+</body>
+</html>

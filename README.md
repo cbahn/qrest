@@ -81,7 +81,7 @@ Here's an example of what the part that explains the file structure could look l
 
 ### 🔎 Implementaiton details
 - [ ] Find art for each of the locations
-- [ ] remove the locID from the leaderboard
+- [X] remove the locID from the leaderboard
 - [ ] Make sure the welcome page shows a reminder to remember your Login Code
 - [X] Make the leaderboard sort correctly
 - [ ] Get a more logical favicon
@@ -90,7 +90,7 @@ Here's an example of what the part that explains the file structure could look l
 ### 🗺️ User routes to make pleasant
 - [X] When you visit a new location and you're logged in (display /location/LOCID page with a flashed message)
 - [X] When you visit a location you've already discovered
-- [ ] Make the settings read with more useful info
+- [X] Make the settings better
 
 ### 🚀 Deployment details
 - [ ] How to make docker gud
