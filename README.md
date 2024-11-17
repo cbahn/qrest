@@ -86,6 +86,7 @@ Here's an example of what the part that explains the file structure could look l
 - [X] Make the leaderboard sort correctly
 - [ ] Get a more logical favicon
 - [X] flash messages
+- [ ] Admins shouldn't appear on the leaderboard
 
 ### 🗺️ User routes to make pleasant
 - [X] When you visit a new location and you're logged in (display /location/LOCID page with a flashed message)

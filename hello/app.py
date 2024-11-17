@@ -139,9 +139,9 @@ def welcome():
 
 @app.route('/admin')
 def admin():
-    if db.check_admin(g.user_data['sessionID']):
-        return "You're in 😎"
-    return "404 loser", 404
+    if g.user_data.get('role', '') == 'admin':
+        return render_template('admin.html')
+    return render_template('404.html'), 404
 
 @app.route('/login', methods=['GET'])
 def login():

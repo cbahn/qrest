@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!-- Main Content -->
+
+
+<main class="container">
+    <h1>ADMIN</h1>
+    <article>
+        <header><strong>View Login Code<strong></header>
+        <p>Remember to screenshot or write this down. You'll need it if you get logged out.</p>
+        <input type="text" id="login-code" name="text" class="big-login-code-display" value="{{ '*' * login_code|length }}" aria-label="Read-only input" readonly >
+        <input id="reveal-login-code" name="reveal" type="checkbox" role="switch" />
+        Reveal Login Code
+    </article>
+
+    <article>
+        <header><strong>Cookie Info<strong></header>
+        <p>This is just for debugging and won't appear in the game.</p>
+        <p><kbd>{{ user_data_dump }}</kbd></p>
+    </article>
+
+    <script>
+        // JavaScript to handle the switch toggle
+        document.getElementById("reveal-login-code").addEventListener("change", function() {
+            const inputField = document.getElementById("login-code");
+            if (this.checked) {
+                inputField.value = "{{ login_code }}";
+            } else {
+                inputField.value = "{{ '*' * login_code|length }}";
+            }
+        });
+    </script>
+
+</main>
+{% endblock %}
