@@ -1,5 +1,3 @@
-
-
 Project mostly based off https://github.com/helloflask/flask-examples/tree/main
 
 ### To setup the virtual environment
@@ -15,6 +13,7 @@ For now I'm doing these updates manually
 pip install flask
 pip install pymongo
 pip install pycryptodome
+pip install qrcode
 ```
 
 ### Don't forget to create the config file.
@@ -101,4 +100,4 @@ Here's an example of what the part that explains the file structure could look l
 
 ### 🚀 Deployment details
 - [ ] How to make docker gud
-- [ ] Make sure to check for any !todo or !security notes left behind
+- [ ] Make sure to check for any !todo or !security notes left behindflask run
