@@ -37,39 +37,49 @@ Here's an example of what the part that explains the file structure could look l
 
 ## STRUCTURE (work in progress)
 ```
-├── requirements.txt
+
+├── .gitignore
 ├── README.md
-├── .gitignore
-├── hello
-│   ├── util_module.py
-│   ├── test_mongo_module.py
-│   ├── mongo_module.py
-│   ├── crypto_module.py
-│   ├── config.py.example
-│   ├── app.py
-│   ├── .flaskenv
-│   ├── templates
-│   │   │   ├── images
-│   │   │   └── logo.svg
-│   ├── static
-│   │   └── data.js
-│   ├── components
-│   │   ├── app
-│   │   │   ├── App.css
-│   │   │   ├── App.jsx
-│   │   │   └── App.test.js
-│   │   └── index.js
-│   ├── utils
-│   │   ├── ...
-│   │   └── index.js
-│   ├── index.css
-│   ├── index.js
-│   ├── serviceWorker.js
-│   └── setupTests.js
-├── .gitignore
-├── package.json
-└── README.md
-└── yarn.lock
+├── requirements.txt
+└── hello
+    ├── .flaskenv
+    ├── app.py
+    ├── config.py.example                   Example of how to format config.py file
+    ├── crypto_module.py                    Utilites for encrypting and decrypting cookies
+    ├── mongo_module.py                     Module for database access
+    ├── static                              Static files
+    │   ├── favicon.ico
+    │   ├── favicon.pdn
+    │   ├── favicon.png
+    │   ├── pico_addons.css
+    │   ├── place_error.png
+    │   ├── place_img
+    │   │   ├── dangan_map_404.jpg
+    │   │   ├── golden-gulch.png
+    │   │   ├── sad_panda_400x400.jpeg
+    │   │   └── text.html
+    │   └── style.css
+    ├── templates                            Jinja2 templates
+    │   ├── 404.html
+    │   ├── TEST_qr.html
+    │   ├── admin.html
+    │   ├── index.html
+    │   ├── layout.html
+    │   ├── leaderboard.html
+    │   ├── location.html
+    │   ├── locations.html
+    │   ├── login.html
+    │   ├── my_location.html
+    │   ├── new_adventurer.html
+    │   ├── sad_panda.html
+    │   ├── settings.html
+    │   ├── unauth_layout.html
+    │   ├── wait.html
+    │   └── welcome.html
+    ├── test_mongo_module.py
+    └── util_module.py
+
+
 ```
 
 ## To-Do List
