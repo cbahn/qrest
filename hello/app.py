@@ -64,7 +64,6 @@ def check_session():
 def page_not_found():
     return render_template('404.html'), 404
     
-
 @app.route('/')
 def index():
 
@@ -84,6 +83,12 @@ def wait():
 @app.route('/settings')
 def settings():
     return render_template('settings.html', login_code=g.user_data.get("userID", "ERROR"), user_data_dump=str(g.user_data))
+
+@app.route('/settings/logout', methods=['POST'])
+def settings_logout():
+    # Change the sessionID to invalidate current login
+    db.rotate_session(g.user_data['userID'])
+    return redirect('/', code=303)
 
 # A list of all locations a user has found / solved
 @app.route('/locations')
@@ -158,8 +163,7 @@ def login_action():
         flash("Login Code not recognized.", "warning")
         return redirect('/login', code=303)
     
-    sessionID = Util.generate_session_code()
-    db.set_session(userID, sessionID)
+    sessionID = db.rotate_session(userID)
 
     # Set the cookie
     cookie_data = { 'sessionID': sessionID }

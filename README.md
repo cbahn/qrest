@@ -90,12 +90,12 @@ Here's an example of what the part that explains the file structure could look l
 - [X] remove the locID from the leaderboard
 - [X] Make sure the welcome page shows a reminder to remember your Login Code
 - [X] Make the leaderboard sort correctly
-- [ ] Get a more logical favicon
+- [X] Get a more logical favicon
 - [X] flash messages
 - [ ] Admins shouldn't appear on the leaderboard
 - [ ] fix new user server-side validation
 - [ ] Fine tune new user experience. Make sure to forward to newly found location early!
-- [ ] Add a log out function to settings
+- [X] Add a log out function to settings
 - [ ] Make it cleaner to log back in if you've just scanned a qr code but you're logged out
 
 ### 🚀 Deployment details

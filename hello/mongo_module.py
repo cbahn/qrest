@@ -1,5 +1,6 @@
 from pymongo import MongoClient, ReturnDocument
 from config import Config #My own config file
+from util_module import Util
 
 
 DATABASE_NAME = Config.DATABASE_NAME
@@ -42,11 +43,13 @@ class DatabaseManager:
     def get_session(self, sessionID):
         return self.users_collection.find_one({"sessionID": sessionID})
     
-    def set_session(self, userID, new_sessionID):
-        return self.users_collection.update_one(
+    def rotate_session(self, userID):
+        new_sessionID = Util.generate_session_code()
+        self.users_collection.update_one(
             {"userID": userID},
             {"$set": {"sessionID": new_sessionID}}
         )
+        return new_sessionID
 
     def log_visit(self, userID, locationID, TEST_number):
         # Construct the filter to find an existing check-in by username and location_id
@@ -72,9 +75,9 @@ class DatabaseManager:
             return result
         return None
 
-    # returns a list of documents (sorted alphabeticaly by friendlyName)
-    # for each location the user has visited
     def list_user_visits(self, userID):
+        # returns a list of documents (sorted alphabeticaly by friendlyName)
+        # for each location the user has visited
         visits = self.visits_collection.find({"userID": userID})
         visited_locationIDs = [s['locationID'] for s in visits]
         locations = self.locations_collection.find({"locationID": {"$in": visited_locationIDs}})

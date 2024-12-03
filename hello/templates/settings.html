@@ -12,14 +12,8 @@
         Reveal Login Code
     </article>
 
-    <article>
-        <header><strong>Cookie Info<strong></header>
-        <p>This is just for debugging and won't appear in the game.</p>
-        <p><kbd>{{ user_data_dump }}</kbd></p>
-    </article>
-
     <script>
-        // JavaScript to handle the switch toggle
+        // JavaScript to handle the reveal-login-code toggle switch
         document.getElementById("reveal-login-code").addEventListener("change", function() {
             const inputField = document.getElementById("login-code");
             if (this.checked) {
@@ -30,5 +24,48 @@
         });
     </script>
 
+    <article>
+        <header><strong>Cookie Info<strong></header>
+        <p>This is just for debugging and won't appear in the game.</p>
+        <p><kbd>{{ user_data_dump }}</kbd></p>
+    </article>
+
+    <article>
+        <header><strong>Log out of account<strong></header>
+        <p><button class="secondary" onclick="openLogoutModal()">Log Out</button></p>
+    </article>
 </main>
+
+<!-- Logout Modal Popup -->
+<dialog id="logoutModal">
+    <article>
+        <header>
+            <h3>Are you sure?</h3>
+        </header>
+        <p>Do you want to log out?</p>
+        <footer>
+            <form action="/settings/logout" method="POST">
+                <button type="button" class="secondary" onclick="closeLogoutModal()">Cancel</button>
+                <button style="width: auto;" type="submit">Log Me Out</button>
+            </form>
+        </footer>
+    </article>
+</dialog>
+
+<script>
+    const modal = document.getElementById('logoutModal');
+
+    function openLogoutModal() {
+        modal.showModal();
+    }
+
+    function closeLogoutModal() {
+    modal.classList.add('closing'); // Add closing animation
+    modal.addEventListener('animationend', () => {
+        modal.classList.remove('closing'); // Remove class after animation
+        modal.close();
+    }, { once: true });
+    }
+</script>
+
 {% endblock %}

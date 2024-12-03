@@ -50,5 +50,5 @@ class Util(object):
         # I am having trouble finding documentation related to what type of input
         #  sanitation is needed for pymongo queries. I'll do a basic character
         #  filter here and hope it's good enough.
-        remove_chars = {'{': None, '}': None, ',': None, '$': None, ';': None, '"': None}
-        return data.translate(str.maketrans(remove_chars))
+        banned_chars = r'{},$;"'
+        return data.translate(str.maketrans( {char: None for char in banned_chars} ))

@@ -36,3 +36,34 @@
     background-size: 1rem auto;
     background-repeat: no-repeat;
 }
+
+/* This is to add animation to flyout modal popups */
+@keyframes slideInFromAbove {
+    from {
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutToAbove {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+}
+
+dialog[open] {
+    animation: slideInFromAbove 0.5s ease forwards;
+}
+
+dialog.closing {
+    animation: slideOutToAbove 0.5s ease forwards;
+}
