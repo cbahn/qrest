@@ -77,27 +77,28 @@ Here's an example of what the part that explains the file structure could look l
     │   └── welcome.html
     ├── test_mongo_module.py
     └── util_module.py
-
-
 ```
 
 ## To-Do List
 
+### ✨ Looking forward
+- [ ] Create a way to create and transfer GACKcoin via QR
+- [ ] Let users solve riddles at each location
+
 ### 🔎 Implementaiton details
 - [ ] Find art for each of the locations
 - [X] remove the locID from the leaderboard
-- [ ] Make sure the welcome page shows a reminder to remember your Login Code
+- [X] Make sure the welcome page shows a reminder to remember your Login Code
 - [X] Make the leaderboard sort correctly
 - [ ] Get a more logical favicon
 - [X] flash messages
 - [ ] Admins shouldn't appear on the leaderboard
 - [ ] fix new user server-side validation
-
-### 🗺️ User routes to make pleasant
-- [X] When you visit a new location and you're logged in (display /location/LOCID page with a flashed message)
-- [X] When you visit a location you've already discovered
-- [X] Make the settings better
+- [ ] Fine tune new user experience. Make sure to forward to newly found location early!
+- [ ] Add a log out function to settings
+- [ ] Make it cleaner to log back in if you've just scanned a qr code but you're logged out
 
 ### 🚀 Deployment details
-- [ ] How to make docker gud
+- [X] How to make docker gud
+- [X] Write deploy guide
 - [ ] Make sure to check for any !todo or !security notes left behindflask run

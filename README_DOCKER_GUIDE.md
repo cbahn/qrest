@@ -64,3 +64,6 @@ docker run -d --network nginx-proxy-manager_default --name=qrest-container junco
 Note that `nginx-proxy-manager_default` is the default network name created by NPM, but it could be different.
 
 You'll want to setup setup NPM to forward traffic to the address `qrest-container`.
+
+### 5. WHITELIST THE IP OF THE SERVER ON MONGODB.COM
+I always forget this step
