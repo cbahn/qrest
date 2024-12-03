@@ -99,7 +99,7 @@ class DatabaseManager:
         else:
             return None
 
-    def calculate_leaderboard(self):
+    def calculate_leaderboard(self, remove_admins=True):
         visits_list = self.visits_collection.find()
         leaderboard_count = {}
         for visit in visits_list:
@@ -112,8 +112,9 @@ class DatabaseManager:
         for id, count in leaderboard_count.items():
             user_data = self.get_user(id)
             if user_data and "friendly_name" in user_data:
-                leaderboard_friendly.append( {
-                    "friendly_name": user_data["friendly_name"],
-                    "visit_count": count
-                })
+                if not (remove_admins and user_data.get('role', '') == 'admin'):  # Remove Admins from list
+                    leaderboard_friendly.append( {
+                        "friendly_name": user_data["friendly_name"],
+                        "visit_count": count,
+                    })
         return leaderboard_friendly

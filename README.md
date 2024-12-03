@@ -92,7 +92,7 @@ Here's an example of what the part that explains the file structure could look l
 - [X] Make the leaderboard sort correctly
 - [X] Get a more logical favicon
 - [X] flash messages
-- [ ] Admins shouldn't appear on the leaderboard
+- [X] Admins shouldn't appear on the leaderboard
 - [ ] fix new user server-side validation
 - [ ] Fine tune new user experience. Make sure to forward to newly found location early!
 - [X] Add a log out function to settings
