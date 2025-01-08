@@ -1,4 +1,5 @@
 from pymongo import MongoClient, ReturnDocument
+from datetime import datetime
 from config import Config #My own config file
 from util_module import Util
 
@@ -6,13 +7,16 @@ from util_module import Util
 DATABASE_NAME = Config.DATABASE_NAME
 
 class DatabaseManager:
-    def __init__(self, database):
-        # <- make sure to hand the database to DatabaseManager, not the client.
-        # Call `client['database_name']` first
+    def __init__(self, client, database_name: str):
 
+        self.client = client
+
+        database = client[database_name]
         self.users_collection = database.users
         self.locations_collection = database.locations
         self.visits_collection = database.visits
+        self.glyph_collection = database.glyphs
+
 
     def create_new_user(self, userID, sessionID):
         new_user = {
@@ -118,3 +122,49 @@ class DatabaseManager:
                         "visit_count": count,
                     })
         return leaderboard_friendly
+
+    def create_glyph(self, glyph_type: str, glyph_details: dict, expiresQ: bool, expiration_date: datetime = None, suggested_glyphID=None):
+        """
+        Multiplies two numbers and returns the result.
+
+        Args:
+            glyph_type (str): the type of the glyph
+            glyph_details (dict): any associated data for that glyph
+            expiresQ (bool): True if the glyph expires
+            expiration_date: datetime
+
+        Returns:
+            string: the glyphID of the newly created glyph
+        """
+        new_glyphID = suggested_glyphID
+        if new_glyphID is None:
+            new_glyphID = Util.generate_new_glyphID()
+
+        with self.client.start_session() as session:
+            with session.start_transaction():
+                while True:
+                    # Check for existing glyphID
+                    existing_glyph = self.glyph_collection.find_one(
+                        {"glyphID": new_glyphID},
+                        session=session
+                    )
+                    if not existing_glyph:
+                        # Insert the new glyph
+                        new_glyph = {
+                            "glyphID": new_glyphID,
+                            "type": glyph_type,
+                            "data": glyph_details,
+                            "expiresQ": expiresQ,
+                        }
+                        if expiresQ:
+                            if not expiration_date:
+                                # if the glyph was set to expire, but the date wasn't
+                                #  set then it expires right now
+                                expiration_date = datetime.now()
+                            new_glyph["expiration"] = expiration_date
+                            
+                        self.glyph_collection.insert_one(new_glyph, session=session)
+                        return new_glyphID
+                    else:
+                        # try a new glyphID
+                        new_glyphID = Util.generate_new_glyphID()

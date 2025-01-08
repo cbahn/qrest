@@ -22,7 +22,7 @@ if not os.path.isfile(Config.MONGO_CERT_PATH):
 
 # Connect to database using mongo_module.py module
 mongoDB_client = MongoClient(Config.MONGO_URI, tls=True, tlsCertificateKeyFile=Config.MONGO_CERT_PATH)
-db = DatabaseManager(mongoDB_client[Config.DATABASE_NAME])
+db = DatabaseManager(mongoDB_client, Config.DATABASE_NAME)
 
 
 START_TIME = datetime.datetime.strptime(Config.START_TIME, "%Y-%m-%d %H:%M:%S")

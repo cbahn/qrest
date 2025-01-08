@@ -15,13 +15,16 @@ class Util(object):
         return random_code
 
     def generate_session_code():
-        return 'S' + Util.generate_random_code(10)
+        return 'S' + Util.generate_random_code(15)
 
     def generate_new_userID():
         return 'A' + Util.generate_random_code(6)
 
     def generate_new_locationID():
         return 'L' + Util.generate_random_code(8)
+    
+    def generate_new_glyphID():
+        return 'G' + Util.generate_random_code(8)
 
     def generate_qr_code(data):
         """

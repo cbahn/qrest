@@ -20,6 +20,14 @@ pip install qrcode
 
 ### Also don't forget to whitelist the IP on mongodb.com
 
+### To run the server
+To test the server in debug mode:
+```bash
+cd hello/
+flask run --debug
+```
+(leave off the debug for production I guess)
+
 ### To run tests
 ```bash
 pytest test_mongo_module.py
@@ -36,7 +44,6 @@ Here's an example of what the part that explains the file structure could look l
 
 ## STRUCTURE (work in progress)
 ```
-
 ├── .gitignore
 ├── README.md
 ├── requirements.txt
