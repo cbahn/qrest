@@ -5,7 +5,12 @@
 <main class="container">
     <section id="home">
         <h1>{{ location.friendlyName }}</h1>
-        <img src="/static/place_img/{{ location.slug }}.png" onerror="this.onerror=null; this.src='/static/place_error.png';">
+        <img
+          src="{{ url_for(
+                    'static',
+                    filename='images/places/' + location.slug + '.png'
+                  )}}"
+          onerror="this.onerror=null; this.src='{{url_for('static',filename='place_error.png')}}';">
         
     </section>
     <section id="details">

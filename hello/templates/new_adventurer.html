@@ -5,7 +5,7 @@
     <h1>You Found your First Location</h1>
     <p>Pick a name to save your progress and start your adventure.</p>
     
-    <form action="/submit_new_user" method="POST">
+    <form action="{{ url_for('submit_new_user') }}" method="POST">
         <label for="username">What's your adventuring name?</label>
         <input type="text" maxlength="20" id="username" name="new_username" placeholder="Enter a username" required>
         <input type="hidden" name="locationID" value="{{ locationID }}">

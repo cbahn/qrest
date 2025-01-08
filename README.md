@@ -109,3 +109,7 @@ Here's an example of what the part that explains the file structure could look l
 - [X] How to make docker gud
 - [X] Write deploy guide
 - [ ] Make sure to check for any !todo or !security notes left behindflask run
+
+## Project Influences
+
+This site was very helpful for the structure of the project https://hackersandslackers.com/flask-blueprints/

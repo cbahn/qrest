@@ -8,7 +8,8 @@
     <title>QRest</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.sand.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
-    <link rel="stylesheet" href="/static/pico_addons.css">
+    <link rel="stylesheet"
+      href="{{ url_for('static', filename='pico_addons.css') }}">
 </head>
 <body>
     <!-- Header and Navigation -->
@@ -27,7 +28,9 @@
         {% endif %}
         {% endwith %}
 
-        <img style="margin-bottom: 20px;" src="/static/place_img/dangan_map_404.jpg">
+        <img
+          style="margin-bottom: 20px;"
+          src="{{ url_for('static', filename='images/dangan_map_404.jpg) }}">
         <br>
         <p>Sorry, we can't find the page you were looking for.</p>
         <a href="/">Return to Home</a>
