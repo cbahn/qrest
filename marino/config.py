@@ -1,4 +1,4 @@
-import os
+# import os
 
 class Config(object):
     MONGO_URI = "mongodb+srv://quest-cluster.rdm3o.mongodb.net/?authSource=$external&authMechanism=MONGODB-X509"

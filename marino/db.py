@@ -5,6 +5,7 @@ from pymongo import MongoClient
 import os
 from pymongo.errors import DuplicateKeyError, OperationFailure
 
+from .util import Util
 from .models import User
 
 
@@ -89,9 +90,11 @@ class UsersDB:
                     # if no exceptions were thrown
                     return userData
 
-    def get(user: User):
-        """
-        tries to match a user to the field provided.
-        Returns a Cursor object
-        """
-        pass
+    def CycleSessionID(userId: str):
+        newSessionCode = Util.generate_session_code()
+        db.users.update_one(
+            {'userID':userId},
+            {'$set': {'sessionID':newSessionCode}})
+        return newSessionCode
+    
+    

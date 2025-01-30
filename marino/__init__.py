@@ -1,7 +1,6 @@
 
 from flask import Flask
-from .configurations import Config
-import os
+from .config import Config
 
 def create_app():
     app = Flask(__name__, instance_relative_config=False)
@@ -15,7 +14,7 @@ def create_app():
 
     with app.app_context():
 
-        from .homerun.routes import homerun_bp
+        from .registration.routes import homerun_bp
 
         app.register_blueprint(homerun_bp)
 

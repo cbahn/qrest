@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from flask import Flask
-from .configurations import Config
-from .db import DuplicateDataError, TestingDB, UsersDB
-from .models import User
+from marino.config import Config
+from marino.db import DuplicateDataError, TestingDB, UsersDB
+from marino.models import User
 
 # Fixture to create a test Flask app
 @pytest.fixture(scope='module')

@@ -1,7 +1,7 @@
 Project mostly based off https://github.com/helloflask/flask-examples/tree/main
 
 ### To setup the virtual environment
-In the `flask-examples` directory:
+In the root directory, `qrest\`, run:
 ```bash
 python -m venv venv
 . venv/Scripts/activate
