@@ -14,8 +14,8 @@ def create_app():
 
     with app.app_context():
 
-        from .registration.routes import homerun_bp
+        from .registration.routes import registration_bp
 
-        app.register_blueprint(homerun_bp)
+        app.register_blueprint(registration_bp)
 
         return app

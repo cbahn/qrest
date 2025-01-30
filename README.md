@@ -5,7 +5,7 @@ In the root directory, `qrest\`, run:
 ```bash
 python -m venv venv
 . venv/Scripts/activate
-pip install -r requirements.txt
+# pip install -r requirements.txt
 ```
 
 For now I'm doing these updates manually
@@ -21,16 +21,15 @@ pip install qrcode
 ### Also don't forget to whitelist the IP on mongodb.com
 
 ### To run the server
-To test the server in debug mode:
+To test the server:
 ```bash
-cd hello/
-flask run --debug
+python run.py
 ```
 (leave off the debug for production I guess)
 
 ### To run tests
 ```bash
-pytest test_mongo_module.py
+pytest
 ```
 
 ### Troubleshooting notes
