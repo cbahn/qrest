@@ -90,6 +90,28 @@ class UsersDB:
                     # if no exceptions were thrown
                     return userData
 
+    def lookup_user(user: User) -> User:
+        param = {
+            'userID':user.userId,
+            'sessionID':user.sessionID,
+            'friendly_name':user.friendlyName,
+            'role':user.role,
+        }
+
+        # Remove all non-specified data fields from search parameters
+        cleaned_param = {k:v for k, v in param.items() if v is not None}
+
+        found_user = db.users.find_one(cleaned_param)
+        if found_user:
+            return User(
+                userId=found_user.get('userID',None),
+                sessionID=found_user.get('sessionID',None),
+                friendlyName=found_user.get('friendly_name',None),
+                role=found_user.get('role',None)
+                )
+        
+        return None
+
     def CycleSessionID(userId: str):
         newSessionCode = Util.generate_session_code()
         db.users.update_one(

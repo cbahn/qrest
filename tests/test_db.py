@@ -55,3 +55,16 @@ def test_create_user(app, db):
     # Verify that the failing users weren't inserted
     assert db.users.count_documents({"friendly_name": "billy_fakename"}) == 0
     assert db.users.count_documents({"userId": "xyz789"}) == 0
+
+def test_lookup_user(app,db):
+
+    UsersDB.create(User(friendlyName="alex",userId = "fed345"))
+    UsersDB.create(User(friendlyName="bill",userId = "xyz789"))
+
+    result1 = UsersDB.lookup_user(User(friendlyName="bill")) 
+    assert result1.userId == "xyz789"
+
+    result2 = UsersDB.lookup_user(User(userId="fed345"))
+    assert result2.friendlyName == "alex"
+
+    assert UsersDB.lookup_user(User(userId="doesnt4exist")) == None

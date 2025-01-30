@@ -4,7 +4,7 @@ class User:
                  userId: str = None,
                  friendlyName: str = None,
                  sessionID: str = None,
-                 role = None):
+                 role: str = None):
         self.userId: str = userId
         self.sessionID: str = sessionID
         self.friendlyName: str = friendlyName
