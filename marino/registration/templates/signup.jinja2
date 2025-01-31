@@ -10,8 +10,11 @@
         <input type="text" maxlength="20" id="username" name="new_username" placeholder="Enter a username" required>
         <input type="hidden" name="locationID" value="{{ locationID }}">
         <small>Usernames only use letters, numbers, and underscores.</small>
+        {% include "_flash.jinja2" %}
         <button type="submit" id="submitBtn" disabled>Create Account</button>
     </form>
+    <br>
+    <a class="secondary" href="{{ url_for('registration_bp_x.login')}}">I already have an account</button>
 </main>
 
 <script>

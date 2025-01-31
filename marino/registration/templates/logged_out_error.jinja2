@@ -1,0 +1,71 @@
+{% extends "unauth_layout.jinja2" %}
+
+{% block content %}
+<!-- Main Content -->
+<main class="container">
+    <h1>Settings</h1>
+    <article>
+        <header><strong>View Login Code<strong></header>
+        <p>Remember to screenshot or write this down. You'll need it if you get logged out.</p>
+        <input type="text" id="login-code" name="text" class="big-login-code-display" value="{{ '*' * login_code|length }}" aria-label="Read-only input" readonly >
+        <input id="reveal-login-code" name="reveal" type="checkbox" role="switch" />
+        Reveal Login Code
+    </article>
+
+    <script>
+        // JavaScript to handle the reveal-login-code toggle switch
+        document.getElementById("reveal-login-code").addEventListener("change", function() {
+            const inputField = document.getElementById("login-code");
+            if (this.checked) {
+                inputField.value = "{{ login_code }}";
+            } else {
+                inputField.value = "{{ '*' * login_code|length }}";
+            }
+        });
+    </script>
+
+    <article>
+        <header><strong>Cookie Info<strong></header>
+        <p>This is just for debugging and won't appear in the game.</p>
+        <p><kbd>{{ user_data_dump }}</kbd></p>
+    </article>
+
+    <article>
+        <header><strong>Log out of account<strong></header>
+        <p><button class="secondary" onclick="openLogoutModal()">Log Out</button></p>
+    </article>
+</main>
+
+<!-- Logout Modal Popup -->
+<dialog id="logoutModal">
+    <article>
+        <header>
+            <h3>Are you sure?</h3>
+        </header>
+        <p>Do you want to log out?</p>
+        <footer>
+            <form action="/settings/logout" method="POST">
+                <button type="button" class="secondary" onclick="closeLogoutModal()">Cancel</button>
+                <button style="width: auto;" type="submit">Log Me Out</button>
+            </form>
+        </footer>
+    </article>
+</dialog>
+
+<script>
+    const modal = document.getElementById('logoutModal');
+
+    function openLogoutModal() {
+        modal.showModal();
+    }
+
+    function closeLogoutModal() {
+    modal.classList.add('closing'); // Add closing animation
+    modal.addEventListener('animationend', () => {
+        modal.classList.remove('closing'); // Remove class after animation
+        modal.close();
+    }, { once: true });
+    }
+</script>
+
+{% endblock %}

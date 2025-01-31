@@ -75,8 +75,7 @@ class UsersDB:
                         raise DuplicateDataError(f"UserID '{user.userId}' already exists.")
                     existing_user = db.users.find_one({"friendly_name": user.friendlyName}, session=session)
                     if existing_user:
-                        print(f"DEBUG: Type of friendly_name: {type(user.friendlyName)}, Value: {user.friendlyName}")
-                        raise DuplicateDataError(f"Friendly Name '{str(user.friendlyName)}' already exists.")
+                        raise DuplicateDataError(f"friendly_name '{str(user.friendlyName)}' already exists.")
                     
                     userData = {
                         "userID": user.userId,

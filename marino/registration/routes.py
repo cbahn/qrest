@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, current_app, g, flash
-from flask import redirect, url_for
+from flask import redirect, url_for, session
 from marino.config import Config
 from functools import wraps
 from marino.db import UsersDB
@@ -21,13 +21,10 @@ def require_login(my_route):
         if user is not None:
             g.user = user
             return my_route(*args, **kwargs)
-        else:
-            return render_template(
-                'index.jinja2',
-                title='YALL LOGGED OUT',
-                subtitle='please login before you hurt yourself.',
-                template='home-template',
-            )
+        
+        # Cookie missing or invalid. Not logged in.
+        session['desired_url'] = request.url # Remember the page they tried to access
+        return redirect(url_for('registration_bp_x.signup'),code=302)
     return decorated_func
 
 # Blueprint Configuration
@@ -68,13 +65,24 @@ def newuser():
     allowed_chars = "a-zA-Z0-9_"
     new_username = re.sub(f"[^{allowed_chars}]", "", new_username)
 
+
     duplicate_user = UsersDB.lookup(User(friendlyName=new_username))
     if duplicate_user is not None:
-        flash(f"Username '{new_username}' is already taken. Please try another", "error")
+        flash(f"Username '{new_username}' is already taken. Please try another name.", "error")
         return redirect(url_for('registration_bp_x.signup'),code=302)
 
     result = create_user_d(new_username)
 
-    if result is None:
-        return "Username created"
-    return "FAIL: " + result
+    if result is not None:
+        flash(f"An error occurred and your account could not be created. "
+              f"Try again or contact support. ERROR: {result}", 'error')
+
+        return redirect(url_for('registration_bp_x.signup'),code=302)
+    
+    flash(f"Success. Welcome to Qrest, {new_username}!", 'success')
+    # Redirect them to the URL they tried to access when they got a
+    #  'logged out' error message.
+    return redirect(
+        session.get('desired_url',url_for('registration_bp_x.home')),
+        code=302
+    )
