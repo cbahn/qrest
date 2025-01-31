@@ -61,10 +61,10 @@ def test_lookup_user(app,db):
     UsersDB.create(User(friendlyName="alex",userId = "fed345"))
     UsersDB.create(User(friendlyName="bill",userId = "xyz789"))
 
-    result1 = UsersDB.lookup_user(User(friendlyName="bill")) 
+    result1 = UsersDB.lookup(User(friendlyName="bill")) 
     assert result1.userId == "xyz789"
 
-    result2 = UsersDB.lookup_user(User(userId="fed345"))
+    result2 = UsersDB.lookup(User(userId="fed345"))
     assert result2.friendlyName == "alex"
 
-    assert UsersDB.lookup_user(User(userId="doesnt4exist")) == None
+    assert UsersDB.lookup(User(userId="doesnt4exist")) == None

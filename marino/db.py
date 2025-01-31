@@ -90,7 +90,7 @@ class UsersDB:
                     # if no exceptions were thrown
                     return userData
 
-    def lookup_user(user: User) -> User:
+    def lookup(user: User) -> User:
         param = {
             'userID':user.userId,
             'sessionID':user.sessionID,
