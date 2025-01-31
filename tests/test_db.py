@@ -68,3 +68,5 @@ def test_lookup_user(app,db):
     assert result2.friendlyName == "alex"
 
     assert UsersDB.lookup(User(userId="doesnt4exist")) == None
+
+    assert UsersDB.lookup(User(userId="AECHVDR")) == None

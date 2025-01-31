@@ -75,7 +75,8 @@ class UsersDB:
                         raise DuplicateDataError(f"UserID '{user.userId}' already exists.")
                     existing_user = db.users.find_one({"friendly_name": user.friendlyName}, session=session)
                     if existing_user:
-                        raise DuplicateDataError(f"Friendly Name '{user.friendlyName}' already exists.")
+                        print(f"DEBUG: Type of friendly_name: {type(user.friendlyName)}, Value: {user.friendlyName}")
+                        raise DuplicateDataError(f"Friendly Name '{str(user.friendlyName)}' already exists.")
                     
                     userData = {
                         "userID": user.userId,
@@ -90,7 +91,7 @@ class UsersDB:
                     # if no exceptions were thrown
                     return userData
 
-    def lookup(user: User) -> User:
+    def lookup(user: User) -> None | User:
         param = {
             'userID':user.userId,
             'sessionID':user.sessionID,
@@ -102,7 +103,7 @@ class UsersDB:
         cleaned_param = {k:v for k, v in param.items() if v is not None}
 
         found_user = db.users.find_one(cleaned_param)
-        if found_user:
+        if found_user is not None:
             return User(
                 userId=found_user.get('userID',None),
                 sessionID=found_user.get('sessionID',None),

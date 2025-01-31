@@ -1,0 +1,42 @@
+{% extends "unauth_layout.jinja2" %}
+
+{% block content %}
+<main class="container">
+    <h1>Welcome</h1>
+    <p>Pick a name to save your progress and start your adventure.</p>
+    
+    <form action="{{ url_for('registration_bp_x.newuser') }}" method="POST">
+        <label for="username">What's your adventuring name?</label>
+        <input type="text" maxlength="20" id="username" name="new_username" placeholder="Enter a username" required>
+        <input type="hidden" name="locationID" value="{{ locationID }}">
+        <small>Usernames only use letters, numbers, and underscores.</small>
+        <button type="submit" id="submitBtn" disabled>Create Account</button>
+    </form>
+</main>
+
+<script>
+    const usernameInput = document.getElementById("username");
+    const usernameCharacterError = document.getElementById("usernameCharacterError");
+    const usernameLengthError = document.getElementById("usernameLengthError");
+    const submitBtn = document.getElementById("submitBtn");
+
+    usernameInput.addEventListener("input", () => {
+        if ( /^[a-zA-Z0-9_]+$/.test(usernameInput.value) ) {
+            usernameInput.setAttribute("aria-invalid", "false");
+            // Disable the submit button if less than 3 chars entered
+            submitBtn.disabled = usernameInput.value.length < 3;
+        } else {
+            usernameInput.setAttribute("aria-invalid", "true");
+            submitBtn.disabled = true;
+        }
+
+        // Don't show valid or invalid if no characters have been entered yet
+        if ( usernameInput.value.length === 0 ) {
+            usernameInput.removeAttribute("aria-invalid");
+            submitBtn.disabled = true;
+        }
+
+    });
+</script>
+
+{% endblock %}

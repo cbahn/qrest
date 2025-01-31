@@ -5,7 +5,7 @@ from marino.registration.controller import validate_username
 @pytest.mark.parametrize(
     "input_username, expected_result",
     [
-        ("NoNumbers123", (False, "No Numbers")),   # ✅ Valid username
+        ("NumbersOK123", (True, "Numbers")),   # ✅ Valid username
         ("_ValidName_", (True, "_ValidName_")),     # ✅ Underscores allowed
         ("ab", (False, "Username too short")),      # ❌ Too short
         ("thisisaverylongusername", (False, "Username too long")),  # ❌ Too long

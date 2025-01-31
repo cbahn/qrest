@@ -11,7 +11,7 @@ def validate_username(raw_input) -> tuple[None | str,str]:
             strip_whitespace=True,
             min_length = 3,
             max_length = 20,
-            pattern = r'^[a-zA-Z_]+$'
+            pattern = r'^[a-zA-Z0-9_]+$'
         )]
 
     try:
@@ -20,26 +20,25 @@ def validate_username(raw_input) -> tuple[None | str,str]:
     except ValidationError as e:
         return False, repr(e)
 
-def create_user_d(raw_name: str) -> None | str:
+def create_user_d(new_name: str) -> None | str:
     """
     returns None if successful,
     otherwise returns an error string
     """
-
-    (valid_name, err) = validate_username(raw_name)
+    (valid_name, err) = validate_username(new_name)
     if valid_name is None:
         return err
     
     def try_to_generate_a_unique_userId(n):
-        for i in range(n):
+        for _ in range(n):
             new_userId = Util.generate_new_userID()
-            if UsersDB.lookup(User(userId=new_userId)) is not None:
+            if UsersDB.lookup(User(userId=new_userId)) is None:
                 return new_userId
         raise RuntimeError(f"Failed to generate a new userId after {n} attmpts!")
 
     try:
         newUser = User(
-            friendlyName = valid_name,
+            friendlyName = new_name,
             userId = try_to_generate_a_unique_userId(20)
         )
         UsersDB.create(newUser)
