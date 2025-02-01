@@ -1,0 +1,27 @@
+{% extends "menu_layout.jinja2" %}
+
+{% block content %}
+<!-- Main Content -->
+<main class="container">
+    <section id="home">
+        <h1>Leaderboard</h1>
+        <p>Who's winning?</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for l in leaderboard_data %}
+                <tr>
+                    <td>{{ l.friendlyName }}</td>
+                    <td>{{ l.visit_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+{% endblock %}

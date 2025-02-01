@@ -63,11 +63,11 @@ def new_location(loc_code):
 def location(loc_slug):
     loc = LocationsDB.lookup(Location(slug=loc_slug))
     if loc is None:
-        return f"Can't find the location with slug: {loc_slug}"
+        return render_template('unvisited_location.jinja2')
     
     # Don't allow a user to view the page unless they've already visited
     print(f"userID = {g.user.userId}, locationID={loc.locationID}")
     if not LocationsDB.check_visit(userID=g.user.userId, locationID=loc.locationID):
-        return f"You haven't visited this location"
+        return render_template('unvisited_location.jinja2')
     
     return render_template('location.jinja2', loc=loc)

@@ -37,6 +37,18 @@
     background-repeat: no-repeat;
 }
 
+.location-image-container {
+    display: flex;
+    justify-content: center;
+}
+
+.square-img {
+    width: 300px;  /* Set a fixed width */
+    height: 300px; /* Set a fixed height */
+    object-fit: cover; /* Ensures the image fills the square without distortion */
+    border-radius: 8px; /* Optional: Rounds corners */
+}
+
 /* This is to add animation to flyout modal popups */
 @keyframes slideInFromAbove {
     from {

@@ -9,7 +9,6 @@ import datetime
 from .util import Util
 from .models import User, Location
 
-
 def get_client():
     """
     Used by the below LocalProxy
@@ -82,6 +81,7 @@ class UsersDB:
                         "userID": user.userId,
                         "sessionID": "",
                         "friendly_name": user.friendlyName,
+                        "fingerprint": user.fingerprint,
                     }
                     if user.role:
                         userData["role"] = user.role
@@ -97,6 +97,7 @@ class UsersDB:
             'sessionID':user.sessionID,
             'friendly_name':user.friendlyName,
             'role':user.role,
+            'fingerprint': user.fingerprint,
         }
 
         # Remove all non-specified data fields from search parameters
@@ -108,9 +109,9 @@ class UsersDB:
                 userId=found_user.get('userID',None),
                 sessionID=found_user.get('sessionID',None),
                 friendlyName=found_user.get('friendly_name',None),
-                role=found_user.get('role',None)
+                role=found_user.get('role',None),
+                fingerprint=found_user.get('fingerprint',None)
                 )
-        
         return None
 
     def cycleSessionID(userId: str) -> str:
@@ -149,7 +150,6 @@ class LocationsDB:
         visit_found = db.visits.find_one(visit_data)
         return visit_found is not None
     
-    
     def record_visit(userID: str, locationID: str) -> bool:
         """ Record a visit if no existing record with the same userID and locationID exists.
         Return True if a new visit was recorded, false otherwise.
@@ -170,3 +170,10 @@ class LocationsDB:
                 visit_data["timestamp"] = datetime.datetime.now(tz=datetime.timezone.utc)
                 db.visits.insert_one(visit_data)
                 return True
+    
+    def get_all_visits():
+        """Retrieve all (name, location) pairs sorted by timestamp."""
+        cursor = db.visits.find({}, {"userID": 1, "locationID": 1, "timestamp": 1}).sort("timestamp", 1)
+        
+        # Extract and return list of (name, location) tuples
+        return [{"userID":doc["userID"], "locationID":doc["locationID"]} for doc in cursor]

@@ -5,7 +5,18 @@ import qrcode
 import io
 import base64
 
+
+
 class Util(object):
+
+    def load_words(filename):
+        words = []
+        with open(filename, "r", encoding="utf-8") as file:
+            words = [line.strip() for line in file if line.strip()]  # Read and clean words
+        return words
+
+    wordlist = None
+
     def generate_random_code(length):
 
         # Define the character set, excluding the specified characters
@@ -25,6 +36,13 @@ class Util(object):
     
     def generate_new_glyphID():
         return 'G' + Util.generate_random_code(8)
+    
+    def generate_new_localStorageData():
+        if Util.wordlist is None:
+           Util.wordlist = Util.load_words("marino/static/words.txt")
+
+        words = random.sample(Util.wordlist, 3)
+        return f"{words[0]}-{words[1]}-{words[2]}"
 
     def generate_qr_code(data):
         """

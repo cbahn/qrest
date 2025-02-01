@@ -4,6 +4,7 @@ from marino.config import Config
 from functools import wraps
 from marino.db import UsersDB
 from marino.models import User
+from marino.util import Util
 from marino.registration.controller import create_user_d
 import re
 
@@ -86,17 +87,21 @@ def new_login():
 
 @registration_bp.route('/signup',methods=['GET'])
 def signup():
-    return render_template('signup.jinja2')
-
+    return render_template(
+        'signup.jinja2',
+        localStorageData = Util.generate_new_localStorageData()
+    )
 
 @registration_bp.route('/newuser',methods=['POST'])
 def newuser():
 
     new_username = str(request.form.get('new_username'))
+    new_fingerprint = str(request.form.get('userdata'))
 
     # Strip non-allowed characters from string
-    allowed_chars = "a-zA-Z0-9_"
+    allowed_chars = "a-zA-Z0-9_-"
     new_username = re.sub(f"[^{allowed_chars}]", "", new_username)
+    new_fingerprint = re.sub(f"[^{allowed_chars}]", "", new_fingerprint)
 
 
     duplicate_user = UsersDB.lookup(User(friendlyName=new_username))
@@ -104,7 +109,7 @@ def newuser():
         flash(f"Username '{new_username}' is already taken. Please try another name.", "error")
         return redirect(url_for('registration_bp_x.signup'),code=302)
 
-    (newly_created_user, error) = create_user_d(new_username)
+    (newly_created_user, error) = create_user_d(new_username,fingerprint=new_fingerprint)
 
     if newly_created_user is None:
         flash(f"An error occurred and your account could not be created. "

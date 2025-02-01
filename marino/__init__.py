@@ -22,4 +22,7 @@ def create_app():
         from .location import routes as location_routes
         app.register_blueprint(location_routes.registration_bp)
 
+        from .menu import routes as menu_routes
+        app.register_blueprint(menu_routes.registration_bp)
+
         return app

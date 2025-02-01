@@ -5,16 +5,16 @@
     <h1>Welcome</h1>
     <p>Pick a name to save your progress and start your adventure.</p>
     
-    <form action="{{ url_for('registration_bp_x.newuser') }}" method="POST">
+    <form id='new_user_form' action="{{ url_for('registration_bp_x.newuser') }}" method="POST">
         <label for="username">What's your adventuring name?</label>
+        <input type="hidden" name="userdata" id="extradata">
         <input type="text" maxlength="20" id="username" name="new_username" placeholder="Enter a username" required>
-        <input type="hidden" name="locationID" value="{{ locationID }}">
         <small>Usernames only use letters, numbers, and underscores.</small>
         {% include "_flash.jinja2" %}
         <button type="submit" id="submitBtn" disabled>Create Account</button>
     </form>
     <br>
-    <a class="secondary" href="{{ url_for('registration_bp_x.login')}}">I already have an account</button>
+    <a class="secondary" href="{{ url_for('registration_bp_x.login')}}">I already have an account</a>
 </main>
 
 <script>
@@ -40,6 +40,22 @@
         }
 
     });
+
+    document.getElementById("new_user_form").addEventListener("submit", function(event) {
+        const key = "j0MRCojPAS7aGowN83OB"
+        let storedValue = localStorage.getItem(key)
+
+        if (!storedValue) {
+            storedValue = "{{ localStorageData }}"
+            localStorage.setItem(key,storedValue)
+            console.log("new key generated and stored:",storedValue)
+        } else {
+            console.log("Key found", storedValue)
+        }
+
+        document.getElementById("extradata").value = storedValue;
+    });
+
 </script>
 
 {% endblock %}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/x-icon"
+      href="{{ url_for('static',filename='favicon.ico') }}">    
+    <title>QRest</title>
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.sand.min.css">
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
+    <link rel="stylesheet"
+      href="{{ url_for('static',filename='pico_addons.css')}}">
+</head>
+<body>
+    <!-- Header and Navigation -->
+    <header class="container">
+        <nav>
+            <ul>
+                <li><strong><a href="example.com">QRest</a></strong></li>
+            </ul>
+            <ul>
+                <li><a href="{{ url_for('menu_bp_x.settings') }}">Settings</a></li>
+                <li><a href="{{ url_for('menu_bp_x.locations') }}">Locations</a></li>
+                <li><a href="{{ url_for('menu_bp_x.leaderboard') }}">Leaderboard</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <!-- Flashed Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <article class="flash-{{ category }}">{{ message }}</article>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Content -->
+        {% block content %}
+        <p>This is the default content.</p>
+        {% endblock %}
+    </main>
+
+</body>
+</html>

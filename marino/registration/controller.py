@@ -20,7 +20,7 @@ def validate_username(raw_input) -> tuple[None | str,str]:
     except ValidationError as e:
         return False, repr(e)
 
-def create_user_d(new_name: str) -> tuple[None | User, str]:
+def create_user_d(new_name: str, fingerprint: str) -> tuple[None | User, str]:
     """
     On success, return (User,"")
     On failure, return (None, "Error cause")
@@ -39,7 +39,8 @@ def create_user_d(new_name: str) -> tuple[None | User, str]:
     try:
         newUser = User(
             friendlyName = new_name,
-            userId = try_to_generate_a_unique_userId(20)
+            userId = try_to_generate_a_unique_userId(20),
+            fingerprint=fingerprint,
         )
         UsersDB.create(newUser)
     except DuplicateDataError as e:
