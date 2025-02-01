@@ -25,4 +25,7 @@ def create_app():
         from .menu import routes as menu_routes
         app.register_blueprint(menu_routes.registration_bp)
 
+        from .admin import routes as admin_routes
+        app.register_blueprint(admin_routes.registration_bp)
+
         return app
