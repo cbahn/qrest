@@ -1,0 +1,29 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<!-- Main Content -->
+<main class="container">
+    <section id="home">
+        <h1>{{ loc.fullName }}</h1>
+        <img
+          
+          onerror="this.onerror=null; this.src='{{url_for('static',filename='place_error.png')}}';">
+        
+    </section>
+    <section id="details">
+        <p>A very nice gulch with rabbits.</p>
+        <article>
+            <header>Puzzle</header>
+            What color was the white rabbit?
+            <footer>
+                <form>
+                    <fieldset role="group">
+                    <input type="text" placeholder="Enter your guess..." />
+                    <input type="submit" value="Submit" />
+                    </fieldset>
+                </form>
+            </footer>
+        </article>
+    </section>
+</main>
+{% endblock %}

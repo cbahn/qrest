@@ -2,8 +2,8 @@ import pytest
 from unittest.mock import patch, MagicMock
 from flask import Flask
 from marino.config import Config
-from marino.db import DuplicateDataError, TestingDB, UsersDB
-from marino.models import User
+from marino.db import DuplicateDataError, TestingDB, UsersDB, LocationsDB
+from marino.models import User, Location
 
 # Fixture to create a test Flask app
 @pytest.fixture(scope='module')
@@ -21,6 +21,7 @@ def db():
     
     # clear the users collection once before the tests are run
     db.users.drop()
+    db.visits.drop()
     yield db
 
 def test_connection_to_real_database(app):
@@ -46,7 +47,7 @@ def test_create_user(app, db):
             userId = "abc123"
         ))
 
-    with pytest.raises(DuplicateDataError, match=r"Friendly Name.*already exists."):
+    with pytest.raises(DuplicateDataError, match=r"friendly_name.*already exists."):
         UsersDB.create(User(
             friendlyName="john",
             userId = "xyz789"
@@ -70,3 +71,16 @@ def test_lookup_user(app,db):
     assert UsersDB.lookup(User(userId="doesnt4exist")) == None
 
     assert UsersDB.lookup(User(userId="AECHVDR")) == None
+
+def test_lookup_loc(app,db):
+
+    result1 = LocationsDB.lookup(Location(locationID="L4567"))
+    assert result1.slug == "ugly-bug"
+    assert result1.fullName == "The Ugly Bug!"
+
+    assert LocationsDB.lookup(Location(slug="doesnt-exist")) == None
+    
+def test_register_visit(app,db):
+
+    assert LocationsDB.record_visit(userID="A45", locationID="L67") == True
+    assert LocationsDB.record_visit(userID="A45", locationID="L67") == False

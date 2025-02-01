@@ -20,10 +20,10 @@ def validate_username(raw_input) -> tuple[None | str,str]:
     except ValidationError as e:
         return False, repr(e)
 
-def create_user_d(new_name: str) -> None | str:
+def create_user_d(new_name: str) -> tuple[None | User, str]:
     """
-    returns None if successful,
-    otherwise returns an error string
+    On success, return (User,"")
+    On failure, return (None, "Error cause")
     """
     (valid_name, err) = validate_username(new_name)
     if valid_name is None:
@@ -46,4 +46,5 @@ def create_user_d(new_name: str) -> None | str:
         return str(e)
 
     # No exception from UsersDB.create() indicates success
-    return None
+
+    return UsersDB.lookup(User(friendlyName=new_name)), ""

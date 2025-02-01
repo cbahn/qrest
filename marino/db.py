@@ -3,10 +3,11 @@ from flask import current_app, g
 from werkzeug.local import LocalProxy
 from pymongo import MongoClient
 import os
-from pymongo.errors import DuplicateKeyError, OperationFailure
+import datetime
+#from pymongo.errors import DuplicateKeyError, OperationFailure
 
 from .util import Util
-from .models import User
+from .models import User, Location
 
 
 def get_client():
@@ -112,11 +113,60 @@ class UsersDB:
         
         return None
 
-    def CycleSessionID(userId: str):
+    def cycleSessionID(userId: str) -> str:
         newSessionCode = Util.generate_session_code()
         db.users.update_one(
             {'userID':userId},
             {'$set': {'sessionID':newSessionCode}})
         return newSessionCode
     
+class LocationsDB:
+    def lookup(loc: Location) -> None | Location:
+        param = {
+            'locationID':loc.locationID,
+            'fullName': loc.fullName,
+            'slug': loc.slug
+        }
+
+        # Remove all non-specified data fields from search parameters
+        cleaned_param = {k:v for k, v in param.items() if v is not None}
+
+        found_loc = db.locations.find_one(cleaned_param)
+        if found_loc is not None:
+            return Location(
+                locationID=found_loc.get('locationID',None),
+                fullName=found_loc.get('fullName',None),
+                slug=found_loc.get('slug',None)
+            )
+        
+        return None
     
+    def check_visit(userID: str, locationID: str) -> bool:
+        visit_data = {
+            "userID": userID,
+            "locationID": locationID
+        }
+        visit_found = db.visits.find_one(visit_data)
+        return visit_found is not None
+    
+    
+    def record_visit(userID: str, locationID: str) -> bool:
+        """ Record a visit if no existing record with the same userID and locationID exists.
+        Return True if a new visit was recorded, false otherwise.
+        """
+        with mongo.start_session() as session:
+            with session.start_transaction():
+
+                visit_data = {
+                    "userID": userID,
+                    "locationID": locationID
+                }
+
+                existing_visit = db.visits.find_one(visit_data)
+
+                if existing_visit is not None:
+                    return False # Visit was already recorded
+
+                visit_data["timestamp"] = datetime.datetime.now(tz=datetime.timezone.utc)
+                db.visits.insert_one(visit_data)
+                return True

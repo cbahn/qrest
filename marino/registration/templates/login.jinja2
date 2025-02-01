@@ -13,7 +13,7 @@
 <body>
 <!-- Main Content -->
 <main class="container">
-    <h1>Sign in</h1>
+    <h1>Log in</h1>
 
     <!-- Flashed Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -24,8 +24,8 @@
     {% endif %}
     {% endwith %}
 
-    <form action="{{url_for('registration_bp_x.login')}}" method="POST">
-        <input type="text" name="userID" placeholder="Login Code" required>
+    <form action="{{url_for('registration_bp_x.new_login')}}" method="POST">
+        <input type="text" name="userID" placeholder="Enter your login code" required>
         <small>(case insensitive)</small>
         <button type="submit" id="submitBtn">Login</button>
     </form>

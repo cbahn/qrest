@@ -10,14 +10,18 @@ import re
 def require_login(my_route):
     @wraps(my_route)
     def decorated_func(*args, **kwargs):
-        cookie = request.cookies.get(Config.COOKIE_NAME)
+        cookie = str(request.cookies.get(Config.COOKIE_NAME))
+
+        # Strip non-allowed characters from string
+        allowed_chars = "A-Z0-9"
+        cookie = re.sub(f"[^{allowed_chars}]", "", cookie)
         
         ## back door cookie value for testing
         if current_app.debug and cookie == "loggedin":
             g.user = User()
             return my_route(*args,**kwargs)
 
-        user = UsersDB.lookup(User(sessionID=str(cookie)))
+        user = UsersDB.lookup(User(sessionID=cookie))
         if user is not None:
             g.user = user
             return my_route(*args, **kwargs)
@@ -35,13 +39,13 @@ registration_bp = Blueprint(
     static_folder='static'
 )
 
-@registration_bp.route('/', methods=['GET'])
+@registration_bp.route('/test', methods=['GET'])
 @require_login
-def home():
+def login_test():
     return render_template(
-        'index.jinja2',
+        'login_test.jinja2',
         title='Flask Blueprint Demo',
-        subtitle=f'Your username is {g.user.userId}',
+        subtitle=f'Your userID is {g.user.userId}',
         template='home-template',
     )
 
@@ -49,6 +53,35 @@ def home():
 @registration_bp.route('/login',methods=['GET'])
 def login():
     return render_template('login.jinja2')
+
+@registration_bp.route('/newlogin', methods=['POST'])
+def new_login():
+    userID = str(request.form.get('userID'))
+
+    userID = userID.upper()#Capitalize so that the input is case insensitive
+    allowed_chars = "A-Z0-9"
+    userID = re.sub(f"[^{allowed_chars}]", "", userID)
+        
+    user = UsersDB.lookup(User(userId=userID))
+    if user is None:
+        flash("Login code not recognized. Try again.", 'warning')
+        return redirect(url_for('registration_bp_x.login'))
+    
+    # User recognized. Cycle session and set as cookie
+    new_session = UsersDB.cycleSessionID(userId=user.userId)
+
+    flash(f"Welcome back, {user.friendlyName}.", 'success')
+
+    # Redirect them to the URL they tried to access when they got a
+    #  'logged out' error message.
+    response = redirect(
+        session.get('desired_url',url_for('registration_bp_x.login_test')),
+        code=302
+    )
+    session.pop('desired_url', None) # removed desired_url from the session
+    # Set the fresh session cookie
+    response.set_cookie(Config.COOKIE_NAME, new_session, max_age=60 * 60 * 24 * 15)  # Expires in 15 days
+    return response
 
 
 @registration_bp.route('/signup',methods=['GET'])
@@ -71,18 +104,27 @@ def newuser():
         flash(f"Username '{new_username}' is already taken. Please try another name.", "error")
         return redirect(url_for('registration_bp_x.signup'),code=302)
 
-    result = create_user_d(new_username)
+    (newly_created_user, error) = create_user_d(new_username)
 
-    if result is not None:
+    if newly_created_user is None:
         flash(f"An error occurred and your account could not be created. "
-              f"Try again or contact support. ERROR: {result}", 'error')
+              f"Try again or contact support. ERROR: {error}", 'error')
 
         return redirect(url_for('registration_bp_x.signup'),code=302)
     
+    # Setup a fresh sessionID for the new user
+    new_session = UsersDB.cycleSessionID(userId=newly_created_user.userId)
+
+
     flash(f"Success. Welcome to Qrest, {new_username}!", 'success')
+
     # Redirect them to the URL they tried to access when they got a
     #  'logged out' error message.
-    return redirect(
-        session.get('desired_url',url_for('registration_bp_x.home')),
+    response = redirect(
+        session.get('desired_url',url_for('registration_bp_x.login_test')),
         code=302
     )
+    session.pop('desired_url', None) # Remove the session key
+    # Set the fresh session cookie
+    response.set_cookie(Config.COOKIE_NAME, new_session, max_age=60 * 60 * 24 * 15)  # Expires in 15 days
+    return response

@@ -9,3 +9,12 @@ class User:
         self.sessionID: str = sessionID
         self.friendlyName: str = friendlyName
         self.role: str = role
+
+class Location:
+    def __init__(self,
+                 locationID: str = None,
+                 fullName: str = None,
+                 slug: str = None):
+        self.locationID: str = locationID
+        self.fullName: str = fullName
+        self.slug: str = slug

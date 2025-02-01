@@ -16,8 +16,10 @@ def create_app():
 
     with app.app_context():
 
-        from .registration.routes import registration_bp
+        from .registration import routes as registration_routes
+        app.register_blueprint(registration_routes.registration_bp)
 
-        app.register_blueprint(registration_bp)
+        from .location import routes as location_routes
+        app.register_blueprint(location_routes.registration_bp)
 
         return app
