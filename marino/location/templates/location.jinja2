@@ -18,11 +18,15 @@
                 <form id="puzzle-form">
                     <fieldset role="group">
                     <input
-                        type="text"
-                        name="guess"
-                        placeholder="Enter your guess..."
-                        required
+                      type="text"
+                      name="guess"
+                      placeholder="Enter your guess..."
+                      required
                     />
+                    <input 
+                      type="hidden"
+                      name ="slug"
+                      value="{{ loc.slug }}" />
                     <input type="submit" value="Submit" />
                     </fieldset>
                 </form>

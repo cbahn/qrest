@@ -81,6 +81,11 @@ def test_lookup_loc(app,db):
     assert LocationsDB.lookup(Location(slug="doesnt-exist")) == None
     
 def test_register_visit(app,db):
+    example_user = 'A45'
+    example_location = 'L67'
 
-    assert LocationsDB.record_visit(userID="A45", locationID="L67") == True
-    assert LocationsDB.record_visit(userID="A45", locationID="L67") == False
+    assert LocationsDB.record_visit(userID=example_user, locationID=example_location, visit_type='discovered') == True
+    assert LocationsDB.record_visit(userID=example_user, locationID=example_location, visit_type='discovered') == False
+
+    assert LocationsDB.record_visit(userID=example_user, locationID=example_location, visit_type='solved') == True
+    assert LocationsDB.record_visit(userID=example_user, locationID=example_location, visit_type='solved') == False

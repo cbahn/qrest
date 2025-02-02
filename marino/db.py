@@ -156,10 +156,14 @@ class LocationsDB:
         visit_found = db.visits.find_one(visit_data)
         return visit_found is not None
     
-    def record_visit(userID: str, locationID: str) -> bool:
-        """ Record a visit if no existing record with the same userID and locationID exists.
-        Return True if a new visit was recorded, false otherwise.
+    def record_visit(userID: str, locationID: str, visit_type: str) -> bool:
+        """ 
+        Record a visit if no existing record with the same userID and locationID exists.
+        Return True if a new visit was created or updated, false otherwise.
         """
+        if visit_type not in ['discovered','solved']:
+            raise ValueError(f"'{visit_type}' is not a valid visit_type")
+
         with mongo.start_session() as session:
             with session.start_transaction():
 
@@ -167,15 +171,25 @@ class LocationsDB:
                     "userID": userID,
                     "locationID": locationID
                 }
-
                 existing_visit = db.visits.find_one(visit_data)
+                
+                if existing_visit is None:
+                    # Log the visit for the first time
+                    visit_data['timestamp'] = datetime.datetime.now(tz=datetime.timezone.utc)
+                    visit_data['visit_type'] = visit_type
+                    db.visits.insert_one(visit_data)
+                    return True
+                
+                if existing_visit['visit_type'] == 'discovered' and visit_type == 'solved':
+                    # Newly solved location, update visit type
+                    db.visits.update_one(
+                        visit_data,
+                        {'$set': {'visit_type': visit_type}}
+                        )
+                    return True
 
-                if existing_visit is not None:
-                    return False # Visit was already recorded
-
-                visit_data["timestamp"] = datetime.datetime.now(tz=datetime.timezone.utc)
-                db.visits.insert_one(visit_data)
-                return True
+                # Any other case, no update is needed
+                return False
     
     def get_all_visits():
         """Retrieve all (name, location) pairs sorted by timestamp."""
