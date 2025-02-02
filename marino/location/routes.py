@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, g
-from flask import request, current_app, session
+from flask import request, current_app, session, jsonify
 from marino.models import User, Location
 from marino.db import UsersDB, LocationsDB
 from marino.config import Config
@@ -71,3 +71,15 @@ def location(loc_slug):
         return render_template('unvisited_location.jinja2')
     
     return render_template('location.jinja2', loc=loc)
+
+@registration_bp.route('/location/validate_guess', methods=['POST'])
+def validate_guess():
+    # Extract the guess from the POSTed form data
+    user_guess = request.form.get('guess', '').strip().lower()
+    
+    # Example: Let's assume the correct answer is "london"
+    correct_answer = "london"
+    is_correct = (user_guess == correct_answer)
+    
+    # Return the JSON response with the validation result
+    return jsonify(correct=is_correct)

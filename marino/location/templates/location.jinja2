@@ -6,24 +6,78 @@
     <section id="home">
         <h1>{{ loc.fullName }}</h1>
         <img
-          
           onerror="this.onerror=null; this.src='{{url_for('static',filename='place_error.png')}}';">
         
     </section>
     <section id="details">
-        <p>A very nice gulch with rabbits.</p>
+        <p>{{ loc.description}} </p>
         <article>
             <header>Puzzle</header>
-            What color was the white rabbit?
+            {{ loc.puzzleText }}
             <footer>
-                <form>
+                <form id="puzzle-form">
                     <fieldset role="group">
-                    <input type="text" placeholder="Enter your guess..." />
+                    <input
+                        type="text"
+                        name="guess"
+                        placeholder="Enter your guess..."
+                        required
+                    />
                     <input type="submit" value="Submit" />
                     </fieldset>
                 </form>
             </footer>
         </article>
+        <article>
+        <header>Feedback on Puzzle Answer</header>
+        <div id="feedback" aria-live="polite">-</div>
+        </article>
     </section>
 </main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('puzzle-form');
+  const feedbackEl = document.getElementById('feedback');
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    // Gather the form data.
+    const formData = new FormData(form);
+
+    // Send a POST request to the server.
+    fetch('{{ url_for("location_bp_x.validate_guess") }}', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Expecting the JSON response to include a key like "correct"
+      if (data.correct) {
+        feedbackEl.textContent = "Correct!";
+        feedbackEl.style.color = "green";
+      } else {
+        feedbackEl.textContent = "Wrong answer. Try again.";
+        feedbackEl.style.color = "red";
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      feedbackEl.textContent = "There was an error processing your request.";
+      feedbackEl.style.color = "red";
+    });
+  });
+});
+</script>
 {% endblock %}

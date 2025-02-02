@@ -16,7 +16,13 @@ class Location:
     def __init__(self,
                  locationID: str = None,
                  fullName: str = None,
-                 slug: str = None):
+                 slug: str = None,
+                 description: str = None,
+                 puzzleText: str = None,
+                 puzzleAnswer: str = None):
         self.locationID: str = locationID
         self.fullName: str = fullName
         self.slug: str = slug
+        self.description: str = description
+        self.puzzleText: str = puzzleText
+        self.puzzleAnswer: str = puzzleAnswer

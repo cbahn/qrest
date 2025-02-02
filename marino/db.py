@@ -124,22 +124,28 @@ class UsersDB:
 class LocationsDB:
     def lookup(loc: Location) -> None | Location:
         param = {
-            'locationID':loc.locationID,
+            'locationID': loc.locationID,
             'fullName': loc.fullName,
-            'slug': loc.slug
+            'slug': loc.slug,
+            'description': loc.description,
+            'puzzleText': loc.puzzleText,
+            'puzzleAnswer': loc.puzzleAnswer
         }
 
         # Remove all non-specified data fields from search parameters
-        cleaned_param = {k:v for k, v in param.items() if v is not None}
+        cleaned_param = {k: v for k, v in param.items() if v is not None}
 
         found_loc = db.locations.find_one(cleaned_param)
         if found_loc is not None:
             return Location(
-                locationID=found_loc.get('locationID',None),
-                fullName=found_loc.get('fullName',None),
-                slug=found_loc.get('slug',None)
+                locationID=found_loc.get('locationID', None),
+                fullName=found_loc.get('fullName', None),
+                slug=found_loc.get('slug', None),
+                description=found_loc.get('description', None),
+                puzzleText=found_loc.get('puzzleText', None),
+                puzzleAnswer=found_loc.get('puzzleAnswer', None)
             )
-        
+
         return None
     
     def check_visit(userID: str, locationID: str) -> bool:
