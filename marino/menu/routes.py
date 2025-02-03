@@ -33,6 +33,10 @@ registration_bp = Blueprint(
 )
 registration_bp.before_request(check_login)
 
+@registration_bp.route('/', methods=['GET'])
+def index():
+    return render_template('index.jinja2')
+
 @registration_bp.route('/settings', methods=['GET'])
 def settings():
     return render_template('settings.jinja2',user=g.user)
@@ -44,9 +48,6 @@ def logout():
     # Set cookie to expire immediately
     response.set_cookie(Config.COOKIE_NAME, '', expires=0)
     return response
-
-
-
 
 @registration_bp.route('/leaderboard', methods=['GET'])
 def leaderboard():

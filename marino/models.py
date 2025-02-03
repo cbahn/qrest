@@ -1,28 +1,24 @@
+from dataclasses import dataclass, asdict
 
+@dataclass
 class User:
-    def __init__(self,
-                 userID: str = None,
-                 friendlyName: str = None,
-                 sessionID: str = None,
-                 role: str = None,
-                 fingerprint: str = None):
-        self.userID: str = userID
-        self.sessionID: str = sessionID
-        self.friendlyName: str = friendlyName
-        self.role: str = role
-        self.fingerprint: str = fingerprint
+    userID: str = None
+    friendlyName: str = None
+    sessionID: str = None
+    role: str = None
+    fingerprint: str = None
 
+    def to_dict(self):
+        return {k: v for k, v in asdict(self).items() if v is not None}
+
+@dataclass
 class Location:
-    def __init__(self,
-                 locationID: str = None,
-                 fullName: str = None,
-                 slug: str = None,
-                 description: str = None,
-                 puzzleText: str = None,
-                 puzzleAnswer: str = None):
-        self.locationID: str = locationID
-        self.fullName: str = fullName
-        self.slug: str = slug
-        self.description: str = description
-        self.puzzleText: str = puzzleText
-        self.puzzleAnswer: str = puzzleAnswer
+    locationID: str = None
+    fullName: str = None
+    slug: str = None
+    description: str = None
+    puzzleText: str = None
+    puzzleAnswer: str = None
+
+    def to_dict(self):
+        return {k: v for k, v in asdict(self).items() if v is not None}

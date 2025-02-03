@@ -50,7 +50,6 @@ def login_test():
         template='home-template',
     )
 
-
 @registration_bp.route('/login',methods=['GET'])
 def login():
     return render_template('login.jinja2')
@@ -83,7 +82,6 @@ def new_login():
     # Set the fresh session cookie
     response.set_cookie(Config.COOKIE_NAME, new_session, max_age=60 * 60 * 24 * 15)  # Expires in 15 days
     return response
-
 
 @registration_bp.route('/signup',methods=['GET'])
 def signup():
