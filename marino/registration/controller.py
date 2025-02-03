@@ -29,17 +29,17 @@ def create_user_d(new_name: str, fingerprint: str) -> tuple[None | User, str]:
     if valid_name is None:
         return err
     
-    def try_to_generate_a_unique_userId(n):
+    def try_to_generate_a_unique_userID(n):
         for _ in range(n):
-            new_userId = Util.generate_new_userID()
-            if UsersDB.lookup(User(userId=new_userId)) is None:
-                return new_userId
-        raise RuntimeError(f"Failed to generate a new userId after {n} attmpts!")
+            new_userID = Util.generate_new_userID()
+            if UsersDB.lookup(User(userID=new_userID)) is None:
+                return new_userID
+        raise RuntimeError(f"Failed to generate a new userID after {n} attmpts!")
 
     try:
         newUser = User(
             friendlyName = new_name,
-            userId = try_to_generate_a_unique_userId(20),
+            userID = try_to_generate_a_unique_userID(20),
             fingerprint=fingerprint,
         )
         UsersDB.create(newUser)

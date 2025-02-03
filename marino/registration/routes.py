@@ -46,7 +46,7 @@ def login_test():
     return render_template(
         'login_test.jinja2',
         title='Flask Blueprint Demo',
-        subtitle=f'Your userID is {g.user.userId}',
+        subtitle=f'Your userID is {g.user.userID}',
         template='home-template',
     )
 
@@ -63,13 +63,13 @@ def new_login():
     allowed_chars = "A-Z0-9"
     userID = re.sub(f"[^{allowed_chars}]", "", userID)
         
-    user = UsersDB.lookup(User(userId=userID))
+    user = UsersDB.lookup(User(userID=userID))
     if user is None:
         flash("Login code not recognized. Try again.", 'warning')
         return redirect(url_for('registration_bp_x.login'))
     
     # User recognized. Cycle session and set as cookie
-    new_session = UsersDB.cycleSessionID(userId=user.userId)
+    new_session = UsersDB.cycleSessionID(userID=user.userID)
 
     flash(f"Welcome back, {user.friendlyName}.", 'success')
 
@@ -118,7 +118,7 @@ def newuser():
         return redirect(url_for('registration_bp_x.signup'),code=302)
     
     # Setup a fresh sessionID for the new user
-    new_session = UsersDB.cycleSessionID(userId=newly_created_user.userId)
+    new_session = UsersDB.cycleSessionID(userID=newly_created_user.userID)
 
 
     flash(f"Success. Welcome to Qrest, {new_username}!", 'success')

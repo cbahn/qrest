@@ -69,16 +69,16 @@ class UsersDB:
                 with session.start_transaction():
 
                     # Enforce uniqueness of userID and friendly_name fields
-                    existing_user = db.users.find_one({"userID": user.userId}, session=session)
+                    existing_user = db.users.find_one({"userID": user.userID}, session=session)
                     if existing_user:
                         print(str(existing_user))
-                        raise DuplicateDataError(f"UserID '{user.userId}' already exists.")
+                        raise DuplicateDataError(f"userID '{user.userID}' already exists.")
                     existing_user = db.users.find_one({"friendly_name": user.friendlyName}, session=session)
                     if existing_user:
                         raise DuplicateDataError(f"friendly_name '{str(user.friendlyName)}' already exists.")
                     
                     userData = {
-                        "userID": user.userId,
+                        "userID": user.userID,
                         "sessionID": "",
                         "friendly_name": user.friendlyName,
                         "fingerprint": user.fingerprint,
@@ -93,7 +93,7 @@ class UsersDB:
 
     def lookup(user: User) -> None | User:
         param = {
-            'userID':user.userId,
+            'userID':user.userID,
             'sessionID':user.sessionID,
             'friendly_name':user.friendlyName,
             'role':user.role,
@@ -106,7 +106,7 @@ class UsersDB:
         found_user = db.users.find_one(cleaned_param)
         if found_user is not None:
             return User(
-                userId=found_user.get('userID',None),
+                userID=found_user.get('userID',None),
                 sessionID=found_user.get('sessionID',None),
                 friendlyName=found_user.get('friendly_name',None),
                 role=found_user.get('role',None),
@@ -114,10 +114,10 @@ class UsersDB:
                 )
         return None
 
-    def cycleSessionID(userId: str) -> str:
+    def cycleSessionID(userID: str) -> str:
         newSessionCode = Util.generate_session_code()
         db.users.update_one(
-            {'userID':userId},
+            {'userID':userID},
             {'$set': {'sessionID':newSessionCode}})
         return newSessionCode
     

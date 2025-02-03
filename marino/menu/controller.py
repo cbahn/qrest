@@ -15,7 +15,7 @@ def generate_leaderboard_data():
     tallies = [{"userID": user, "visit_count": count} for user, count in user_visit_counts.items()]
     
     for i in tallies:
-        user = UsersDB.lookup(User(userId=i.get('userID')))
+        user = UsersDB.lookup(User(userID=i.get('userID')))
         if user is not None:
             i['friendlyName'] = user.friendlyName
         else:

@@ -54,7 +54,7 @@ def new_location(loc_code):
         return f"Can't find the location with ID: {loc_code}"
     
     if LocationsDB.record_visit(
-        userID=g.user.userId,
+        userID=g.user.userID,
         locationID=loc.locationID,
         visit_type='discovered',
         ):
@@ -70,8 +70,8 @@ def location(loc_slug):
         return render_template('unvisited_location.jinja2')
     
     # Don't allow a user to view the page unless they've already visited
-    print(f"userID = {g.user.userId}, locationID={loc.locationID}")
-    if not LocationsDB.check_visit(userID=g.user.userId, locationID=loc.locationID):
+    print(f"userID = {g.user.userID}, locationID={loc.locationID}")
+    if not LocationsDB.check_visit(userID=g.user.userID, locationID=loc.locationID):
         return render_template('unvisited_location.jinja2')
     
     return render_template('location.jinja2', loc=loc)
@@ -99,7 +99,7 @@ def validate_guess():
 
     # A user can't guess on a location they haven't discovered
     if not LocationsDB.check_visit(
-        userID=g.user.userId,
+        userID=g.user.userID,
         locationID=loc.locationID
         ):
         return jsonify(youhavenot='visited') # TODO make good
@@ -109,7 +109,7 @@ def validate_guess():
     is_correct = (user_guess == loc.puzzleAnswer)
     if is_correct:
         LocationsDB.record_visit(
-            userID=g.user.userId,
+            userID=g.user.userID,
             locationID=loc.locationID,
             visit_type='solved'
         )

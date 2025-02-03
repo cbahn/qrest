@@ -1,12 +1,12 @@
 
 class User:
     def __init__(self,
-                 userId: str = None,
+                 userID: str = None,
                  friendlyName: str = None,
                  sessionID: str = None,
                  role: str = None,
                  fingerprint: str = None):
-        self.userId: str = userId
+        self.userID: str = userID
         self.sessionID: str = sessionID
         self.friendlyName: str = friendlyName
         self.role: str = role
