@@ -40,16 +40,6 @@ registration_bp = Blueprint(
     static_folder='static'
 )
 
-@registration_bp.route('/test', methods=['GET'])
-@require_login
-def login_test():
-    return render_template(
-        'login_test.jinja2',
-        title='Flask Blueprint Demo',
-        subtitle=f'Your userID is {g.user.userID}',
-        template='home-template',
-    )
-
 @registration_bp.route('/login',methods=['GET'])
 def login():
     return render_template('login.jinja2')
@@ -124,7 +114,7 @@ def newuser():
     # Redirect them to the URL they tried to access when they got a
     #  'logged out' error message.
     response = redirect(
-        session.get('desired_url',url_for('registration_bp_x.login_test')),
+        session.get('desired_url',url_for('menu_bp_x.index')),
         code=302
     )
     session.pop('desired_url', None) # Remove the session key

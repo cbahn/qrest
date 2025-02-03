@@ -2,6 +2,7 @@ from flask import current_app, g
 
 from werkzeug.local import LocalProxy
 from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
 import os
 import datetime
 #from pymongo.errors import DuplicateKeyError, OperationFailure
@@ -46,11 +47,6 @@ db = LocalProxy(get_db)
 
 ######################### FUNCTIONS ###############################
 
-class DuplicateDataError(Exception):
-    """Raised when there's an attempt to insert a duplicate 
-    value into a field that must be unique """
-    pass
-
 class TestingDB:
 
     def connection_test():
@@ -64,38 +60,28 @@ class TestingDB:
         return db
 
 class UsersDB:
-    def create(user: User):
+    def create(user: User) -> dict:
+
+        new_user_record = user.to_dict()
+
         with mongo.start_session() as session:
                 with session.start_transaction():
 
-                    # Enforce uniqueness of userID and friendly_name fields
-                    existing_user = db.users.find_one({"userID": user.userID}, session=session)
-                    if existing_user:
-                        print(str(existing_user))
-                        raise DuplicateDataError(f"userID '{user.userID}' already exists.")
-                    existing_user = db.users.find_one({"friendly_name": user.friendlyName}, session=session)
-                    if existing_user:
-                        raise DuplicateDataError(f"friendly_name '{str(user.friendlyName)}' already exists.")
+                    if db.users.find_one({"userID": user.userID}, session=session):
+                        raise DuplicateKeyError(f"userID '{user.userID}' already exists.")
                     
-                    userData = {
-                        "userID": user.userID,
-                        "sessionID": "",
-                        "friendly_name": user.friendlyName,
-                        "fingerprint": user.fingerprint,
-                    }
-                    if user.role:
-                        userData["role"] = user.role
-                    db.users.insert_one( userData )
+                    if db.users.find_one({"friendlyName": user.friendlyName}, session=session):
+                        raise DuplicateKeyError(f"friendlyName '{user.friendlyName}' already exists.")
+                    
+                    db.users.insert_one( new_user_record, session=session)
 
-                    # I'm not sure what to return here. We know the function succeeded
-                    # if no exceptions were thrown
-                    return userData
+        return new_user_record
 
     def lookup(user: User) -> None | User:
         param = {
             'userID':user.userID,
             'sessionID':user.sessionID,
-            'friendly_name':user.friendlyName,
+            'friendlyName':user.friendlyName,
             'role':user.role,
             'fingerprint': user.fingerprint,
         }
@@ -108,7 +94,7 @@ class UsersDB:
             return User(
                 userID=found_user.get('userID',None),
                 sessionID=found_user.get('sessionID',None),
-                friendlyName=found_user.get('friendly_name',None),
+                friendlyName=found_user.get('friendlyName',None),
                 role=found_user.get('role',None),
                 fingerprint=found_user.get('fingerprint',None)
                 )

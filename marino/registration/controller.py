@@ -1,6 +1,7 @@
-from marino.db import UsersDB, DuplicateDataError
+from marino.db import UsersDB
 from marino.util import Util
 from marino.models import User
+from pymongo.errors import DuplicateKeyError
 from pydantic import BaseModel, StringConstraints, ValidationError
 from typing_extensions import Annotated
 
@@ -43,7 +44,7 @@ def create_user_d(new_name: str, fingerprint: str) -> tuple[None | User, str]:
             fingerprint=fingerprint,
         )
         UsersDB.create(newUser)
-    except DuplicateDataError as e:
+    except DuplicateKeyError as e:
         return str(e)
 
     # No exception from UsersDB.create() indicates success

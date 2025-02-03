@@ -1,8 +1,9 @@
 import pytest
+from pymongo.errors import DuplicateKeyError
 from unittest.mock import patch, MagicMock
 from flask import Flask
 from marino.config import Config
-from marino.db import DuplicateDataError, TestingDB, UsersDB, LocationsDB
+from marino.db import TestingDB, UsersDB, LocationsDB
 from marino.models import User, Location
 
 # Fixture to create a test Flask app
@@ -41,20 +42,20 @@ def test_create_user(app, db):
     except Exception as e:
         assert False, f"An exception was raised while creating user: {e}"
 
-    with pytest.raises(DuplicateDataError, match=r"userID.*already exists."):
+    with pytest.raises(DuplicateKeyError, match=r"userID.*already exists."):
         UsersDB.create(User(
             friendlyName="billy_fakename",
             userID = "abc123"
         ))
 
-    with pytest.raises(DuplicateDataError, match=r"friendly_name.*already exists."):
+    with pytest.raises(DuplicateKeyError, match=r"friendlyName.*already exists."):
         UsersDB.create(User(
             friendlyName="john",
             userID = "xyz789"
         ))
 
     # Verify that the failing users weren't inserted
-    assert db.users.count_documents({"friendly_name": "billy_fakename"}) == 0
+    assert db.users.count_documents({"friendlyName": "billy_fakename"}) == 0
     assert db.users.count_documents({"userID": "xyz789"}) == 0
 
 def test_lookup_user(app,db):

@@ -44,7 +44,7 @@ def settings():
 @registration_bp.route('/settings/logout', methods=['POST'])
 def logout():
     flash('You have been logged out.','info')
-    response = redirect(url_for('registration_bp_x.login_test'),code=302)
+    response = redirect(url_for('menu_bp_x.index'),code=302)
     # Set cookie to expire immediately
     response.set_cookie(Config.COOKIE_NAME, '', expires=0)
     return response
