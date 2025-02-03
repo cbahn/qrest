@@ -60,44 +60,38 @@ class TestingDB:
         return db
 
 class UsersDB:
+
+    FULL_PROJECTION = {
+        "userID": 1,
+        "sessionID": 1,
+        "friendlyName": 1,
+        "role": 1,
+        "fingerprint": 1,
+        "_id": 0,
+    }
+
     def create(user: User) -> dict:
 
         new_user_record = user.to_dict()
 
         with mongo.start_session() as session:
-                with session.start_transaction():
+            with session.start_transaction():
 
-                    if db.users.find_one({"userID": user.userID}, session=session):
-                        raise DuplicateKeyError(f"userID '{user.userID}' already exists.")
-                    
-                    if db.users.find_one({"friendlyName": user.friendlyName}, session=session):
-                        raise DuplicateKeyError(f"friendlyName '{user.friendlyName}' already exists.")
-                    
-                    db.users.insert_one( new_user_record, session=session)
-
+                if db.users.find_one({"userID": user.userID}, session=session):
+                    raise DuplicateKeyError(f"userID '{user.userID}' already exists.")
+                
+                if db.users.find_one({"friendlyName": user.friendlyName}, session=session):
+                    raise DuplicateKeyError(f"friendlyName '{user.friendlyName}' already exists.")
+                
+                db.users.insert_one( new_user_record, session=session)
         return new_user_record
 
     def lookup(user: User) -> None | User:
-        param = {
-            'userID':user.userID,
-            'sessionID':user.sessionID,
-            'friendlyName':user.friendlyName,
-            'role':user.role,
-            'fingerprint': user.fingerprint,
-        }
+        user_query = user.to_dict()
 
-        # Remove all non-specified data fields from search parameters
-        cleaned_param = {k:v for k, v in param.items() if v is not None}
-
-        found_user = db.users.find_one(cleaned_param)
+        found_user = db.users.find_one(user_query, UsersDB.FULL_PROJECTION)
         if found_user is not None:
-            return User(
-                userID=found_user.get('userID',None),
-                sessionID=found_user.get('sessionID',None),
-                friendlyName=found_user.get('friendlyName',None),
-                role=found_user.get('role',None),
-                fingerprint=found_user.get('fingerprint',None)
-                )
+            return User(**found_user)
         return None
 
     def cycleSessionID(userID: str) -> str:
@@ -110,59 +104,21 @@ class UsersDB:
 class LocationsDB:
 
     def create(loc: Location) -> None | Location:
-        new_locationID = Util.generate_new_locationID()
-        param = {
-            'locationID': new_locationID,
-            'fullName': loc.fullName,
-            'slug': loc.slug,
-            'description': loc.description,
-            'puzzleText': loc.puzzleText,
-            'puzzleAnswer': loc.puzzleAnswer
-        }
-        db.locations.insert_one( param )
-        loc.locationID = new_locationID
+        loc.locationID = Util.generate_new_locationID()
+        new_location_record = loc.to_dict()
+        db.locations.insert_one( new_location_record )
         return loc
 
-
     def lookup(loc: Location) -> None | Location:
-        param = {
-            'locationID': loc.locationID,
-            'fullName': loc.fullName,
-            'slug': loc.slug,
-            'description': loc.description,
-            'puzzleText': loc.puzzleText,
-            'puzzleAnswer': loc.puzzleAnswer
-        }
+        param = loc.to_dict()
 
-        # Remove all non-specified data fields from search parameters
-        cleaned_param = {k: v for k, v in param.items() if v is not None}
-
-        found_loc = db.locations.find_one(cleaned_param)
+        found_loc = db.locations.find_one(param, UsersDB.FULL_PROJECTION)
         if found_loc is not None:
-            return Location(
-                locationID=found_loc.get('locationID', None),
-                fullName=found_loc.get('fullName', None),
-                slug=found_loc.get('slug', None),
-                description=found_loc.get('description', None),
-                puzzleText=found_loc.get('puzzleText', None),
-                puzzleAnswer=found_loc.get('puzzleAnswer', None)
-            )
-
+            return Location(**found_loc)
         return None
     
     def get_all_locations():
-        all_locs = db.locations.find(
-            {},
-            {
-            '_id': 0,
-            'locationID': 1,
-            'fullName': 1,
-            'slug': 1,
-            'description': 1,
-            'puzzleText': 1,
-            'puzzleAnswer': 1
-            }
-        )          
+        all_locs = db.locations.find({}, UsersDB.FULL_PROJECTION)
         return [Location(**loc) for loc in all_locs]
 
     def check_visit(userID: str, locationID: str) -> bool:
@@ -204,13 +160,12 @@ class LocationsDB:
                         {'$set': {'visit_type': visit_type}}
                         )
                     return True
-
                 # Any other case, no update is needed
                 return False
     
     def get_all_visits():
         """Retrieve all (name, location) pairs sorted by timestamp."""
-        cursor = db.visits.find({}, {"userID": 1, "locationID": 1, "timestamp": 1}).sort("timestamp", 1)
+        cursor = db.visits.find({}, {"userID": 1, "locationID": 1, "timestamp": 1, "_id":0}).sort("timestamp", 1)
         
         # Extract and return list of (name, location) tuples
         return [{"userID":doc["userID"], "locationID":doc["locationID"]} for doc in cursor]
