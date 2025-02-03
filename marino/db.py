@@ -103,6 +103,17 @@ class UsersDB:
     
 class LocationsDB:
 
+    FULL_PROJECTION = {
+        "locationID": 1,
+        "fullName": 1,
+        "slug": 1,
+        "imageFile": 1,
+        "descripton": 1,
+        "puzzleText": 1,
+        "puzzleAnswer": 1,
+        "_id": 0,
+    }
+
     def create(loc: Location) -> None | Location:
         loc.locationID = Util.generate_new_locationID()
         new_location_record = loc.to_dict()
@@ -112,14 +123,22 @@ class LocationsDB:
     def lookup(loc: Location) -> None | Location:
         param = loc.to_dict()
 
-        found_loc = db.locations.find_one(param, UsersDB.FULL_PROJECTION)
+        found_loc = db.locations.find_one(param, LocationsDB.FULL_PROJECTION)
         if found_loc is not None:
             return Location(**found_loc)
         return None
     
     def get_all_locations():
-        all_locs = db.locations.find({}, UsersDB.FULL_PROJECTION)
+        all_locs = db.locations.find({}, LocationsDB.FULL_PROJECTION)
         return [Location(**loc) for loc in all_locs]
+
+    def delete(locationID: str) -> bool:
+        result = db.locations.delete_one({"locationID": locationID})
+
+        if result.acknowledged and result.deleted_count == 1:
+            return True # Success
+        else:
+            return False # Unknown failure
 
     def check_visit(userID: str, locationID: str) -> bool:
         visit_data = {

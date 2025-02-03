@@ -16,6 +16,7 @@ class Location:
     locationID: str = None
     fullName: str = None
     slug: str = None
+    imageFile: str = None
     description: str = None
     puzzleText: str = None
     puzzleAnswer: str = None

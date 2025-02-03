@@ -9,14 +9,22 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Count</th>
+                    <th>Location ID</th>
                 </tr>
             </thead>
             <tbody>
-                {% for l in locations %}
+                {% for loc in locations %}
                 <tr>
-                    <td>{{ l.fullName }}</td>
-                    <td>{{ l.locationID }}</td>
+                    <td>
+                    <img
+                        src="{{ url_for('static',filename='uploads/' + loc.imageFile) }}"
+                        alt="{{ loc.fullName }} thumbnail"
+                        style="width:40px; height:auto; margin-right:8px; vertical-align:middle;"
+                        >
+                    <a href="{{url_for('location_bp_x.location',loc_slug=loc.slug)}}">{{ loc.fullName }}</a>
+                    </td>
+                    <td><span class="fixed-width-text">{{ loc.locationID }}</span></td>
+                    <td><a class="secondary">Delete</a></td>
                 </tr>
                 {% endfor %}
             </tbody>

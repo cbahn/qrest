@@ -4,7 +4,7 @@ from flask import request, Request
 import re
 import os
 
-def validate_new_location(
+def validate_new_location_data(
         fullName: str,
         slug: str,
         description: str,

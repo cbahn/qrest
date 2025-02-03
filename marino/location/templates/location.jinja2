@@ -5,7 +5,7 @@
 <main class="container">
     <section id="home">
         <h1>{{ loc.fullName }}</h1>
-        <img src="{{ url_for('static',filename='uploads/' + loc.slug + '.jpg') }}">
+        <img src="{{ url_for('static',filename='uploads/' + loc.imageFile) }}">
         
     </section>
     <section id="details">

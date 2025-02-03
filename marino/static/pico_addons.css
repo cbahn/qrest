@@ -7,6 +7,12 @@
     font-size: 1.6rem;
 }
 
+.fixed-width-text {
+    font-family: "Space Mono", monospace;
+    font-weight: 400;
+    font-style: normal;
+}
+
 /* These are related to the flashed message */
 .flash-success {
     --pico-border-color: var(--pico-form-element-valid-border-color);
