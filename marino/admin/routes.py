@@ -2,11 +2,12 @@ from flask import Blueprint, render_template, request, current_app, g, flash
 from flask import redirect, url_for, session
 from marino.config import Config
 from functools import wraps
-from marino.db import UsersDB
+from marino.db import UsersDB, LocationsDB
 from marino.models import User
 from marino.registration.controller import create_user_d
 from werkzeug.utils import secure_filename
 import os
+from marino.admin.controller import validate_new_location, extract_image_from_request
 
 # Blueprint Configuration
 registration_bp = Blueprint(
@@ -26,30 +27,37 @@ def newlocation():
 
 @registration_bp.route('/admin/newlocation', methods=['POST'])
 def upload_newlocation():
-    # Check if a file is part of the request
-    if 'file' not in request.files:
-        return "<h1>ERROR: no file</h1>"
-    file = request.files['file']
-    # If no file is selected, the browser submits an empty part without filename
-    if file.filename == '':
-        return redirect(request.url)
-    
-    # Only allow specific image file extensions
-    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-    def allowed_file(filename):
-        return '.' in filename and \
-            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-    UPLOAD_FOLDER = os.path.join(current_app.root_path, 'static', 'uploads')
-    if file and allowed_file(file.filename):
-        # Secure the filename and save the file
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(file_path)
-        return redirect(url_for('admin_bp_x.gallery'))
+    new_loc, err = validate_new_location(
+        fullName=request.form.get('fullName',"",type=str),
+        slug=request.form.get('slug',"",type=str),
+        description=request.form.get('description',"",type=str),
+        puzzleText=request.form.get('puzzleText',"",type=str),
+        puzzleAnswer=request.form.get('puzzleAnswer',"",type=str),
+    )
+    if new_loc is None:
+        return f"DATA ERROR: {err}"
+
+    file = extract_image_from_request(
+        request, allowed_extensions={'.jpg'})
+    
+    if file is None:
+        return "FILE ERROR"
+
+    UPLOAD_FOLDER = os.path.join(
+        current_app.root_path, 'static', 'uploads')
+    # Secure the filename and save the file
+    _, ext = os.path.splitext(file.filename)
+    filename = secure_filename(new_loc.slug + ext)
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    file.save(file_path)
+
+    LocationsDB.create(new_loc)
+
+    return redirect(url_for('location_bp_x.location',loc_slug=new_loc.slug))
     
 @registration_bp.route('/admin/gallery', methods=['GET'])
-def gallery():
+def gallery(): #TODO remove this
     # List all images in the upload folder
     files = os.listdir(os.path.join(current_app.root_path, 'static', 'uploads'))
     images = [f for f in files]

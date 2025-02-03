@@ -122,6 +122,22 @@ class UsersDB:
         return newSessionCode
     
 class LocationsDB:
+
+    def create(loc: Location) -> None | Location:
+        new_locationID = Util.generate_new_locationID()
+        param = {
+            'locationID': new_locationID,
+            'fullName': loc.fullName,
+            'slug': loc.slug,
+            'description': loc.description,
+            'puzzleText': loc.puzzleText,
+            'puzzleAnswer': loc.puzzleAnswer
+        }
+        db.locations.insert_one( param )
+        loc.locationID = new_locationID
+        return loc
+
+
     def lookup(loc: Location) -> None | Location:
         param = {
             'locationID': loc.locationID,

@@ -5,8 +5,7 @@
 <main class="container">
     <section id="home">
         <h1>{{ loc.fullName }}</h1>
-        <img
-          onerror="this.onerror=null; this.src='{{url_for('static',filename='place_error.png')}}';">
+        <img src="{{ url_for('static',filename='uploads/' + loc.slug + '.jpg') }}">
         
     </section>
     <section id="details">

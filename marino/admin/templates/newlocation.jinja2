@@ -1,13 +1,63 @@
-    <!doctype html>
-    <html>
-      <head>
-        <title>Upload an Image</title>
-      </head>
-      <body>
-        <h1>Upload an Image</h1>
+{% extends "admin_layout.jinja2" %}
+
+{% block content %}
+<!-- Main Content -->
+<main class="container">
+    <h1>Settings</h1>
+
+    <article>
+        <header><strong>Create New Location<strong></header>
         <form method="post" enctype="multipart/form-data">
-          <input type="file" name="file">
-          <input type="submit" value="Upload">
+          <fieldset>
+            <label>
+              Location Name
+              <input
+                name="fullName"
+                placeholder="The Golden Gulch"
+              />
+            </label>
+            <label>
+              URL-safe Location Name
+              <input
+                name="slug"
+                placeholder="the-golden-gulch"
+              />
+              <small>This is a version of the name that will appear in the URL for the location. It can't contain anything except for lowercase letters, numbers, and hyphens.</small>
+            </label>
+            <label>
+              Upload an Image
+              <input type="file" name="file" />
+              <small>Images should be square and aproximately 700x700 pixels. Allowed formats: jpg, jpeg, & png.</small>
+            </label>            
+            <label>
+              Description / Flavortext
+            <textarea
+              name="description"
+              placeholder="Give it some personality..."
+            ></textarea>
+            </label>
+            <label>
+              Puzzle Text
+            <textarea
+              name="puzzleText"
+              placeholder="What do they have to figure out to get the answer?"
+            ></textarea>
+            </label>
+            <label>
+              Puzzle Answer
+              <input
+                name="puzzleAnswer"
+                placeholder="thebigbadwolf"
+              />
+              <small>Only lowercase letters and numbers allowed in answers! When guesses are submitted, all other characters (like spaces) will be removed. And all letters will be converted to lowercase.</small>
+            </label>
+          </fieldset>
+          <input
+            type="submit"
+            value="Upload"
+          />
         </form>
-      </body>
-    </html>
+    </article>
+</main>
+
+{% endblock %}
