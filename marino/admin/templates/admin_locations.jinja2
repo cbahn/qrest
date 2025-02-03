@@ -1,0 +1,27 @@
+{% extends "admin_layout.jinja2" %}
+
+{% block content %}
+<!-- Main Content -->
+<main class="container">
+    <section id="home">
+        <h1>Admin Leaderboard</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for l in locations %}
+                <tr>
+                    <td>{{ l.fullName }}</td>
+                    <td>{{ l.locationID }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+
+{% endblock %}

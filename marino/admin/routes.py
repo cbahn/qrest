@@ -3,7 +3,7 @@ from flask import redirect, url_for, session
 from marino.config import Config
 from functools import wraps
 from marino.db import UsersDB, LocationsDB
-from marino.models import User
+from marino.models import User, Location
 from marino.registration.controller import create_user_d
 from werkzeug.utils import secure_filename
 import os
@@ -55,7 +55,12 @@ def upload_newlocation():
     LocationsDB.create(new_loc)
 
     return redirect(url_for('location_bp_x.location',loc_slug=new_loc.slug))
-    
+
+@registration_bp.route('/admin/locations', methods=['GET'])
+def admin_locations():
+    all_locs = LocationsDB.get_all_locations()
+    return render_template('admin_locations.jinja2',locations=all_locs)
+
 @registration_bp.route('/admin/gallery', methods=['GET'])
 def gallery(): #TODO remove this
     # List all images in the upload folder

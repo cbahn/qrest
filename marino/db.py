@@ -164,6 +164,21 @@ class LocationsDB:
 
         return None
     
+    def get_all_locations():
+        all_locs = db.locations.find(
+            {},
+            {
+            '_id': 0,
+            'locationID': 1,
+            'fullName': 1,
+            'slug': 1,
+            'description': 1,
+            'puzzleText': 1,
+            'puzzleAnswer': 1
+            }
+        )          
+        return [Location(**loc) for loc in all_locs]
+
     def check_visit(userID: str, locationID: str) -> bool:
         visit_data = {
             "userID": userID,
