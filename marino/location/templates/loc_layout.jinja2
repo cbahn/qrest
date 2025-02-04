@@ -29,13 +29,7 @@
     <main class="container">
 
         <!-- Flashed Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <article class="flash-{{ category }}">{{ message }}</article>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
+        {% include "_flash.jinja2" %}
 
         <!-- Content -->
         {% block content %}
