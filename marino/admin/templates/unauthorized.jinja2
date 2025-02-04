@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/x-icon"
+      href="{{ url_for('static',filename='favicon.png') }}">    
+    <title>GACKquest</title>
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.sand.min.css">
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
+    <link rel="stylesheet"
+      href="{{ url_for('static',filename='pico_addons.css')}}">
+</head>
+<body>
+    <main class="container">
+
+        <!-- Flashed Messages -->
+        {% include "_flash.jinja2" %}
+
+        <h1>Unauthorized</h1>
+        <p>You have to be logged in as an admin to view this page.</p>
+    </main>
+
+</body>
+</html>

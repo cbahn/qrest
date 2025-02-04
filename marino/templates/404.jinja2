@@ -6,7 +6,7 @@
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/x-icon"
       href="{{ url_for('static',filename='favicon.png') }}">    
-    <title>QRest</title>
+    <title>GACKquest</title>
     <link rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.sand.min.css">
     <link rel="stylesheet"
@@ -15,31 +15,10 @@
       href="{{ url_for('static',filename='pico_addons.css')}}">
 </head>
 <body>
-    <!-- Header and Navigation -->
-    <header class="container">
-        <nav>
-            <ul>
-                <li><strong><a>QRest</a></strong></li>
-            </ul>
-            <ul>
-            </ul>
-        </nav>
-    </header>
-
     <main class="container">
-
-        <!-- Flashed Messages -->
-        {% include "_flash.jinja2" %}
-
-        <!-- Content -->
-        {% block content %}
-        <p>This is the default content.</p>
-        {% endblock %}
+        <h1>404</h1>
+        <p>This page does not exist</p>
     </main>
-
-    {% block scripts %}
-        {# This is where scripts in the subtemplates will be placed#}
-    {% endblock %}
 
 </body>
 </html>

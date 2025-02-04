@@ -21,7 +21,7 @@ def check_login_require_admin():
     g.user = user
     if not user.admin:
         # TODO make a better error page
-        return "You do not have permissio to access this page", 403
+        return render_template('unauthorized.jinja2'), 403
     return
 
 # Blueprint Configuration

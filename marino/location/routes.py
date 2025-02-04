@@ -33,15 +33,6 @@ registration_bp = Blueprint(
 )
 registration_bp.before_request(check_login)
 
-@registration_bp.route('/location_test', methods=['GET'])
-def location_test():
-    return render_template(
-        'location_test.jinja2',
-        title='Flask LOCATION Blueprint Demo',
-        subtitle=f'subtitle fun',
-        template='home-template',
-    )
-
 @registration_bp.route('/l/<loc_code>', methods=['GET'])
 def new_location(loc_code):
 

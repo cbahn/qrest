@@ -1,12 +1,12 @@
 
-from flask import Flask
+from flask import Flask, render_template
 from .config import Config
 
 def create_app():
     app = Flask(__name__, instance_relative_config=False)
     app.config.from_mapping(None)
     # app.config.from_object('config.Config')
-    app.config['DEBUG'] = True
+    # app.config['DEBUG'] = False
 
     app.config['SECRET_KEY'] = Config.SECRET_KEY
 
@@ -27,5 +27,9 @@ def create_app():
 
         from .admin import routes as admin_routes
         app.register_blueprint(admin_routes.registration_bp)
+
+        @app.errorhandler(404)
+        def page_not_found(e):
+            return render_template('404.jinja2'), 404
 
         return app
