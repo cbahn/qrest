@@ -90,5 +90,12 @@ dialog.closing {
     the admin settings */
 
 .admin-interface {
-    color: var(--pico-color-fuchsia-600);
+    color: #8766F0;
+}
+
+.admin-interface-gradient {
+    background: linear-gradient(45deg, #00dbde, #fc00ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }

@@ -1,63 +1,51 @@
 {% extends "menu_layout.jinja2" %}
 
 {% block content %}
-<!-- Main Content -->
 <main class="container">
-    <h1>Settings</h1>
-
-    <article>
-        <header><strong>Create New Location<strong></header>
-        <form method="post" enctype="multipart/form-data">
-          <fieldset>
-            <label>
-              Location Name
-              <input
-                name="fullName"
-                placeholder="The Golden Gulch"
-              />
-            </label>
-            <label>
-              URL-safe Location Name
-              <input
-                name="slug"
-                placeholder="the-golden-gulch"
-              />
-              <small>This is a version of the name that will appear in the URL for the location. It can't contain anything except for lowercase letters, numbers, and hyphens.</small>
-            </label>
-            <label>
-              Upload an Image
-              <input type="file" name="file" />
-              <small>Images should be square and aproximately 700x700 pixels. Allowed formats: jpg, jpeg, & png.</small>
-            </label>            
-            <label>
-              Description / Flavortext
-            <textarea
-              name="description"
-              placeholder="Give it some personality..."
-            ></textarea>
-            </label>
-            <label>
-              Puzzle Text
-            <textarea
-              name="puzzleText"
-              placeholder="What do they have to figure out to get the answer?"
-            ></textarea>
-            </label>
-            <label>
-              Puzzle Answer
-              <input
-                name="puzzleAnswer"
-                placeholder="thebigbadwolf"
-              />
-              <small>Only lowercase letters and numbers allowed in answers! When guesses are submitted, all other characters (like spaces) will be removed. And all letters will be converted to lowercase.</small>
-            </label>
-          </fieldset>
-          <input
-            type="submit"
-            value="Upload"
-          />
-        </form>
-    </article>
+  <h1 class="admin-interface-gradient">New Location</h1>
+  <form method="post" enctype="multipart/form-data">
+    <fieldset>
+      <label>
+        Location Name
+        <input type="text" name="fullName" placeholder="The Golden Gulch" />
+      </label>
+      
+      <label>
+        URL-safe Location Name
+        <input type="text" name="slug" placeholder="the-golden-gulch" />
+        <small>
+          This name will appear in the URL. Only lowercase letters, numbers, and hyphens are allowed.
+        </small>
+      </label>
+      
+      <label>
+        Upload an Image
+        <input type="file" name="file" />
+        <small>
+          Images should be square (approx. 700x700 pixels). Allowed formats: jpg, jpeg, png.
+        </small>
+      </label>
+      
+      <label>
+        Description / Flavortext
+        <textarea name="description" placeholder="Give it some personality..."></textarea>
+      </label>
+      
+      <label>
+        Puzzle Question
+        <textarea name="puzzleText" placeholder="What do they have to figure out to get the answer?"></textarea>
+      </label>
+      
+      <label>
+        Puzzle Answer
+        <input type="text" name="puzzleAnswer" placeholder="thebigbadwolf" />
+        <small>
+          Only lowercase letters and numbers allowed. All other characters will be removed, and letters will be converted to lowercase.
+        </small>
+      </label>
+      
+      <input type="submit" value="Upload" />
+    </fieldset>
+  </form>
 </main>
-
 {% endblock %}
