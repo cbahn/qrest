@@ -9,6 +9,21 @@ from werkzeug.utils import secure_filename
 import os
 from marino.admin.controller import validate_new_location_data, extract_image_from_request
 
+def check_login_require_admin():
+    cookie = request.cookies.get(Config.COOKIE_NAME)
+
+    user = UsersDB.lookup(User(sessionID=str(cookie)))
+    if user is None:
+        # Cookie missing or invalid. Not logged in.
+        session['desired_url'] = request.url # Remember the page they tried to access
+        return redirect(url_for('registration_bp_x.signup'), code=302)
+
+    g.user = user
+    if not user.admin:
+        # TODO make a better error page
+        return "You do not have permissio to access this page", 403
+    return
+
 # Blueprint Configuration
 registration_bp = Blueprint(
     'admin_bp_x',
@@ -16,6 +31,7 @@ registration_bp = Blueprint(
     template_folder='templates',
     static_folder='static'
 )
+registration_bp.before_request(check_login_require_admin)
 
 @registration_bp.route('/admin', methods=['GET'])
 def admin():

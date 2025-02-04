@@ -25,11 +25,20 @@
                 <li><a href="{{ url_for('menu_bp_x.settings') }}">Settings</a></li>
                 <li><a href="{{ url_for('menu_bp_x.locations') }}">Locations</a></li>
                 <li><a href="{{ url_for('menu_bp_x.leaderboard') }}">Leaderboard</a></li>
-                {% if g.user.admin %}
-                <li><a class="admin-interface" href="{{url_for('admin_bp_x.admin') }}">Admin</a></li>
-                {% endif %}
             </ul>
         </nav>
+        {% if g.user.admin %}
+        <nav>
+          <ul>
+              <li><strong><a class="admin-interface" href="{{ url_for('admin_bp_x.admin') }}">Admin</a></strong></li>
+          </ul>
+          <ul>
+              <li><a class="admin-interface" href="{{ url_for('admin_bp_x.newlocation') }}">NewLocation</a></li>
+              <li><a class="admin-interface" href="{{ url_for('admin_bp_x.admin_locations') }}">Locations</a></li>
+              
+          </ul>
+        </nav>
+        {% endif %}
     </header>
 
     <style>
