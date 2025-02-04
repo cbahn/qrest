@@ -1,0 +1,11 @@
+# import os
+
+class Config(object):
+    SECRET_KEY = "my very secret key"
+
+    MONGO_URI = "mongodb+srv://your-database-address.net/?authSource=$external&authMechanism=MONGODB-X509"
+    MONGO_CERT_PATH = "./secrets/your_cert_name.pem"
+    MONGO_DB_NAME = 'exampledb'
+
+    COOKIE_NAME = 'quest_session'
+    ALLOW_SIGNUPS = False #TODO this is only for testing
