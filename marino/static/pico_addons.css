@@ -85,3 +85,10 @@ dialog[open] {
 dialog.closing {
     animation: slideOutToAbove 0.5s ease forwards;
 }
+
+/* This is to mark buttons or interfaces assocated with
+    the admin settings */
+
+.admin-interface {
+    color: var(--pico-color-fuchsia-600);
+}

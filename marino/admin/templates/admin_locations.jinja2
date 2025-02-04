@@ -1,30 +1,35 @@
 {% extends "admin_layout.jinja2" %}
 
 {% block content %}
-<!-- Main Content -->
 <main class="container">
     <section id="home">
-        <h1>Admin Leaderboard</h1>
+        <h1>Admin Locations</h1>
         <table>
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Location ID</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for loc in locations %}
                 <tr>
                     <td>
-                    <img
-                        src="{{ url_for('static',filename='uploads/' + loc.imageFile) }}"
-                        alt="{{ loc.fullName }} thumbnail"
-                        style="width:40px; height:auto; margin-right:8px; vertical-align:middle;"
-                        >
-                    <a href="{{url_for('location_bp_x.location',loc_slug=loc.slug)}}">{{ loc.fullName }}</a>
+                        <img src="{{ url_for('static', filename='uploads/' ~ loc.imageFile) }}"
+                             alt="{{ loc.fullName }} thumbnail"
+                             style="width:40px; height:auto; margin-right:8px; vertical-align:middle;">
+                        <a href="{{ url_for('location_bp_x.location', loc_slug=loc.slug) }}">{{ loc.fullName }}</a>
                     </td>
                     <td><span class="fixed-width-text">{{ loc.locationID }}</span></td>
-                    <td><a class="secondary">Delete</a></td>
+                    <td>
+                        <!-- The delete button: note the data-delete-url attribute -->
+                        <button type="button"
+                                class="secondary small-button delete-btn"
+                                data-delete-url="{{ url_for('admin_bp_x.delete_location', loc_slug=loc.slug) }}">
+                            Delete
+                        </button>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -32,4 +37,87 @@
     </section>
 </main>
 
+<!-- Delete Confirmation Modal -->
+<dialog id="deleteModal">
+    <article>
+        <header>
+            <h3>Confirm Deletion</h3>
+        </header>
+        <p>Are you sure you want to delete this location?</p>
+        <footer>
+            <button type="button" class="secondary outline" onclick="closeDeleteModal()">Cancel</button>
+            <button type="button" onclick="confirmDeletion()">Delete</button>
+        </footer>
+    </article>
+</dialog>
+
+<!-- Optional inline styles for smaller delete buttons and modal appearance -->
+<style>
+    .small-button {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.9rem;
+        line-height: 1;
+    }
+    dialog {
+        border: none;
+        border-radius: 0.5rem;
+        box-shadow: 0 0 10px rgba(0,0,0,0.25);
+    }
+</style>
+
+<!-- JavaScript to wire up the modal and send DELETE requests -->
+<script>
+    // Will hold the URL to send the DELETE request to.
+    let currentDeleteUrl = null;
+    const deleteModal = document.getElementById('deleteModal');
+
+    // Attach event listeners to each delete button
+    document.querySelectorAll('.delete-btn').forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Grab the URL from the data attribute
+            currentDeleteUrl = this.getAttribute('data-delete-url');
+            deleteModal.showModal();
+        });
+    });
+
+    function closeDeleteModal() {
+        // Optionally add a closing animation here before closing.
+        deleteModal.close();
+        currentDeleteUrl = null;
+    }
+
+    function confirmDeletion() {
+        if (!currentDeleteUrl) return;
+
+        fetch(currentDeleteUrl, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // You might process response.json() if the server returns details.
+                return response.json();
+            } else {
+                throw new Error('Deletion failed.');
+            }
+        })
+        .then(data => {
+            // For example, you could flash a message (or use data.flash_message)
+            // and then reload the page to update the list:
+            window.location.reload();
+        })
+        .catch(error => {
+            //console.error('Error deleting location:', error);
+            //alert('Failed to delete location.');
+            // For now, the error message is being flashed when the page reloads.
+            window.location.reload();
+        });
+
+        // Close the modal immediately.
+        deleteModal.close();
+    }
+</script>
 {% endblock %}

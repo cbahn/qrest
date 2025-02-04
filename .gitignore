@@ -8,6 +8,7 @@ secrets/
 
 # uploaded files
 marino/static/uploads/
+marino/static/uploads/*
 
 # Config file
 hello/config.py

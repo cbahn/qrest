@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/x-icon"
-      href="{{ url_for('static',filename='favicon.ico') }}">    
+      href="{{ url_for('static',filename='favicon.png') }}">    
     <title>QRest</title>
     <link rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.sand.min.css">
@@ -19,7 +19,7 @@
     <header class="container">
         <nav>
             <ul>
-                <li><strong><a href="example.com">QRest</a></strong></li>
+                <li><strong><a href="{{ url_for('menu_bp_x.index')}}">QRest</a></strong></li>
             </ul>
             <ul>
                 <li><a href="{{ url_for('menu_bp_x.settings') }}">Settings</a></li>
