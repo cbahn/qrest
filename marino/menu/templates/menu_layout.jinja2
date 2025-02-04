@@ -25,7 +25,7 @@
                 <li><a href="{{ url_for('menu_bp_x.settings') }}">Settings</a></li>
                 <li><a href="{{ url_for('menu_bp_x.locations') }}">Locations</a></li>
                 <li><a href="{{ url_for('menu_bp_x.leaderboard') }}">Leaderboard</a></li>
-                {% if True %}
+                {% if g.user.admin %}
                 <li><a class="admin-interface" href="{{url_for('admin_bp_x.admin') }}">Admin</a></li>
                 {% endif %}
             </ul>

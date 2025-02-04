@@ -65,10 +65,18 @@ def new_location(loc_code):
 
 @registration_bp.route('/location/<loc_slug>', methods=['GET'])
 def location(loc_slug):
+    # TODO the page should indicate if it's just discovered or
+    # if it's been solved. Also, the way admins access the page
+    # should be improved. And I think it makes sense to have a separate
+    # 404 page and undiscovered page.
+
     loc = LocationsDB.lookup(Location(slug=loc_slug))
     if loc is None:
         return render_template('unvisited_location.jinja2')
     
+    if g.user.admin:
+        return render_template('location.jinja2', loc=loc)
+
     # Don't allow a user to view the page unless they've already visited
     print(f"userID = {g.user.userID}, locationID={loc.locationID}")
     if not LocationsDB.check_visit(userID=g.user.userID, locationID=loc.locationID):

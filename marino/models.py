@@ -7,6 +7,7 @@ class User:
     sessionID: str = None
     role: str = None
     fingerprint: str = None
+    admin: None | bool = None
 
     def to_dict(self):
         return {k: v for k, v in asdict(self).items() if v is not None}

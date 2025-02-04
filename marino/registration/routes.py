@@ -65,7 +65,7 @@ def new_login():
     # Redirect them to the URL they tried to access when they got a
     #  'logged out' error message.
     response = redirect(
-        session.get('desired_url',url_for('registration_bp_x.login_test')),
+        session.get('desired_url',url_for('menu_bp_x.index')),
         code=302
     )
     session.pop('desired_url', None) # removed desired_url from the session

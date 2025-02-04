@@ -67,12 +67,16 @@ class UsersDB:
         "friendlyName": 1,
         "role": 1,
         "fingerprint": 1,
+        "admin": 1,
         "_id": 0,
     }
 
     def create(user: User) -> dict:
 
         new_user_record = user.to_dict()
+
+        # All users are created as non-admins by default
+        new_user_record['admin'] = False
 
         with mongo.start_session() as session:
             with session.start_transaction():
