@@ -8,3 +8,4 @@ class Config(object):
     MONGO_DB_NAME = 'exampledb'
 
     COOKIE_NAME = 'qrest_session'
+    ALLOW_SIGNUPS = False #TODO this is only for testing

@@ -77,11 +77,15 @@ def new_login():
 def signup():
     return render_template(
         'signup.jinja2',
-        localStorageData = Util.generate_new_localStorageData()
+        localStorageData = Util.generate_new_localStorageData(),
+        allow_signups = Config.ALLOW_SIGNUPS, #TODO this is only for testing
     )
 
 @registration_bp.route('/newuser',methods=['POST'])
 def newuser():
+    if not Config.ALLOW_SIGNUPS: #TODO this is only for testing
+        flash("Signups are currently disabled.", 'error')
+        return redirect(url_for('registration_bp_x.login'))
 
     new_username = str(request.form.get('new_username'))
     new_fingerprint = str(request.form.get('userdata'))

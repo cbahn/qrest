@@ -99,3 +99,12 @@ dialog.closing {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+.title-gradient {
+    padding-bottom: 8px;
+    background: rgb(195,129,54);
+    background: linear-gradient(152deg, rgba(195,129,54,1) 0%, rgba(139,139,120,1) 64%, rgba(139,139,120,1) 100%); 
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

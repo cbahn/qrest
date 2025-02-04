@@ -7,21 +7,19 @@
     <table>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Location ID</th>
+          <th style="padding-left:0px;">Name</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for loc in locations %}
         <tr>
-          <td>
+          <td style="padding-left:0px;">
             <img src="{{ url_for('static', filename='uploads/' ~ loc.imageFile) }}"
                  alt="{{ loc.fullName }} thumbnail"
                  style="width:40px; height:auto; margin-right:8px; vertical-align:middle;">
             <a href="{{ url_for('location_bp_x.location', loc_slug=loc.slug) }}">{{ loc.fullName }}</a>
           </td>
-          <td><span class="fixed-width-text">{{ loc.locationID }}</span></td>
           <td>
             <!-- The delete button: note the data-delete-url attribute -->
             <button type="button"

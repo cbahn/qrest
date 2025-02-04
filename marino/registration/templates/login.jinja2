@@ -13,10 +13,8 @@
 <body>
 <!-- Main Content -->
 <main class="container">
+    {% include "_flash.jinja2" %}    
     <h1>Log in</h1>
-
-    <!-- Flashed Messages -->
-    {% include "_flash.jinja2" %}
 
     <form action="{{url_for('registration_bp_x.new_login')}}" method="POST">
         <input type="text" name="userID" placeholder="Enter your login code" required>

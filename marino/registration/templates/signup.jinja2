@@ -3,6 +3,7 @@
 {% block content %}
 <main class="container">
     <h1>Welcome</h1>
+    {% if allow_signups %}
     <p>Pick a name to save your progress and start your adventure.</p>
     
     <form id='new_user_form' action="{{ url_for('registration_bp_x.newuser') }}" method="POST">
@@ -13,6 +14,9 @@
         {% include "_flash.jinja2" %}
         <button type="submit" id="submitBtn" disabled>Create Account</button>
     </form>
+    {% else %}
+    <p>Sorry, new accounts are not currently being accepted.</p>
+    {% endif %}
     <br>
     <a class="secondary" href="{{ url_for('registration_bp_x.login')}}">I already have an account</a>
 </main>
