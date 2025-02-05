@@ -2,18 +2,42 @@
 
 {% block content %}
 <!-- Main Content -->
-<main class="container">
     <section id="home">
+      <span class="tag tag-undiscovered">Discovered</span>
         <h1>{{ loc.fullName }}</h1>
+        
+        <style>
+
+        .tag {
+          padding: 3px 8px;
+          font-size: 0.75rem;
+          border-radius: 5px 0 0 0;
+        }
+
+        .tag-undiscovered {
+          background-color: gray;
+          color: white;
+        }
+
+        .tag-silver {
+          background-color: silver;
+          color: black;
+        }
+
+        .tag-gold {
+          background-color: gold;
+          color: black;
+        }
+        </style>
+
+
         <img src="{{ url_for('static',filename='uploads/' + loc.imageFile) }}">
         
     </section>
     <section id="details">
         <p>{{ loc.description}} </p>
         <article>
-            <header>Puzzle</header>
-            {{ loc.puzzleText }}
-            <footer>
+            <header>{{ loc.puzzleText }}</header>
                 <form id="puzzle-form">
                     <fieldset role="group">
                     <input
@@ -29,14 +53,13 @@
                     <input type="submit" value="Submit" />
                     </fieldset>
                 </form>
-            </footer>
+                <footer>feedback</footer>
         </article>
         <article>
         <header>Feedback on Puzzle Answer</header>
         <div id="feedback" aria-live="polite">-</div>
         </article>
     </section>
-</main>
 {% endblock %}
 
 {% block scripts %}
