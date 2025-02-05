@@ -90,7 +90,7 @@ dialog.closing {
     the admin settings */
 
 .admin-interface {
-    color: #8766F0;
+    color: #588FE9;
 }
 
 .admin-interface-gradient {
@@ -100,10 +100,13 @@ dialog.closing {
     -webkit-text-fill-color: transparent;
 }
 
-.title-gradient {
+/* TODO: This itroduces a pretty warm feeling to the UI. I should add to that */
+.title-gradient { 
     padding-bottom: 8px;
-    background: rgb(195,129,54);
-    background: linear-gradient(152deg, rgba(195,129,54,1) 0%, rgba(139,139,120,1) 64%, rgba(139,139,120,1) 100%); 
+    background: #FDC830;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #F37335, #FDC830);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #F37335, #FDC830); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
