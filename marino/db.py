@@ -112,7 +112,7 @@ class LocationsDB:
         "fullName": 1,
         "slug": 1,
         "imageFile": 1,
-        "descripton": 1,
+        "description": 1,
         "puzzleText": 1,
         "puzzleAnswer": 1,
         "_id": 0,
