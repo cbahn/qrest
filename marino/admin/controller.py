@@ -1,6 +1,6 @@
 from marino.models import Location
 from marino.db import LocationsDB
-from flask import request, Request
+from flask import Request
 import re
 import os
 

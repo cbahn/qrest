@@ -1,5 +1,4 @@
 from marino.db import UsersDB, LocationsDB
-from marino.util import Util
 from marino.models import User
 from collections import Counter
 

@@ -1,11 +1,5 @@
 # Utilites functions used by app.py
 import random
-from html import escape # this is being used for bebugging
-import qrcode
-import io
-import base64
-
-
 
 class Util(object):
 
@@ -44,29 +38,6 @@ class Util(object):
         words = random.sample(Util.wordlist, 3)
         return f"{words[0]}-{words[1]}-{words[2]}"
 
-    def generate_qr_code(data):
-        """
-        generate_qr_code creates a qr code image
-        :param data: a string you want encoded
-        :return: returns a base64 encoded PNG image to be used in a webpage.
-        Example using usage: <img src="data:image/png;base64,{{ generate_qr_code(data) }}">
-        """
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=8,
-            border=4,
-        )
-        qr.add_data(data)
-        qr.make(fit=True)
-
-        img = qr.make_image(fill="black", back_color="white")
-        buffer = io.BytesIO()
-        img.save(buffer, format="PNG")
-        buffer.seek(0)
-        img_base64 = base64.b64encode(buffer.read()).decode('utf-8')
-        return img_base64
-    
     def sanitize(data):
         # I am having trouble finding documentation related to what type of input
         #  sanitation is needed for pymongo queries. I'll do a basic character

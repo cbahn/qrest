@@ -4,7 +4,6 @@ from marino.models import User, Location
 from marino.db import UsersDB, LocationsDB
 from marino.config import Config
 import re
-from functools import wraps
 
 def check_login():
     cookie = request.cookies.get(Config.COOKIE_NAME)
