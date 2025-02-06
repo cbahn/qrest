@@ -11,7 +11,8 @@ marino/static/uploads/
 marino/static/uploads/*
 
 # Config file
-marino/config.py
+# Commented out. I'm putting secrets in environment variables instead.
+# marino/config.py
 
 # Pytest
 .pytest_cache/

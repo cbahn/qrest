@@ -1,8 +1,6 @@
 from marino.db import UsersDB, LocationsDB
 from marino.util import Util
 from marino.models import User
-from typing_extensions import Annotated
-import tabulate
 from collections import Counter
 
 def generate_leaderboard_data():

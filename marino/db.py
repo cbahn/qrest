@@ -3,7 +3,6 @@ from flask import current_app, g
 from werkzeug.local import LocalProxy
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-import os
 import datetime
 #from pymongo.errors import DuplicateKeyError, OperationFailure
 
@@ -19,23 +18,12 @@ def get_client():
     if mongo is None:
         # Get configuration from Flask app
         mongo_uri = current_app.config.get("MONGO_URI")
-        mongo_cert_path = current_app.config.get("MONGO_CERT_PATH")
 
         if not mongo_uri:
             raise RuntimeError("MONGO_URI is not set in the Flask configuration")
-        if not mongo_cert_path:
-            raise RuntimeError("MONGO_CERT_PATH is not set in the Flask configuration")
 
-        # Throw an exception if the cert file is missing
-        if not os.path.isfile(mongo_cert_path):
-            raise FileNotFoundError(f"Certificate file '{mongo_cert_path}' does not exist.")
-
-        # Initialize the MongoClient with TLS options
-        mongo = g._database_client = MongoClient(
-            mongo_uri,
-            tls=True,
-            tlsCertificateKeyFile=mongo_cert_path
-        )
+        # Initialize the MongoClient
+        mongo = g._database_client = MongoClient(mongo_uri)
     return mongo
 
 def get_db():

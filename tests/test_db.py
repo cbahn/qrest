@@ -31,6 +31,7 @@ def test_connection_to_real_database(app):
     and retrieve data from the one document there
     """
     test_doc = TestingDB.connection_test()
+    assert test_doc is not None
     assert test_doc['testString'] == "Welcome Home John"
 
 def test_create_user(app, db):

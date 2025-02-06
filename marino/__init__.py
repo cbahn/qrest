@@ -1,6 +1,7 @@
 
 from flask import Flask, render_template
 from .config import Config
+import os
 
 def create_app():
     app = Flask(__name__, instance_relative_config=False)
@@ -10,8 +11,7 @@ def create_app():
 
     app.config['SECRET_KEY'] = Config.SECRET_KEY
 
-    app.config['MONGO_URI'] = Config.MONGO_URI
-    app.config['MONGO_CERT_PATH'] = Config.MONGO_CERT_PATH
+    app.config['MONGO_URI'] = os.getenv('MONGO_URI')
     app.config['MONGO_DB_NAME'] = Config.MONGO_DB_NAME
 
     with app.app_context():
