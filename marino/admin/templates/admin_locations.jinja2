@@ -9,6 +9,7 @@
         <tr>
           <th style="padding-left:0px;">Name</th>
           <th>Actions</th>
+          <th>Change Discovery Status</th>
         </tr>
       </thead>
       <tbody>
@@ -28,14 +29,24 @@
               Delete
             </button>
           </td>
+          <td>
+          
+          <details class="dropdown">
+              <summary></summary>
+              <ul>
+                  <li><a href="#" class="change-status" data-status="undiscovered" data-loc-id="{{ loc.locationID }}">Undiscovered</a></li>
+                  <li><a href="#" class="change-status" data-status="discovered" data-loc-id="{{ loc.locationID }}">Discovered</a></li>
+                  <li><a href="#" class="change-status" data-status="solved" data-loc-id="{{ loc.locationID }}">Solved</a></li>
+              </ul>
+          </details>
+          
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </section>
 </main>
-
-
 
 
 <!-- Delete Confirmation Modal -->
@@ -120,5 +131,48 @@
     // Close the modal immediately.
     deleteModal.close();
   }
+
+  // Calls the change status endpoint when a visit status is clicked
+  document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".change-status").forEach(function (item) {
+          item.addEventListener("click", function (event) {
+              event.preventDefault(); // Prevent default link behavior
+
+              const locationID = this.getAttribute("data-loc-id");
+              const newStatus = this.getAttribute("data-status");
+
+              // Send a POST request to update the status
+              fetch("/admin/change_discovery_status", {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json",
+                      "X-Requested-With": "XMLHttpRequest",
+                  },
+                  body: JSON.stringify({
+                      locationID: locationID,
+                      status: newStatus,
+                  }),
+              })
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error("Failed to update status.");
+                  }
+                  return response.json();
+              })
+              .then(data => {
+                  console.log("Status updated:", data);
+                  setTimeout(() => {
+                      location.reload();
+                  }, 3000); // Reload the page after 3 seconds
+              })
+              .catch(error => {
+                  console.error("Error updating status:", error);
+              });
+          });
+      });
+  });
+
+
+
 </script>
 {% endblock %}

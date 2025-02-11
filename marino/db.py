@@ -230,6 +230,29 @@ class LocationsDB:
                 # Any other case, no update is needed
                 return False
     
+    def change_discovery_status(userID: str, locationID: str, new_status: str):
+        if new_status not in ['undiscovered', 'discovered', 'solved']:
+            raise ValueError(f"'{new_status}' is not a valid discovery status")
+
+        visit_data = {
+            "userID": userID,
+            "locationID": locationID
+        }
+        
+        existing_visit = db.visits.find_one(visit_data)
+        
+        if existing_visit is None:
+            # Create a new visit record
+            visit_data['timestamp'] = datetime.datetime.now(tz=ZoneInfo("UTC"))
+            visit_data['visit_type'] = new_status
+            db.visits.insert_one(visit_data)
+        else:
+            # Update the existing visit record
+            db.visits.update_one(
+                visit_data,
+                {'$set': {'visit_type': new_status}}
+            )
+
     def get_all_visits():
         """Retrieve all {name, location, visit_type} entires sorted by timestamp."""
         cursor = db.visits.find({}, {

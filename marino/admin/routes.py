@@ -151,3 +151,13 @@ def deduct_coins():
         return jsonify({"error": str(e)}), 400
 
     return jsonify({'success':True,"new_coin_count": new_coin_count}), 200
+
+@registration_bp.route("/admin/change_discovery_status", methods=["POST"])
+def change_discovery_status():
+    data = request.get_json()
+    locationID = data.get("locationID")
+    new_status = data.get("status")
+
+    LocationsDB.change_discovery_status(g.user.userID, locationID, new_status)
+
+    return jsonify({"success": True, "new_status": new_status})
