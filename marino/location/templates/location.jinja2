@@ -3,41 +3,47 @@
 {% block content %}
 <!-- Main Content -->
     <section id="home">
-      <span class="tag tag-undiscovered">Discovered</span>
-        <h1>{{ loc.fullName }}</h1>
-        
-        <style>
+      {% if visit_status == "discovered" %}
+        <span class="tag tag-discovered">Discovered</span>
+      {% elif visit_status == "solved" %}
+        <span class="tag tag-solved">Solved</span>
+      {% else %}
+        <span class="tag tag-undiscovered">Undiscovered</span>
+      {% endif %}
+      <h1>{{ loc.fullName }}</h1>
+      <style>
 
-        .tag {
-          padding: 3px 8px;
-          font-size: 0.75rem;
-          border-radius: 5px 0 0 0;
-        }
+      .tag {
+        padding: 3px 8px;
+        font-size: 0.75rem;
+        border-radius: 5px 0 0 0;
+      }
 
-        .tag-undiscovered {
-          background-color: gray;
-          color: white;
-        }
+      .tag-undiscovered {
+        background-color: gray;
+        color: white;
+      }
 
-        .tag-silver {
-          background-color: silver;
-          color: black;
-        }
+      .tag-discovered {
+        background-color: silver;
+        color: black;
+      }
 
-        .tag-gold {
-          background-color: gold;
-          color: black;
-        }
-        </style>
+      .tag-solved {
+        background-color: gold;
+        color: black;
+      }
+      </style>
 
 
-        <img src="{{ url_for('static',filename='uploads/' + loc.imageFile) }}">
+      <img src="{{ url_for('static',filename='uploads/' + loc.imageFile) }}">
         
     </section>
     <section id="details">
         <p>{{ loc.description}} </p>
         <article>
             <header>{{ loc.puzzleText }}</header>
+              {% if visit_status == 'discovered' %}
                 <form id="puzzle-form">
                     <fieldset role="group">
                     <input
@@ -54,6 +60,12 @@
                     </fieldset>
                 </form>
                 <footer>feedback</footer>
+              {% elif visit_status == 'solved' %}
+                <input type="text" id="login-code" name="text" class="big-login-code-display" value="******" aria-label="Read-only input" readonly >
+                <input id="reveal-login-code" name="reveal" type="checkbox" role="switch" />
+                Reveal
+              {% endif %}
+
         </article>
         <article>
         <header>Feedback on Puzzle Answer</header>
@@ -64,6 +76,16 @@
 
 {% block scripts %}
 <script>
+// JavaScript to handle the reveal-login-code toggle switch
+document.getElementById("reveal-login-code").addEventListener("change", function() {
+    const inputField = document.getElementById("login-code");
+    if (this.checked) {
+        inputField.value = "{{ loc.puzzleAnswer }}";
+    } else {
+        inputField.value = "******";
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('puzzle-form');
   const feedbackEl = document.getElementById('feedback');

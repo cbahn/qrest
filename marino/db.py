@@ -186,13 +186,15 @@ class LocationsDB:
         else:
             return False # Unknown failure
 
-    def check_visit(userID: str, locationID: str) -> bool:
+    def check_visit(userID: str, locationID: str) -> str:
         visit_data = {
             "userID": userID,
             "locationID": locationID
         }
         visit_found = db.visits.find_one(visit_data)
-        return visit_found is not None
+        if visit_found is None:
+            return 'undiscovered'
+        return visit_found['visit_type']
     
     def record_visit(userID: str, locationID: str, visit_type: str) -> bool:
         """ 

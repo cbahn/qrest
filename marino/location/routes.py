@@ -55,24 +55,19 @@ def new_location(loc_code):
 
 @registration_bp.route('/location/<loc_slug>', methods=['GET'])
 def location(loc_slug):
-    # TODO the page should indicate if it's just discovered or
-    # if it's been solved. Also, the way admins access the page
-    # should be improved. And I think it makes sense to have a separate
-    # 404 page and undiscovered page.
-
+    
     loc = LocationsDB.lookup(Location(slug=loc_slug))
     if loc is None:
-        return render_template('unvisited_location.jinja2')
-    
-    if g.user.admin:
-        return render_template('location.jinja2', loc=loc)
+        return render_template('undiscovered_location.jinja2')
 
-    # Don't allow a user to view the page unless they've already visited
-    print(f"userID = {g.user.userID}, locationID={loc.locationID}")
-    if not LocationsDB.check_visit(userID=g.user.userID, locationID=loc.locationID):
-        return render_template('unvisited_location.jinja2')
+    visit_status = LocationsDB.check_visit(userID=g.user.userID, locationID=loc.locationID)
     
-    return render_template('location.jinja2', loc=loc)
+    # Users can't visit an undiscovered location unless they're an admin
+    if visit_status == 'undiscovered' and not g.user.admin:
+        return render_template('undiscovered_location.jinja2')
+    
+    print(f"visit_status={visit_status}")
+    return render_template('location.jinja2', loc=loc, visit_status=visit_status)
 
 @registration_bp.route('/location/validate_guess', methods=['POST'])
 def validate_guess():
@@ -96,10 +91,11 @@ def validate_guess():
         return jsonify(youre='fucked') #TODO make good
 
     # A user can't guess on a location they haven't discovered
-    if not LocationsDB.check_visit(
+    visit_status = LocationsDB.check_visit(
         userID=g.user.userID,
-        locationID=loc.locationID
-        ):
+        locationID=loc.locationID)
+    
+    if visit_status == 'undiscovered':
         return jsonify(youhavenot='visited') # TODO make good
 
     # Example: Let's assume the correct answer is "london"
