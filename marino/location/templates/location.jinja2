@@ -45,8 +45,9 @@
             <header>{{ loc.puzzleText }}</header>
               {% if visit_status == 'discovered' %}
                 <form id="puzzle-form">
-                    <fieldset role="group">
+                    <fieldset style="margin-bottom:0px;" role="group">
                     <input
+                      id="guess_input"
                       type="text"
                       name="guess"
                       placeholder="Enter your guess..."
@@ -59,23 +60,19 @@
                     <input type="submit" value="Submit" />
                     </fieldset>
                 </form>
-                <footer>feedback</footer>
+                <footer id="feedback" aria-live="polite"></footer>
               {% elif visit_status == 'solved' %}
                 <input type="text" id="login-code" name="text" class="big-login-code-display" value="******" aria-label="Read-only input" readonly >
                 <input id="reveal-login-code" name="reveal" type="checkbox" role="switch" />
                 Reveal
               {% endif %}
-
-        </article>
-        <article>
-        <header>Feedback on Puzzle Answer</header>
-        <div id="feedback" aria-live="polite">-</div>
         </article>
     </section>
 {% endblock %}
 
 {% block scripts %}
 <script>
+{% if visit_status == 'solved' %}
 // JavaScript to handle the reveal-login-code toggle switch
 document.getElementById("reveal-login-code").addEventListener("change", function() {
     const inputField = document.getElementById("login-code");
@@ -85,10 +82,13 @@ document.getElementById("reveal-login-code").addEventListener("change", function
         inputField.value = "******";
     }
 });
+{% endif %}
 
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('puzzle-form');
   const feedbackEl = document.getElementById('feedback');
+  const guessInput = document.getElementById('guess_input');
+
 
   form.addEventListener('submit', function (event) {
     event.preventDefault();
@@ -111,13 +111,22 @@ document.addEventListener('DOMContentLoaded', function () {
       return response.json();
     })
     .then(data => {
-      // Expecting the JSON response to include a key like "correct"
+      
+      guessInput.value = '';
       if (data.correct) {
         feedbackEl.textContent = "Correct!";
         feedbackEl.style.color = "green";
-      } else {
-        feedbackEl.textContent = "Wrong answer. Try again.";
+
+        // Reload the page after 7/10 of a second.
+        setTimeout(function() {
+            location.reload();
+        }, 700);
+      } elif (data.error) {
+        feedbackEl.textContent = data.error;
         feedbackEl.style.color = "red";
+      } else {
+        feedbackEl.textContent = "[" + data.guess + "] is not correct. Try again.";
+        feedbackEl.style.color = "#b7612e";
       }
     })
     .catch(error => {

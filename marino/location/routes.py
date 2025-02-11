@@ -78,7 +78,7 @@ def validate_guess():
     # Strip everything except alphanumeric and make lowercase
     allowed_chars = "a-zA-Z0-9"
     user_guess = re.sub(f"[^{allowed_chars}]", "", user_guess)
-    user_guess.lower()
+    user_guess = user_guess.lower()
 
     # Also strip the slug, just for safety
     allowed_chars = "a-z0-9-"
@@ -88,7 +88,7 @@ def validate_guess():
     # Should I do this differently?
     loc = LocationsDB.lookup(Location(slug=slug))
     if loc is None:
-        return jsonify(youre='fucked') #TODO make good
+        return jsonify(error='ERROR: Location not found')
 
     # A user can't guess on a location they haven't discovered
     visit_status = LocationsDB.check_visit(
@@ -96,10 +96,8 @@ def validate_guess():
         locationID=loc.locationID)
     
     if visit_status == 'undiscovered':
-        return jsonify(youhavenot='visited') # TODO make good
+        return jsonify(error="You can't guess at a location you have not visited")
 
-    # Example: Let's assume the correct answer is "london"
-    print(f"userguess: {user_guess}, answer={loc.puzzleAnswer}")
     is_correct = (user_guess == loc.puzzleAnswer)
     if is_correct:
         LocationsDB.record_visit(
@@ -109,4 +107,4 @@ def validate_guess():
         )
     
     # Return the JSON response with the validation result
-    return jsonify(correct=is_correct)
+    return jsonify(correct=is_correct, guess=user_guess)
