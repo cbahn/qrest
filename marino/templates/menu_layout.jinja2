@@ -25,10 +25,10 @@
           <nav>
           <ul></ul>
             <ul>
-                <li><a href="{{ url_for('menu_bp_x.settings') }}">Settings</a></li>
-                <li><a href="{{ url_for('menu_bp_x.locations') }}">Locations</a></li>
-                <li><a href="{{ url_for('menu_bp_x.leaderboard') }}">Leaderboard</a></li>
-                <li><a href="{{ url_for('menu_bp_x.gackcoin') }}">GACKcoin</a></li>
+                <li><a class="normal-interface" href="{{ url_for('menu_bp_x.settings') }}">Settings</a></li>
+                <li><a class="normal-interface" href="{{ url_for('menu_bp_x.locations') }}">Locations</a></li>
+                <li><a class="normal-interface" href="{{ url_for('menu_bp_x.leaderboard') }}">Leaderboard</a></li>
+                <li><a class="normal-interface" href="{{ url_for('menu_bp_x.gackcoin') }}">GACKcoin</a></li>
             </ul>
         </nav>
         {% if g.user.admin %}

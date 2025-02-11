@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, request, current_app, g, flash, send_file
 from flask import redirect, url_for, session
 from marino.config import Config
-from marino.db import UsersDB
+from marino.db import UsersDB, LocationsDB
 from marino.models import User
-from .controller import generate_leaderboard_data
+from .controller import generate_leaderboard_data, all_locations_visited_by_user
 import qrcode
 import io
 
@@ -50,7 +50,7 @@ def create_qr(ephemeralID):
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=10,
-        border=3,
+        border=1,
     )
     qr.add_data(f"{current_app.config['PREFERRED_URL_SCHEME']}://{request.host}/e/{ephemeralID}")
     qr.make(fit=True)
@@ -82,7 +82,8 @@ def leaderboard():
 
 @registration_bp.route('/locations', methods=['GET'])
 def locations():
-    return render_template('locations.jinja2')
+    return render_template('locations.jinja2',
+        locations=all_locations_visited_by_user(g.user.userID))
 
 @registration_bp.route('/gackcoin', methods=['GET'])
 def gackcoin():

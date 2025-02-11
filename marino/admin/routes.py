@@ -76,17 +76,6 @@ def admin_locations():
     all_locs = LocationsDB.get_all_locations()
     return render_template('admin_locations.jinja2',locations=all_locs)
 
-@registration_bp.route('/admin/gallery', methods=['GET'])
-def gallery(): #TODO remove this
-    # List all images in the upload folder
-    files = os.listdir(os.path.join(current_app.root_path, 'static', 'uploads'))
-    images = [f for f in files]
-    # Generate HTML to display each image
-    images_html = ''.join(
-        f'<img src="/static/uploads/{img}" style="width:200px; margin:10px;">'
-        for img in images
-    )
-    return render_template('gallery.jinja2', images_html=images_html)
 
 @registration_bp.route('/location/<loc_slug>', methods=['DELETE'])
 def delete_location(loc_slug):

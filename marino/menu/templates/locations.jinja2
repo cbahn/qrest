@@ -1,35 +1,33 @@
 {% extends "menu_layout.jinja2" %}
 
 {% block content %}
-<!-- Main Content -->
 <main class="container">
   <section id="home">
-    <h1 class="title-gradient">Locations</h1>
-
-    {% if locations %}
-    <table role="grid">
+    <h1 class="title-gradient">Discovered Locations</h1>
+    <table>
       <thead>
         <tr>
-          <th>Name</th>
+          <th style="padding-left:0px;">Name</th>
           <th>Status</th>
         </tr>
       </thead>
       <tbody>
-        {% for loc in locations %}
+        {% for visit in locations %}
         <tr>
-          <td>
-            <a href="{{ url_for('loc_info',loc_slug = loc.slug) }}">
-              {{ loc.friendlyName }}
-            </a>
+          <td style="padding-left:0px;">
+            <img src="{{ url_for('static', filename='uploads/' ~ visit.loc.imageFile) }}"
+                 alt="{{ visit.loc.imageFile }} missing"
+                 style="width:40px; height:auto; margin-right:8px; vertical-align:middle;">
+            <a href="{{ url_for('location_bp_x.location', loc_slug=visit.loc.slug) }}">{{ visit.loc.fullName }}</a>
           </td>
-          <td>Discovered</td>
+          <td>
+            {{ visit.visit_type }}
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-    {% else %}
-    <p>This page doesn't work yet 😞.</p>
-    {% endif %}
   </section>
 </main>
+
 {% endblock %}

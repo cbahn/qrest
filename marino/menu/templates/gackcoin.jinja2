@@ -3,15 +3,33 @@
 {% block content %}
 <!-- Main Content -->
 <main class="container">
-    <h1 class="title-gradient">GACKcoin</h1>
-    <article>
-        <header><strong>View Login Code<strong></header>
-        <p>Remember to screenshot or write this down. You'll need it if you get logged out.</p>
-        <input type="text" id="login-code" name="text" class="big-login-code-display" value="{{ '*' * user.userID|length }}" aria-label="Read-only input" readonly >
-        <input id="reveal-login-code" name="reveal" type="checkbox" role="switch" />
-        Reveal Login Code
-    </article>
+    <h1 class="title-gradient">You have <span class="fixed-width-text">1</span> Gackcoin</h1>
+    <p>You can exchange for physical GACKcoin so you can vote in the choose your own adventure game. <span style="color:#232a38;">Or use it to bribe people.</span></p>
+    <p>Show the below QR code to Grayson, Ariel, Carl, or Kat.</p>
 
+    <div class="circle-container">
+        <img src="http://127.0.0.1:5000/qr/beer" alt="Example Image">
+    </div>
 </main>
 
+<style>
+    /* The container circle dimensions are calculated so that the image's corners
+       (rotated 45deg) just touch its edge. For a 150px square, the circle's diameter 
+       should be about 150px * sqrt(2) ≈ 212px. */
+    .circle-container {
+        width: 282px;
+        height: 282px;
+        border-radius: 50%;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 20px auto; /* centers the circle horizontally */
+    }
+    .circle-container img {
+        width: 200px;
+        height: 200px;
+        transform: rotate(225deg);
+    }
+</style>
 {% endblock %}

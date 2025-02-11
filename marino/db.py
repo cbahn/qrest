@@ -104,7 +104,7 @@ class UsersDB:
         """
         # Create history entry
         new_entry = {
-            "timestamp": datetime.datetime.now(tz=ZoneInfo("America/Chicago")),
+            "timestamp": datetime.datetime.now(tz=ZoneInfo("UTC")),
             "cause": cause,
             "coin_delta": coin_delta
         }
@@ -172,6 +172,9 @@ class LocationsDB:
         return None
     
     def get_all_locations():
+        """
+        Returns a list of all locations in the database.
+        """
         all_locs = db.locations.find({}, LocationsDB.FULL_PROJECTION)
         return [Location(**loc) for loc in all_locs]
 
@@ -210,7 +213,7 @@ class LocationsDB:
                 
                 if existing_visit is None:
                     # Log the visit for the first time
-                    visit_data['timestamp'] = datetime.datetime.now(tzinfo=ZoneInfo("America/Chicago"))
+                    visit_data['timestamp'] = datetime.datetime.now(tz=ZoneInfo("UTC"))
                     visit_data['visit_type'] = visit_type
                     db.visits.insert_one(visit_data)
                     return True
@@ -226,8 +229,14 @@ class LocationsDB:
                 return False
     
     def get_all_visits():
-        """Retrieve all (name, location) pairs sorted by timestamp."""
-        cursor = db.visits.find({}, {"userID": 1, "locationID": 1, "timestamp": 1, "_id":0}).sort("timestamp", 1)
+        """Retrieve all {name, location, visit_type} entires sorted by timestamp."""
+        cursor = db.visits.find({}, {
+            "userID": 1,
+            "locationID": 1,
+            "timestamp": 1,
+            "visit_type": 1,
+            "_id":0
+            }).sort("timestamp", 1)
         
-        # Extract and return list of (name, location) tuples
-        return [{"userID":doc["userID"], "locationID":doc["locationID"]} for doc in cursor]
+        # Extract and return list of (name, location, visit_type) dictionaries
+        return [{"userID":doc["userID"], "locationID":doc["locationID"], "visit_type":doc["visit_type"]} for doc in cursor]

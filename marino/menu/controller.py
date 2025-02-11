@@ -19,3 +19,21 @@ def generate_leaderboard_data():
             i['friendlyName'] = "-- error --"
 
     return sorted(tallies, key=lambda x: -x["visit_count"])
+
+def all_locations_visited_by_user(userID: str):
+    locations = LocationsDB.get_all_locations()
+    all_visits = LocationsDB.get_all_visits()
+    user_visits = [visit for visit in all_visits if visit["userID"] == userID]
+    
+    location_map = {location.locationID: location for location in locations}
+    
+    results = []
+    for visit in user_visits:
+        location_id = visit.get('locationID')
+        # Only add if we can find the matching location object
+        if location_id in location_map:
+            results.append({
+                'loc': location_map[location_id],
+                'visit_type': visit.get('visit_type')
+            })
+    return results

@@ -79,11 +79,11 @@
 }
 
 dialog[open] {
-    animation: slideInFromAbove 0.5s ease forwards;
+    animation: slideInFromAbove 0.3s ease forwards;
 }
 
 dialog.closing {
-    animation: slideOutToAbove 0.5s ease forwards;
+    animation: slideOutToAbove 0.3s ease forwards;
 }
 
 /* This is to mark buttons or interfaces assocated with
@@ -100,12 +100,14 @@ dialog.closing {
     -webkit-text-fill-color: transparent;
 }
 
-/* TODO: This itroduces a pretty warm feeling to the UI. I should add to that */
+.normal-interface {
+    color: #e4bd3e;
+}
+
 .title-gradient { 
     padding-bottom: 8px;
     background: #FDC830;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #F37335, #FDC830);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #F37335, #FDC830); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(90deg, #F37335, #defd30); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     
     background-clip: text;
     -webkit-background-clip: text;
