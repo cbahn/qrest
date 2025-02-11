@@ -28,8 +28,8 @@ class Util(object):
     def generate_new_locationID():
         return 'L' + Util.generate_random_code(8)
     
-    def generate_new_glyphID():
-        return 'G' + Util.generate_random_code(8)
+    def generate_new_ephemeralID():
+        return 'E' + Util.generate_random_code(8)
     
     def generate_new_localStorageData():
         if Util.wordlist is None:

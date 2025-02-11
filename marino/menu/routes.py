@@ -1,9 +1,11 @@
-from flask import Blueprint, render_template, request, current_app, g, flash
+from flask import Blueprint, render_template, request, current_app, g, flash, send_file
 from flask import redirect, url_for, session
 from marino.config import Config
 from marino.db import UsersDB
 from marino.models import User
 from .controller import generate_leaderboard_data
+import qrcode
+import io
 
 def check_login():
     cookie = request.cookies.get(Config.COOKIE_NAME)
@@ -38,6 +40,30 @@ def index():
 @registration_bp.route('/settings', methods=['GET'])
 def settings():
     return render_template('settings.jinja2',user=g.user)
+
+@registration_bp.route('/qr/<ephemeralID>', methods=['GET'])
+def create_qr(ephemeralID):
+    """
+    Creates a qr code for <url>/e/<ephemeralID>
+    """
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=3,
+    )
+    qr.add_data(f"{current_app.config['PREFERRED_URL_SCHEME']}://{request.host}/e/{ephemeralID}")
+    qr.make(fit=True)
+    
+    # Create an image from the QR Code instance
+    img = qr.make_image(fill_color='black', back_color='white')
+    
+    # Save the image to a BytesIO object
+    img_io = io.BytesIO()
+    img.save(img_io, 'PNG')
+    img_io.seek(0)
+    
+    return send_file(img_io, mimetype='image/png')
 
 @registration_bp.route('/settings/logout', methods=['POST'])
 def logout():

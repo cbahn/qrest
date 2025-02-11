@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, current_app, g, flash
-from flask import redirect, url_for, session
+from flask import redirect, url_for, session, jsonify
 from marino.config import Config
 from marino.db import UsersDB, LocationsDB
 from marino.models import User, Location
@@ -117,3 +117,48 @@ def delete_location(loc_slug):
             return f"Error deleting file: {str(e)}", 500
     
     return redirect(url_for('admin_bp_x.admin_locations'))
+
+@registration_bp.route('/e/<ephemeralID>', methods=['GET'])
+def redirect_to_user(ephemeralID):
+    """
+    Redirects to the user associated with the ephemeralID
+    """
+   
+    user = UsersDB.lookup(User(ephemeralID=ephemeralID))
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+    return redirect(url_for('admin_bp_x.view_user', userID = user.userID), code=302)
+
+@registration_bp.route('/admin/user/<userID>', methods=['GET'])
+def view_user(userID):
+    """
+    Transfer a coin to another user
+    """
+    user = UsersDB.lookup(User(userID=userID))
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+
+    return render_template('view_user.jinja2', user=user)
+
+@registration_bp.route('/admin/deduct_coins', methods=['POST'])
+def deduct_coins():
+    """
+    Deduct coins from a user
+    """
+    data = request.get_json()
+    userID = data.get('userID')
+    amount_to_remove = int(data.get('coin_amount'))
+    if amount_to_remove <= 0:
+        return jsonify({"error": "coin_amount must be positive"}), 400
+
+    user = UsersDB.lookup(User(userID=userID))
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+
+    try:
+        new_coin_count = UsersDB.modify_coins(userID, -amount_to_remove,
+            f"Deducted by admin: {g.user.friendlyName}")
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+    return jsonify({'success':True,"new_coin_count": new_coin_count}), 200

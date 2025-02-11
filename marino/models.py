@@ -8,6 +8,8 @@ class User:
     role: str = None
     fingerprint: str = None
     admin: None | bool = None
+    ephemeralID: None | str = None
+    coins: None | int = None
 
     def to_dict(self):
         return {k: v for k, v in asdict(self).items() if v is not None}

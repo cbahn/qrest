@@ -3,13 +3,15 @@ flask==3.1.0
 pymongo==4.10.1
 pydantic==2.10.6
 
+qrcode==8.0
+pillow==11.1.0
 # I'm confused if any of these other imports are needed
 # jinja2==3.1.2
 # rjsmin==1.2.3
 # mako==1.1.4
 
-# sendgrid==6.0.5
-# webassets==2.0
+# This is only used during testing
+python-dotenv==1.0.1 
 
 # WSGI
 # This isn't needed for testing, but

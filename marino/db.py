@@ -4,6 +4,7 @@ from werkzeug.local import LocalProxy
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 import datetime
+from zoneinfo import ZoneInfo
 #from pymongo.errors import DuplicateKeyError, OperationFailure
 
 from .util import Util
@@ -56,6 +57,8 @@ class UsersDB:
         "role": 1,
         "fingerprint": 1,
         "admin": 1,
+        "ephemeralID": 1,
+        "coins": 1,
         "_id": 0,
     }
 
@@ -65,6 +68,9 @@ class UsersDB:
 
         # All users are created as non-admins by default
         new_user_record['admin'] = False
+
+        # All users are created with 0 coins by default
+        new_user_record['coins'] = 0
 
         with mongo.start_session() as session:
             with session.start_transaction():
@@ -86,12 +92,57 @@ class UsersDB:
             return User(**found_user)
         return None
 
+    def modify_coins(userID: str, coin_delta: int, cause: str) -> int:
+        """ 
+        Modify the coin count for the user with the given userID.
+        
+        Returns:
+            int: The updated coin count.
+
+        Raises:
+            ValueError: If the user is not found or if the new coin count would be negative.
+        """
+        # Create history entry
+        new_entry = {
+            "timestamp": datetime.datetime.now(tz=ZoneInfo("America/Chicago")),
+            "cause": cause,
+            "coin_delta": coin_delta
+        }
+
+        with mongo.start_session() as session:
+            with session.start_transaction():
+                user = db.users.find_one({"userID": userID})
+                if user is None:
+                    raise ValueError(f"User with userID '{userID}' not found")
+
+                new_coin_count = user.get('coins', 0) + coin_delta
+
+                if new_coin_count < 0:
+                    raise ValueError("Coin count cannot be negative")
+
+                # Update user document
+                db.users.update_one(
+                    {"userID": userID},
+                    {
+                        "$set": {"coins": new_coin_count},
+                        "$push": {"coinHistory": new_entry}
+                    }
+                )
+        return new_coin_count
+
     def cycleSessionID(userID: str) -> str:
         newSessionCode = Util.generate_session_code()
         db.users.update_one(
             {'userID':userID},
             {'$set': {'sessionID':newSessionCode}})
         return newSessionCode
+    
+    def cycleEphemeralID(userID: str) -> str:
+        newEphemeralID = Util.generate_ephemeralID()
+        db.users.update_one(
+            {'userID':userID},
+            {'$set': {'ephemeralID':newEphemeralID}})
+        return newEphemeralID
     
 class LocationsDB:
 
@@ -159,7 +210,7 @@ class LocationsDB:
                 
                 if existing_visit is None:
                     # Log the visit for the first time
-                    visit_data['timestamp'] = datetime.datetime.now(tz=datetime.timezone.utc)
+                    visit_data['timestamp'] = datetime.datetime.now(tzinfo=ZoneInfo("America/Chicago"))
                     visit_data['visit_type'] = visit_type
                     db.visits.insert_one(visit_data)
                     return True
