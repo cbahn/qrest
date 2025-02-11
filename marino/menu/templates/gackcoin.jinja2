@@ -1,0 +1,17 @@
+{% extends "menu_layout.jinja2" %}
+
+{% block content %}
+<!-- Main Content -->
+<main class="container">
+    <h1 class="title-gradient">GACKcoin</h1>
+    <article>
+        <header><strong>View Login Code<strong></header>
+        <p>Remember to screenshot or write this down. You'll need it if you get logged out.</p>
+        <input type="text" id="login-code" name="text" class="big-login-code-display" value="{{ '*' * user.userID|length }}" aria-label="Read-only input" readonly >
+        <input id="reveal-login-code" name="reveal" type="checkbox" role="switch" />
+        Reveal Login Code
+    </article>
+
+</main>
+
+{% endblock %}

@@ -83,3 +83,7 @@ def leaderboard():
 @registration_bp.route('/locations', methods=['GET'])
 def locations():
     return render_template('locations.jinja2')
+
+@registration_bp.route('/gackcoin', methods=['GET'])
+def gackcoin():
+    return render_template('gackcoin.jinja2', user=g.user)
