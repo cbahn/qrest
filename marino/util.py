@@ -29,7 +29,7 @@ class Util(object):
         return 'L' + Util.generate_random_code(8)
     
     def generate_new_ephemeralID():
-        return 'E' + Util.generate_random_code(8)
+        return 'E' + Util.generate_random_code(6)
     
     def generate_new_localStorageData():
         if Util.wordlist is None:

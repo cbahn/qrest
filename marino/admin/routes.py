@@ -116,10 +116,10 @@ def redirect_to_user(ephemeralID):
     user = UsersDB.lookup(User(ephemeralID=ephemeralID))
     if user is None:
         return jsonify({"error": "User not found"}), 404
-    return redirect(url_for('admin_bp_x.view_user', userID = user.userID), code=302)
+    return redirect(url_for('admin_bp_x.admin_view_user', userID = user.userID), code=302)
 
 @registration_bp.route('/admin/user/<userID>', methods=['GET'])
-def view_user(userID):
+def admin_view_user(userID):
     """
     Transfer a coin to another user
     """

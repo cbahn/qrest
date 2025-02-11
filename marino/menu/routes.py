@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, current_app, g, flash, send_file
-from flask import redirect, url_for, session
+from flask import redirect, url_for, session, jsonify
 from marino.config import Config
 from marino.db import UsersDB, LocationsDB
 from marino.models import User
@@ -87,4 +87,18 @@ def locations():
 
 @registration_bp.route('/gackcoin', methods=['GET'])
 def gackcoin():
-    return render_template('gackcoin.jinja2', user=g.user)
+    # Every pageload we cycle the ID. Not really necessary, but it's fun.
+    eID = UsersDB.cycleEphemeralID(g.user.userID)
+    return render_template('gackcoin.jinja2', eID=eID)
+
+@registration_bp.route('/get_coin_count', methods=['GET'])
+def get_coin_count():
+    return jsonify({'coin_count': g.user.coins})
+
+@registration_bp.route('/user/<friendly_name>', methods=['GET'])
+def user(friendly_name):
+    user = UsersDB.lookup(User(friendlyName=friendly_name))
+    if user is None:
+        flash('User not found.','error')
+        return redirect(url_for('menu_bp_x.index'), code=302)
+    return render_template('view_user.jinja2', me=g.user, them=user)

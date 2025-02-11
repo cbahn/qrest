@@ -138,7 +138,7 @@ class UsersDB:
         return newSessionCode
     
     def cycleEphemeralID(userID: str) -> str:
-        newEphemeralID = Util.generate_ephemeralID()
+        newEphemeralID = Util.generate_new_ephemeralID()
         db.users.update_one(
             {'userID':userID},
             {'$set': {'ephemeralID':newEphemeralID}})

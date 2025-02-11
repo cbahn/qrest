@@ -3,15 +3,14 @@
 {% block content %}
 <!-- Main Content -->
 <main class="container">
-    <h1 class="title-gradient">You have <span class="fixed-width-text">1</span> Gackcoin</h1>
+    <h1 class="title-gradient">You have <span id="coinCount" class="fixed-width-text">1</span> Gackcoin</h1>
     <p>You can exchange for physical GACKcoin so you can vote in the choose your own adventure game. <span style="color:#232a38;">Or use it to bribe people.</span></p>
     <p>Show the below QR code to Grayson, Ariel, Carl, or Kat.</p>
 
     <div class="circle-container">
-        <img src="http://127.0.0.1:5000/qr/beer" alt="Example Image">
+        <img src=" {{ url_for('menu_bp_x.create_qr', ephemeralID = eID) }}" alt="Example Image">
     </div>
 </main>
-
 <style>
     /* The container circle dimensions are calculated so that the image's corners
        (rotated 45deg) just touch its edge. For a 150px square, the circle's diameter 
@@ -32,4 +31,23 @@
         transform: rotate(225deg);
     }
 </style>
+
+<script>
+coinCount = document.getElementById('coinCount');
+function updateCoins() {
+    fetch('/get_coin_count') // Replace with your actual API route
+        .then(response => response.json())
+        .then(data => {
+            coinCount.textContent = data.coin_count;
+        })
+        .catch(error => console.error('Error fetching coin count:', error));
+}
+
+// update every 0.6 seconds
+// Hope this isn't a mistake
+setInterval(updateCoins, 600);
+
+
+
+</script>
 {% endblock %}
