@@ -89,7 +89,22 @@ def locations():
 def gackcoin():
     # Every pageload we cycle the ID. Not really necessary, but it's fun.
     eID = UsersDB.cycleEphemeralID(g.user.userID)
-    return render_template('gackcoin.jinja2', eID=eID)
+    return render_template('gackcoin.jinja2', eID=eID, user=g.user)
+
+@registration_bp.route('/e/<ephemeralID>', methods=['GET'])
+def redirect_to_user(ephemeralID):
+    """
+    Redirects to the user associated with the ephemeralID
+    """
+    user = UsersDB.lookup(User(ephemeralID=ephemeralID))
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+    
+    print(f"g.user.admin value is {g.user.admin}")
+    if g.user.admin:
+        return redirect(url_for('admin_bp_x.admin_view_user', userID = user.userID), code=302)
+    
+    return redirect(url_for('menu_bp_x.view_user', friendlyName = user.friendlyName), code=302)
 
 @registration_bp.route('/get_coin_count', methods=['GET'])
 def get_coin_count():
@@ -102,3 +117,26 @@ def user(friendly_name):
         flash('User not found.','error')
         return redirect(url_for('menu_bp_x.index'), code=302)
     return render_template('view_user.jinja2', me=g.user, them=user)
+
+@registration_bp.route('/transfer_coins', methods=['POST'])
+def transfer_coins():
+    data = request.json
+    sender_userID = g.user.userID
+    recipient_friendlyName = data.get('recipient')
+    amount = data.get('amount')
+
+    if not recipient_friendlyName or not amount:
+        return jsonify({'error': 'Missing recipient or amount'}), 400
+
+    try:
+        amount = int(amount)
+    except ValueError:
+        return jsonify({'error': 'Amount must be an integer'}), 400
+
+    try:
+        UsersDB.transfer_coin(sender_userID, recipient_friendlyName, amount)
+        return jsonify({'success': True}), 200
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': 'An unexpected error occurred'}), 500

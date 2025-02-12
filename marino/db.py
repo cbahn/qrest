@@ -143,6 +143,71 @@ class UsersDB:
             {'userID':userID},
             {'$set': {'ephemeralID':newEphemeralID}})
         return newEphemeralID
+
+    def transfer_coin(sender_userID: str, recipient_friendlyName: str, amount: int):
+        """ 
+        Transfer coins from one user to another.
+        
+        Args:
+            sender_userID (str): The userID of the sender.
+            recipient_friendlyName (str): The friendlyName of the recipient.
+            amount (int): The amount of coins to transfer.
+
+        Returns:
+            bool: True if the transfer was successful, False otherwise.
+
+        Raises:
+            ValueError: If the sender or recipient is not found, or if the sender has insufficient coins.
+        """
+        if amount <= 0:
+            raise ValueError("Transfer amount must be positive")
+
+        with mongo.start_session() as session:
+            with session.start_transaction():
+                sender = db.users.find_one({"userID": sender_userID})
+                if sender is None:
+                    raise ValueError(f"Sender with userID '{sender_userID}' not found")
+
+                recipient = db.users.find_one({"friendlyName": recipient_friendlyName})
+                if recipient is None:
+                    raise ValueError(f"Recipient with friendlyName '{recipient_friendlyName}' not found")
+
+                sender_new_coin_count = sender.get('coins', 0) - amount
+                if sender_new_coin_count < 0:
+                    raise ValueError("Sender has insufficient coins")
+
+                recipient_new_coin_count = recipient.get('coins', 0) + amount
+
+                # Create history entries
+                timestamp = datetime.datetime.now(tz=ZoneInfo("UTC"))
+                sender_entry = {
+                    "timestamp": timestamp,
+                    "cause": f"Transfer to {recipient_friendlyName}",
+                    "coin_delta": -amount
+                }
+                recipient_entry = {
+                    "timestamp": timestamp,
+                    "cause": f"Transfer from {sender_userID}",
+                    "coin_delta": amount
+                }
+
+                # Update sender document
+                db.users.update_one(
+                    {"userID": sender_userID},
+                    {
+                        "$set": {"coins": sender_new_coin_count},
+                        "$push": {"coinHistory": sender_entry}
+                    }
+                )
+
+                # Update recipient document
+                db.users.update_one(
+                    {"friendlyName": recipient_friendlyName},
+                    {
+                        "$set": {"coins": recipient_new_coin_count},
+                        "$push": {"coinHistory": recipient_entry}
+                    }
+                )
     
 class LocationsDB:
 

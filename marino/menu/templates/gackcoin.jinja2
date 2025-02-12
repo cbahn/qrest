@@ -3,9 +3,8 @@
 {% block content %}
 <!-- Main Content -->
 <main class="container">
-    <h1 class="title-gradient">You have <span id="coinCount" class="fixed-width-text">1</span> Gackcoin</h1>
-    <p>You can exchange for physical GACKcoin so you can vote in the choose your own adventure game. <span style="color:#232a38;">Or use it to bribe people.</span></p>
-    <p>Show the below QR code to Grayson, Ariel, Carl, or Kat.</p>
+    <h1 class="title-gradient">You have <span id="coinCount" class="fixed-width-text">{{ user.coins }}</span> Gackcoin</h1>
+    <p>You can show this code to Grayson, Ariel, Carl, or Kat to exchange for physical GACKcoin.</p><p>Other players can scan this code to send you GACKcoin.</p>
 
     <div class="circle-container">
         <img src=" {{ url_for('menu_bp_x.create_qr', ephemeralID = eID) }}" alt="Example Image">
@@ -13,8 +12,7 @@
 </main>
 <style>
     /* The container circle dimensions are calculated so that the image's corners
-       (rotated 45deg) just touch its edge. For a 150px square, the circle's diameter 
-       should be about 150px * sqrt(2) ≈ 212px. */
+       (rotated 45deg) just touch its edge. For a 150px square, the circle's diameter should be about */
     .circle-container {
         width: 282px;
         height: 282px;

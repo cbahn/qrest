@@ -5,11 +5,16 @@
 <main class="container">
     <h1 class="title-gradient">Transfer GACKcoins</h1>
     
-    <p>You have <b class="normal-interface">3</b> GACKcoin available to send.</p>
-    <form id="deductCoinsForm">
+    <p>You have <b class="normal-interface" id="available_coins">{{ me.coins }}</b> GACKcoin available to send.</p>
+    
+    <form id="transferCoinsForm">
         <p>Recipient: <span class="fixed-width-text normal-interface">{{ them.friendlyName }}</span></p>
+        
         <input type="number" id="coin_amount" name="coin_amount" min="1" required>
-        <button type="submit">Send <span>3</span> GACKcoin</button>
+        <input type="hidden" name="recipient_id" value="{{ them.friendlyName }}">
+        <small id="coinErrorMessage" style="color: rgb(207, 89, 34); display: none;">Not enough GACKcoin.</small>
+
+        <button type="submit" id="submitBtn">Send <span id="sendAmount">3</span> GACKcoin</button>
     </form>
 
     <!-- Modal for success message -->
@@ -22,5 +27,70 @@
         </article>
     </dialog>
 </main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const availableCoins = parseInt(document.getElementById("available_coins").textContent, 0);
+        const coinInput = document.getElementById("coin_amount");
+        const coinErrorMessage = document.getElementById("coinErrorMessage");
+        const submitBtn = document.getElementById("submitBtn");
+        const sendAmountText = document.getElementById("sendAmount");
+
+        coinInput.addEventListener("input", function () {
+            const enteredAmount = parseInt(coinInput.value, 10);
+
+            if (isNaN(enteredAmount) || enteredAmount < 1) {
+                submitBtn.disabled = true;
+                coinErrorMessage.style.display = "none";
+                sendAmountText.textContent = "0";
+                return;
+            }
+
+            if (enteredAmount > availableCoins) {
+                submitBtn.disabled = true;
+                coinErrorMessage.style.display = "block";
+            } else {
+                submitBtn.disabled = false;
+                coinErrorMessage.style.display = "none";
+            }
+
+            sendAmountText.textContent = enteredAmount;
+        });
+
+        document.getElementById("transferCoinsForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const amountToSend = parseInt(coinInput.value, 10);
+            if (amountToSend > availableCoins) {
+                return; // Prevent submission if validation somehow failed
+            }
+
+            fetch("/transfer_coins", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                body: JSON.stringify({ amount: amountToSend, recipient: "{{ them.friendlyName }}" }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("coinMessage").textContent = "Transfer successful!";
+                    document.getElementById("coinModal").showModal();
+                } else {
+                    document.getElementById("coinMessage").textContent = "Transfer failed!";
+                    document.getElementById("coinModal").showModal();
+                }
+            })
+            .catch(error => console.error("Error processing transfer:", error));
+        });
+
+        document.getElementById("closeModal").addEventListener("click", function () {
+            document.getElementById("coinModal").close();
+            location.reload(); // Reload the page when the modal is closed
+        });
+    });
+</script>
 
 {% endblock %}

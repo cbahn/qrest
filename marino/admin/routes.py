@@ -7,6 +7,15 @@ from werkzeug.utils import secure_filename
 import os
 from marino.admin.controller import validate_new_location_data, extract_image_from_request
 
+from flask import Flask, send_file
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import qrcode
+import io
+import math
+from PIL import Image  # Add this import
+
+
 def check_login_require_admin():
     cookie = request.cookies.get(Config.COOKIE_NAME)
 
@@ -107,17 +116,6 @@ def delete_location(loc_slug):
     
     return redirect(url_for('admin_bp_x.admin_locations'))
 
-@registration_bp.route('/e/<ephemeralID>', methods=['GET'])
-def redirect_to_user(ephemeralID):
-    """
-    Redirects to the user associated with the ephemeralID
-    """
-   
-    user = UsersDB.lookup(User(ephemeralID=ephemeralID))
-    if user is None:
-        return jsonify({"error": "User not found"}), 404
-    return redirect(url_for('admin_bp_x.admin_view_user', userID = user.userID), code=302)
-
 @registration_bp.route('/admin/user/<userID>', methods=['GET'])
 def admin_view_user(userID):
     """
@@ -127,7 +125,7 @@ def admin_view_user(userID):
     if user is None:
         return jsonify({"error": "User not found"}), 404
 
-    return render_template('view_user.jinja2', user=user)
+    return render_template('admin_view_user.jinja2', user=user)
 
 @registration_bp.route('/admin/deduct_coins', methods=['POST'])
 def deduct_coins():
@@ -161,3 +159,74 @@ def change_discovery_status():
     LocationsDB.change_discovery_status(g.user.userID, locationID, new_status)
 
     return jsonify({"success": True, "new_status": new_status})
+
+def list_locations():
+    """Dummy function returning locations with titles and QR data"""
+    return [
+        {"title": "Location 1", "data": "https://example.com/location1"},
+        {"title": "Location 2", "data": "https://example.com/location2"},
+        {"title": "Location 3", "data": "https://example.com/location3"},
+    ]
+
+@registration_bp.route("/pdf", methods=["GET"])
+def generate_pdf():
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter  # dimensions in points
+
+    locations = LocationsDB.get_all_locations()
+
+    for location in locations:
+        title = location.fullName
+        qr_data = f"{current_app.config['PREFERRED_URL_SCHEME']}://{request.host}/l/{location.locationID}"
+
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=0,
+            )
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        qr_img = qr.make_image(fill_color="black", back_color="white")
+        qr_buffer = io.BytesIO()
+        qr_img.save(qr_buffer, format='PNG')
+        qr_buffer.seek(0)
+
+        # Load the image from the BytesIO buffer
+        qr_image = Image.open(qr_buffer)
+
+        # Draw the title centered at the top of the page
+        pdf.setFont("Helvetica-Bold", 40)
+        text_width = pdf.stringWidth(title, "Helvetica-Bold", 40)
+        pdf.drawString((width - text_width) / 2, height - 100, title)
+
+        # Define the QR code's size and choose a center position for it.
+        # In this case, we'll center the QR code on the page.
+        qr_size = 250
+        center_x = width / 2
+        center_y = height / 2
+
+        # Save the canvas state, translate to the center, rotate, draw the QR, then restore state.
+        pdf.saveState()
+        pdf.translate(center_x, center_y)
+        pdf.rotate(135)  # rotate by 45 degrees
+        pdf.drawInlineImage(qr_image, -qr_size / 2, -qr_size / 2, qr_size, qr_size)
+        pdf.restoreState()
+
+        # Draw a black circle outline around the rotated QR code.
+        # For a square of side `qr_size` rotated by 45°, the bounding circle has a radius of:
+        #     (qr_size * sqrt(2)) / 2
+        # Adding a little padding (e.g., 10 points) gives:
+        radius = (qr_size * math.sqrt(2)) / 2 + 10
+        pdf.setStrokeColor(canvas.Color(0, 0, 0))
+        pdf.setLineWidth(2)
+        pdf.circle(center_x, center_y, radius)
+
+        # Start a new page for the next location.
+        pdf.showPage()
+
+    pdf.save()
+    buffer.seek(0)
+    return send_file(buffer, as_attachment=True,
+        mimetype='application/pdf', download_name='locations.pdf')
