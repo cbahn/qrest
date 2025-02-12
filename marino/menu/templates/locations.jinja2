@@ -16,7 +16,6 @@
         <tr>
           <td style="padding-left:0px;">
             <img src="{{ url_for('static', filename='uploads/' ~ visit.loc.imageFile) }}"
-                 alt="{{ visit.loc.imageFile }} missing"
                  style="width:40px; height:auto; margin-right:8px; vertical-align:middle;">
             <a href="{{ url_for('location_bp_x.location', loc_slug=visit.loc.slug) }}">{{ visit.loc.fullName }}</a>
           </td>
