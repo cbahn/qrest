@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
         setTimeout(function() {
             location.reload();
         }, 700);
-      } elif (data.error) {
+      } else if (data.error) {
         feedbackEl.textContent = data.error;
         feedbackEl.style.color = "red";
       } else {
