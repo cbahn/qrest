@@ -330,3 +330,42 @@ class LocationsDB:
         
         # Extract and return list of (name, location, visit_type) dictionaries
         return [{"userID":doc["userID"], "locationID":doc["locationID"], "visit_type":doc["visit_type"]} for doc in cursor]
+    
+    def calculate_leaderboard():
+        """
+        Calculate the leaderboard based on the points system:
+        2 points for each discovered location and 5 points for each solved location.
+        
+        Returns:
+            list: A list of dictionaries with friendlyName and their total points, sorted by points in descending order.
+        """
+        leaderboard = {}
+
+        visits = db.visits.find({}, {
+            "userID": 1,
+            "visit_type": 1,
+            "_id": 0
+        })
+
+        for visit in visits:
+            userID = visit["userID"]
+            visit_type = visit["visit_type"]
+
+            if userID not in leaderboard:
+                leaderboard[userID] = 0
+
+            if visit_type == "discovered":
+                leaderboard[userID] += 2
+            elif visit_type == "solved":
+                leaderboard[userID] += 5
+
+        # Convert userID to friendlyName and create the sorted leaderboard list
+        sorted_leaderboard = []
+        for userID, points in leaderboard.items():
+            user = db.users.find_one({"userID": userID}, {"friendlyName": 1, "_id": 0})
+            if user:
+                sorted_leaderboard.append({"friendlyName": user["friendlyName"], "points": points})
+
+        sorted_leaderboard.sort(key=lambda x: x["points"], reverse=True)
+
+        return sorted_leaderboard

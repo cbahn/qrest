@@ -5,23 +5,40 @@
 <main class="container">
     <section id="home">
         <h1 class="title-gradient">Leaderboard</h1>
-        <p>This is sorta working, but not done yet.</p>
         <table>
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Count</th>
+                    <th>Score</th>
                 </tr>
             </thead>
             <tbody>
-                {% for l in leaderboard_data %}
+                {% for l in leaderboard_scores %}
                 <tr>
-                    <td>{{ l.friendlyName }}</td>
-                    <td>{{ l.visit_count }}</td>
+                    <td class="{% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">{{ l.friendlyName }}</td>
+                    <td>{{ l.points }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </section>
 </main>
+
+<style>
+.gold {
+    color: gold;
+    font-weight: bold;
+}
+
+.silver {
+    color: silver;
+    font-weight: bold;
+}
+
+.bronze {
+    color: #cd7f32;
+    font-weight: bold;
+}
+</style>
+
 {% endblock %}

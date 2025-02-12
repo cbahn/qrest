@@ -75,9 +75,10 @@ def logout():
 
 @registration_bp.route('/leaderboard', methods=['GET'])
 def leaderboard():
+    leaderboard_scores = LocationsDB.calculate_leaderboard()
     return render_template(
         'leaderboard.jinja2',
-        leaderboard_data=generate_leaderboard_data()
+        leaderboard_scores=leaderboard_scores,
     )
 
 @registration_bp.route('/locations', methods=['GET'])
