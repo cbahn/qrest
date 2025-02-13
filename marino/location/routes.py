@@ -123,7 +123,11 @@ def validate_guess():
             locationID=loc.locationID,
             visit_type='solved'
         )
-    
+        UsersDB.modify_coins(
+            userID = g.user.userID,
+            coin_delta = 1,
+            cause=f"Earned coin for solving {loc.locationID}")
+        flash(f"You solved {loc.fullName} and earned one GACKcoin!", 'success')
     # Return the JSON response with the validation result
     return jsonify(correct=is_correct, guess=user_guess)
 
