@@ -1,4 +1,5 @@
 from dataclasses import dataclass, asdict
+from datetime import datetime
 
 @dataclass
 class User:
@@ -26,3 +27,10 @@ class Location:
 
     def to_dict(self):
         return {k: v for k, v in asdict(self).items() if v is not None}
+    
+@dataclass
+class Comment:
+    friendlyName: str
+    timestamp: datetime
+    chicago_time: str
+    comment: str

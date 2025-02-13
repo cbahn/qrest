@@ -3,15 +3,16 @@ from pymongo.errors import DuplicateKeyError
 from unittest.mock import patch, MagicMock
 from flask import Flask
 from marino.config import Config
-from marino.db import TestingDB, UsersDB, LocationsDB
+from marino.db import TestingDB, UsersDB, LocationsDB, CommentsDB
 from marino.models import User, Location
+from pprint import pprint
+import os
 
 # Fixture to create a test Flask app
 @pytest.fixture(scope='module')
 def app():
     app = Flask(__name__)
-    app.config['MONGO_URI'] = Config.MONGO_URI
-    app.config['MONGO_CERT_PATH'] = Config.MONGO_CERT_PATH
+    app.config['MONGO_URI'] = os.getenv('MONGO_URI')
     app.config['MONGO_DB_NAME'] = "test-db-1"
     with app.app_context():
         yield app
@@ -91,3 +92,10 @@ def test_register_visit(app,db):
 
     assert LocationsDB.record_visit(userID=example_user, locationID=example_location, visit_type='solved') == True
     assert LocationsDB.record_visit(userID=example_user, locationID=example_location, visit_type='solved') == False
+
+def test_comments(app,db):
+    CommentsDB.create_comment('abc123','l4567','comment one')
+    CommentsDB.create_comment('fed345','l4567','comment two')
+
+    all_comments = CommentsDB.get_comments_for_location('l4567')
+    assert pprint(all_comments) == 'bug'

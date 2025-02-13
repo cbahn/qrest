@@ -8,7 +8,7 @@ from zoneinfo import ZoneInfo
 #from pymongo.errors import DuplicateKeyError, OperationFailure
 
 from .util import Util
-from .models import User, Location
+from .models import User, Location, Comment
 
 def get_client():
     """
@@ -375,3 +375,52 @@ class LocationsDB:
         sorted_leaderboard.sort(key=lambda x: x["points"], reverse=True)
 
         return sorted_leaderboard
+
+class CommentsDB:
+    def create_comment(userID: str, locationID: str, comment: str):
+        new_comment = {
+            "userID": userID,
+            "locationID": locationID,
+            "comment": comment,
+            "timestamp": datetime.datetime.now(tz=ZoneInfo("UTC"))
+        }
+        db.comments.insert_one(new_comment)
+
+
+
+    def get_comments_for_location(locationID: str) -> list:
+        pipeline = [
+            {"$match": {"locationID": locationID}},
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "userID",
+                    "foreignField": "userID",
+                    "as": "user_info"
+                }
+            },
+            {"$unwind": "$user_info"},
+            {
+                "$project": {
+                    "_id": 0,
+                    "friendlyName": "$user_info.friendlyName",
+                    "timestamp": 1,
+                    "comment": 1
+                }
+            },
+            {"$sort": {"timestamp": -1}}
+        ]
+        comments_dict = list(db.comments.aggregate(pipeline))
+
+        def format_chicago_time(dt: datetime) -> str:
+            """Return the datetime formatted as Thu Feb 13,  8:43am (Chicago time)."""
+            chicago_tz = ZoneInfo("America/Chicago")
+            local_dt = dt.astimezone(chicago_tz)
+            date = local_dt.strftime("%a %b %d")
+            time = local_dt.strftime("%I:%M%p").lower()
+            return f"{date}, {time}"
+
+        for c in comments_dict:
+            c['chicago_time'] = format_chicago_time(c['timestamp'])
+
+        return [Comment(**c) for c in comments_dict]

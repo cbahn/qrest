@@ -1,0 +1,111 @@
+{% extends "menu_layout.jinja2" %}
+
+{% block content %}
+<!-- Main Content -->
+    <section id="home">
+      <span class="tag tag-solved">Solved</span>
+      <h1>{{ loc.fullName }}</h1>
+      <style>
+
+      .tag {
+        padding: 3px 8px;
+        font-size: 0.75rem;
+        border-radius: 5px 0 0 0;
+      }
+
+      .tag-solved {
+        background-color: gold;
+        color: black;
+      }
+
+      /* COMMENTS */
+      .comment {
+        border-bottom: 1px solid #444; /* Darker border for separation */
+      }
+
+      .comment header {
+        font-size: 0.9em;
+        color: #bbb; /* Muted light gray */
+      }
+
+      .comment .username {
+        font-weight: bold;
+        color: #fff; /* Bright white for distinction */
+      }
+
+      .comment .timestamp {
+        font-style: italic;
+        color: #999; /* Dimmer gray */
+      }
+
+      .comment-text {
+        font-size: 1em;
+        color: #eee; /* Light gray for readability */
+      }
+      </style>
+
+      <img src="{{ url_for('static',filename='uploads/' + loc.imageFile) }}">
+        
+    </section>
+    <section id="details">
+        <p style="white-space: pre-wrap;">{{ loc.description}} </p>
+        <article>
+            <header>{{ loc.puzzleText }}</header>
+                <input type="text" id="login-code" name="text" class="big-login-code-display" value="******" aria-label="Read-only input" readonly >
+                <input id="reveal-login-code" name="reveal" type="checkbox" role="switch" />
+                Reveal
+        </article>
+    </section>
+    <section id="comments">
+      <h3>Comments</h3>
+      <!-- Comment Submission Form -->
+      <form method="POST" action="/submit_comment" onsubmit="return validateForm()">
+        <textarea id="comment" name="comment" placeholder="Add a comment..." oninput="toggleSubmit()"></textarea>
+        <input type="hidden" name="slug" value="{{ loc.slug }}">
+        <button type="submit" id="submitBtn" disabled>Submit</button>
+      </form>
+        {% if comments|length <= 0 %}
+          <p>No comments yet...</p>
+        {% else %}
+          {% for c in comments %}
+            <article class="comment">
+              <header>
+                <span class="username">{{ c.friendlyName }}</span>
+                <span class="timestamp"> — {{ c.chicago_time }}</span>
+              </header>
+              <p class="comment-text">{{ c.comment }}</p>
+            </article>
+          {% endfor %}
+        {% endif %}
+    </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// JavaScript to handle the reveal-login-code toggle switch
+document.getElementById("reveal-login-code").addEventListener("change", function() {
+    const inputField = document.getElementById("login-code");
+    if (this.checked) {
+        inputField.value = "{{ loc.puzzleAnswer }}";
+    } else {
+        inputField.value = "******";
+    }
+});
+
+function toggleSubmit() {
+  const commentInput = document.getElementById('comment');
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = !commentInput.value.trim();
+}
+
+function validateForm() {
+  const commentInput = document.getElementById('comment').value.trim();
+  if (!commentInput) {
+    alert("Comment cannot be empty.");
+    return false;
+  }
+  return true;
+}
+
+</script>
+{% endblock %}

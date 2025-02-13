@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, g
 from flask import request, current_app, session, jsonify
-from marino.models import User, Location
-from marino.db import UsersDB, LocationsDB
+from marino.models import User, Location, Comment
+from marino.db import UsersDB, LocationsDB, CommentsDB
 from marino.config import Config
 import re
 
@@ -66,6 +66,10 @@ def location(loc_slug):
     if visit_status == 'undiscovered' and not g.user.admin:
         return render_template('undiscovered_location.jinja2')
     
+    if visit_status == 'solved':
+        comments = CommentsDB.get_comments_for_location(loc.locationID)
+        return render_template('solved_location.jinja2',loc=loc, comments=comments)
+    
     print(f"visit_status={visit_status}")
     return render_template('location.jinja2', loc=loc, visit_status=visit_status)
 
@@ -122,3 +126,31 @@ def validate_guess():
     
     # Return the JSON response with the validation result
     return jsonify(correct=is_correct, guess=user_guess)
+
+@registration_bp.route('/submit_comment', methods=['POST'])
+def submit_comment():
+    user_comment = str(request.form.get('comment', ''))
+    user_comment = user_comment.replace("$","")[:280]
+
+    slug = str(request.form.get('slug',''))
+
+    loc = LocationsDB.lookup(Location(slug=slug))
+    if loc is None:
+        flash("Comment didn't post: error reading slug", 'warning')
+        return redirect(url_for('menu_bp_x.index'))
+    
+    if len(user_comment) == 0:
+        flash("Comment didn't post: cannot post empty comment", 'warning')
+        return redirect(url_for('location_bp_x.location',loc_slug=loc.slug))
+    
+    # A user can't comment on a location they haven't solved
+    visit_status = LocationsDB.check_visit(
+        userID=g.user.userID,
+        locationID=loc.locationID)
+    
+    if not visit_status == 'solved':
+        flash("You cannot comment on a location you haven't solved.")
+        return redirect(url_for('location_bp_x.location',loc_slug=loc.slug))
+    
+    CommentsDB.create_comment(g.user.userID, loc.locationID, user_comment)
+    return redirect(url_for('location_bp_x.location',loc_slug=loc.slug))
