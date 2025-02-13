@@ -3,21 +3,21 @@
 {% block content %}
 <!-- Main Content -->
 <main class="container">
-    <h2>Suspected Duplicate Users</h2>
+    <h2 class="admin-interface-gradient">Suspected Duplicate Users</h2>
     <table>
         <thead>
             <tr>
                 <th>Fingerprint</th>
-                <th>User ID</th>
-                <th>Friendly Name</th>
+                <th>Username</th>
+                <th>userID</th>
             </tr>
         </thead>
         <tbody>
             {% for u in users %}
             <tr>
                 <td>{{ u.fingerprint }}</td>
-                <td>{{ u.userID }}</td>
                 <td>{{ u.friendlyName }}</td>
+                <td>{{ u.userID }}</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -125,7 +125,7 @@ class UsersDB:
                 new_coin_count = user.get('coins', 0) + coin_delta
 
                 if new_coin_count < 0:
-                    raise ValueError("Coin count cannot be negative")
+                    raise ValueError(f"Insufficient funds, cannot deduct {-coin_delta}")
 
                 # Update user document
                 db.users.update_one(

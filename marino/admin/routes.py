@@ -135,8 +135,6 @@ def deduct_coins():
     data = request.get_json()
     userID = data.get('userID')
     amount_to_remove = int(data.get('coin_amount'))
-    if amount_to_remove <= 0:
-        return jsonify({"error": "coin_amount must be positive"}), 400
 
     user = UsersDB.lookup(User(userID=userID))
     if user is None:
@@ -160,14 +158,6 @@ def change_discovery_status():
     LocationsDB.change_discovery_status(g.user.userID, locationID, new_status)
 
     return jsonify({"success": True, "new_status": new_status})
-
-def list_locations():
-    """Dummy function returning locations with titles and QR data"""
-    return [
-        {"title": "Location 1", "data": "https://example.com/location1"},
-        {"title": "Location 2", "data": "https://example.com/location2"},
-        {"title": "Location 3", "data": "https://example.com/location3"},
-    ]
 
 @registration_bp.route("/admin/pdf", methods=["GET"])
 def generate_pdf():
@@ -243,3 +233,7 @@ def dupe():
 
     dupe_users_sorted = sorted(dupe_users, key=lambda u: u.fingerprint)
     return render_template('dupe.jinja2', users=dupe_users_sorted)
+
+@registration_bp.route('/admin/users', methods=['GET'])
+def admin_users():
+    return render_template('admin_users.jinja2', users=UsersDB.get_all_users())

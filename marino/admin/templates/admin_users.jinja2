@@ -1,0 +1,42 @@
+{% extends "menu_layout.jinja2" %}
+
+{% block content %}
+<main class="container">
+  <section id="home">
+    <h1 class="admin-interface-gradient">View Users</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>userID</th>
+          <th>password</th>
+          <th>Verified?</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          {% if u.admin %}
+          <td><b>{{u.friendlyName}}</b></td>   
+          {% else %}
+          <td>{{u.friendlyName}}</td>   
+          {% endif %}     
+          <td>{{u.userID}}</td>
+          
+          <td>
+            {% if u.admin %}
+            *****
+            {% else %}
+            {{u.password}}
+            {% endif %}
+          </td>
+          <td>{{ u.has_cashed_out }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</main>
+
+
+{% endblock %}

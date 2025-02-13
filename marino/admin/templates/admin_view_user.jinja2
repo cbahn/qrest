@@ -3,7 +3,7 @@
 {% block content %}
 <!-- Main Content -->
 <main class="container">
-    <h1 class="admin-interface-gradient">Viewing User: {{ user.userID }}</h1>
+    <h1 class="admin-interface-gradient">Viewing User: {{ user.friendlyName }}</h1>
     
     <h2>Account Details</h2>
     <p><strong>Coins:</strong> <span id="coinCount">{{ user.coins }}</span></p>
@@ -15,6 +15,13 @@
         <input type="hidden" id="userID" value="{{ user.userID }}">
         <button type="submit">Deduct</button>
     </form>
+<br><hr><br>
+    <form id="addCoinsForm">
+        <label for="coin_amount">Add Coins:</label>
+        <input type="number" id="add_coin_amount" name="add_coin_amount" min="1" required>
+        <input type="hidden" id="userID" value="{{ user.userID }}">
+        <button type="submit">Add</button>
+    </form>
     
     <!-- Modal for success message -->
     <dialog id="coinModal">
@@ -25,15 +32,6 @@
             </footer>
         </article>
     </dialog>
-    
-    <h3>Admin Comments</h3>
-    <form id="updateCommentForm">
-        <textarea id="admin_comment" name="admin_comment" rows="4" cols="50">{{ user.AdminComments }}</textarea>
-        <input type="hidden" id="userIDComment" value="{{ user.userID }}">
-        <button type="submit">Save Comment</button>
-    </form>
-    
-    <p id="commentMessage"></p>
 </main>
 
 <script>
@@ -41,8 +39,9 @@
         event.preventDefault();
         const userID = document.getElementById("userID").value;
         const coinAmount = document.getElementById("coin_amount").value;
-        
-        fetch("/admin/deduct_coins", {
+        document.getElementById("coin_amount").value = "";
+
+        fetch("{{ url_for('admin_bp_x.deduct_coins') }}", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userID: userID, coin_amount: coinAmount })
@@ -52,6 +51,33 @@
             if (data.success) {
                 document.getElementById("coinCount").textContent = data.new_coin_count;
                 document.getElementById("coinMessage").textContent = `Success, ${coinAmount} coins were removed from account.`;
+                document.getElementById("coinModal").showModal();
+            } else {
+                document.getElementById("coinMessage").textContent = `ERROR: ${data.error}. Maybe try refreshing the page.`;
+                document.getElementById("coinModal").showModal();
+            }
+        });
+    });
+
+    document.getElementById("addCoinsForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const userID = document.getElementById("userID").value;
+        const coinAmount = document.getElementById("add_coin_amount").value;
+        document.getElementById("add_coin_amount").value = "";
+        
+        fetch("{{ url_for('admin_bp_x.deduct_coins') }}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userID: userID, coin_amount: -Math.abs(coinAmount) })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("coinCount").textContent = data.new_coin_count;
+                document.getElementById("coinMessage").textContent = `Success, ${coinAmount} coins were added to account.`;
+                document.getElementById("coinModal").showModal();
+            } else {
+                document.getElementById("coinMessage").textContent = `ERROR: ${data.error}. Maybe try refreshing the page.`;
                 document.getElementById("coinModal").showModal();
             }
         });
