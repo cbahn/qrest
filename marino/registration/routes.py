@@ -44,17 +44,15 @@ registration_bp = Blueprint(
 def login():
     return render_template('login.jinja2')
 
-@registration_bp.route('/newlogin', methods=['POST'])
+@registration_bp.route('/log_me_in', methods=['POST'])
 def new_login():
-    userID = str(request.form.get('userID'))
+    password = str(request.form.get('password'))
 
-    userID = userID.upper()#Capitalize so that the input is case insensitive
-    allowed_chars = "A-Z0-9"
-    userID = re.sub(f"[^{allowed_chars}]", "", userID)
+    password = password.strip() # strip whitespace
         
-    user = UsersDB.lookup(User(userID=userID))
+    user = UsersDB.lookup(User(password=password))
     if user is None:
-        flash("Login code not recognized. Try again.", 'warning')
+        flash("Password not recognized.", 'warning')
         return redirect(url_for('registration_bp_x.login'))
     
     # User recognized. Cycle session and set as cookie
@@ -88,20 +86,27 @@ def newuser():
         return redirect(url_for('registration_bp_x.login'))
 
     new_username = str(request.form.get('new_username'))
+    new_password = str(request.form.get('password'))
     new_fingerprint = str(request.form.get('userdata'))
 
     # Strip non-allowed characters from string
     allowed_chars = "a-zA-Z0-9_-"
     new_username = re.sub(f"[^{allowed_chars}]", "", new_username)
+    new_password = new_password.strip()
     new_fingerprint = re.sub(f"[^{allowed_chars}]", "", new_fingerprint)
 
 
-    duplicate_user = UsersDB.lookup(User(friendlyName=new_username))
-    if duplicate_user is not None:
+    friendlyName_in_use = UsersDB.lookup(User(friendlyName=new_username))
+    if friendlyName_in_use is not None:
         flash(f"Username '{new_username}' is already taken. Please try another name.", "error")
         return redirect(url_for('registration_bp_x.signup'),code=302)
 
-    (newly_created_user, error) = create_user_d(new_username,fingerprint=new_fingerprint)
+    password_in_use = UsersDB.lookup(User(password=new_password))
+    if password_in_use is not None:
+        flash(f"Your password is too common. Try a more complex one.", "error")
+        return redirect(url_for('registration_bp_x.signup'),code=302)
+
+    (newly_created_user, error) = create_user_d(friendlyName=new_username,password=new_password, fingerprint=new_fingerprint)
 
     if newly_created_user is None:
         flash(f"An error occurred and your account could not be created. "

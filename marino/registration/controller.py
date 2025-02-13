@@ -21,12 +21,12 @@ def validate_username(raw_input) -> tuple[None | str,str]:
     except ValidationError as e:
         return False, repr(e)
 
-def create_user_d(new_name: str, fingerprint: str) -> tuple[None | User, str]:
+def create_user_d(friendlyName: str, password: str, fingerprint: str) -> tuple[None | User, str]:
     """
     On success, return (User,"")
     On failure, return (None, "Error cause")
     """
-    (valid_name, err) = validate_username(new_name)
+    (valid_name, err) = validate_username(friendlyName)
     if valid_name is None:
         return err
     
@@ -39,9 +39,10 @@ def create_user_d(new_name: str, fingerprint: str) -> tuple[None | User, str]:
 
     try:
         newUser = User(
-            friendlyName = new_name,
+            friendlyName = friendlyName,
+            password = password,
+            fingerprint=fingerprint,            
             userID = try_to_generate_a_unique_userID(20),
-            fingerprint=fingerprint,
         )
         UsersDB.create(newUser)
     except DuplicateKeyError as e:
@@ -49,4 +50,4 @@ def create_user_d(new_name: str, fingerprint: str) -> tuple[None | User, str]:
 
     # No exception from UsersDB.create() indicates success
 
-    return UsersDB.lookup(User(friendlyName=new_name)), ""
+    return UsersDB.lookup(User(friendlyName=friendlyName)), ""

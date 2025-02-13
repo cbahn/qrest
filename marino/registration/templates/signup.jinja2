@@ -11,6 +11,8 @@
         <input type="hidden" name="userdata" id="extradata">
         <input type="text" maxlength="20" id="username" name="new_username" placeholder="Enter a username" required>
         <small>Usernames only use letters, numbers, and underscores.</small>
+        <label for="password">Choose a password. You'll need to remember this in case you get logged out.</label>
+        <input type="text" minlength="2" id="password" name="password" placeholder="Choose a password" required>
         {% include "_flash.jinja2" %}
         <button type="submit" id="submitBtn" disabled>Create Account</button>
     </form>
@@ -52,9 +54,6 @@
         if (!storedValue) {
             storedValue = "{{ localStorageData }}"
             localStorage.setItem(key,storedValue)
-            console.log("new key generated and stored:",storedValue)
-        } else {
-            console.log("Key found", storedValue)
         }
 
         document.getElementById("extradata").value = storedValue;

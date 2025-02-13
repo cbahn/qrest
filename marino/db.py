@@ -52,8 +52,9 @@ class UsersDB:
 
     FULL_PROJECTION = {
         "userID": 1,
-        "sessionID": 1,
+        "password": 1,
         "friendlyName": 1,
+        "sessionID": 1,        
         "role": 1,
         "fingerprint": 1,
         "admin": 1,
@@ -77,7 +78,10 @@ class UsersDB:
 
                 if db.users.find_one({"userID": user.userID}, session=session):
                     raise DuplicateKeyError(f"userID '{user.userID}' already exists.")
-                
+    
+                if db.users.find_one({"password": user.password}, session=session):
+                    raise DuplicateKeyError(f"password '{user.password}' already exists.")
+
                 if db.users.find_one({"friendlyName": user.friendlyName}, session=session):
                     raise DuplicateKeyError(f"friendlyName '{user.friendlyName}' already exists.")
                 

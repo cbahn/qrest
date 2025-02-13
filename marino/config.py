@@ -6,4 +6,4 @@ class Config(object):
     MONGO_DB_NAME = 'exampledb'
 
     COOKIE_NAME = 'qrest_session'
-    ALLOW_SIGNUPS = False
+    ALLOW_SIGNUPS = True

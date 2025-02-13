@@ -5,21 +5,21 @@
 <main class="container">
     <h1 class="title-gradient">Settings</h1>
     <article>
-        <header><strong>View Login Code<strong></header>
+        <header><strong>View your password<strong></header>
         <p>Remember to screenshot or write this down. You'll need it if you get logged out.</p>
-        <input type="text" id="login-code" name="text" class="big-login-code-display" value="{{ '*' * user.userID|length }}" aria-label="Read-only input" readonly >
-        <input id="reveal-login-code" name="reveal" type="checkbox" role="switch" />
+        <input type="text" id="password" name="text" class="big-login-code-display" value="{{ '*' * user.password|length }}" aria-label="Read-only input" readonly >
+        <input id="reveal-password" name="reveal" type="checkbox" role="switch" />
         Reveal Login Code
     </article>
 
     <script>
-        // JavaScript to handle the reveal-login-code toggle switch
-        document.getElementById("reveal-login-code").addEventListener("change", function() {
-            const inputField = document.getElementById("login-code");
+        // JavaScript to handle the reveal-password toggle switch
+        document.getElementById("reveal-password").addEventListener("change", function() {
+            const inputField = document.getElementById("password");
             if (this.checked) {
-                inputField.value = "{{ user.userID }}";
+                inputField.value = "{{ user.password }}";
             } else {
-                inputField.value = "{{ '*' * user.userID|length }}";
+                inputField.value = "{{ '*' * user.password|length }}";
             }
         });
     </script>
@@ -36,7 +36,7 @@
         <header>
             <h3>Log Out, are you sure?</h3>
         </header>
-        <p>Make sure to write down your Login Code first.</p>
+        <p>Make sure to write down your password first.</p>
         <footer>
             <form action="{{ url_for('menu_bp_x.logout')}}" method="POST">
                 <button type="button" class="secondary" onclick="closeLogoutModal()">Cancel</button>

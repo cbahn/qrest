@@ -4,6 +4,7 @@ from datetime import datetime
 @dataclass
 class User:
     userID: str = None
+    password: str = None
     friendlyName: str = None
     sessionID: str = None
     role: str = None
