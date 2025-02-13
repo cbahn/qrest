@@ -108,7 +108,7 @@ def get_coin_count():
 
 @registration_bp.route('/user/<friendly_name>', methods=['GET'])
 def user(friendly_name):
-    has_cashed_out = g.user.has_cached_out if g.user.has_cached_out is not None else False
+    has_cashed_out = g.user.has_cashed_out if g.user.has_cashed_out is not None else False
     if not has_cashed_out:
         flash('You must cash out at least one gackcoin with the admins before you can send coins to other users','info')
         return redirect(url_for('menu_bp_x.index'))
@@ -121,7 +121,7 @@ def user(friendly_name):
 
 @registration_bp.route('/transfer_coins', methods=['POST'])
 def transfer_coins():
-    has_cashed_out = g.user.has_cached_out if g.user.has_cached_out is not None else False
+    has_cashed_out = g.user.has_cashed_out if g.user.has_cashed_out is not None else False
     if not has_cashed_out:
         return jsonify({'error':'You must cash out at least one gackcoin with gack staff before you are able to transfer coins to other players'})
 

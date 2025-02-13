@@ -9,6 +9,7 @@ class User:
     sessionID: str = None
     role: str = None
     fingerprint: str = None
+    has_cashed_out: None | bool = None
     admin: None | bool = None
     ephemeralID: None | str = None
     coins: None | int = None
