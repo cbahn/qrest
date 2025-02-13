@@ -209,6 +209,10 @@ class UsersDB:
                     }
                 )
     
+    def get_all_users():
+        all_users = db.users.find({}, UsersDB.FULL_PROJECTION)
+        return [User(**user) for user in all_users]
+
 class LocationsDB:
 
     FULL_PROJECTION = {

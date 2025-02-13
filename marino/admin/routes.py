@@ -14,6 +14,7 @@ import qrcode
 import io
 import math
 from PIL import Image  # Add this import
+from collections import Counter
 
 
 def check_login_require_admin():
@@ -168,7 +169,7 @@ def list_locations():
         {"title": "Location 3", "data": "https://example.com/location3"},
     ]
 
-@registration_bp.route("/pdf", methods=["GET"])
+@registration_bp.route("/admin/pdf", methods=["GET"])
 def generate_pdf():
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=letter)
@@ -230,3 +231,15 @@ def generate_pdf():
     buffer.seek(0)
     return send_file(buffer, as_attachment=True,
         mimetype='application/pdf', download_name='locations.pdf')
+
+@registration_bp.route('/admin/dupe', methods=['GET'])
+def dupe():
+    all_users = UsersDB.get_all_users()
+
+    # count occurences of each fingerprint
+    fingerprint_counts = Counter(u.fingerprint for u in all_users)
+
+    dupe_users = [u for u in all_users if fingerprint_counts[u.fingerprint] > 1]
+
+    dupe_users_sorted = sorted(dupe_users, key=lambda u: u.fingerprint)
+    return render_template('dupe.jinja2', users=dupe_users_sorted)
