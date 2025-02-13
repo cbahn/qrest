@@ -104,8 +104,8 @@ def validate_guess():
 
     # This is where ~~Custom~~Answers~~ get programmed in
     # If is grayson's location, then it should have a range of answers.
-    c_and_c_range = [2,50]
-    guild_passwords = ['window', 'pinch','shadow','whisper']
+    c_and_c_range = [300,1200]
+    guild_passwords = ['window', 'pinch','shadow','whisper','solving this quest by reading the source code? Thats how a true thief would do it.']
     if loc.slug == 'thieves-guild':
         is_correct = (user_guess in guild_passwords)
     elif loc.slug == 'cask-and-cardboard':

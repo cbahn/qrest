@@ -57,6 +57,7 @@ class UsersDB:
         "sessionID": 1,        
         "role": 1,
         "fingerprint": 1,
+        "has_cashed_out": 1,
         "admin": 1,
         "ephemeralID": 1,
         "coins": 1,
@@ -69,6 +70,8 @@ class UsersDB:
 
         # All users are created as non-admins by default
         new_user_record['admin'] = False
+
+        new_user_record['has_cached_out'] = False
 
         # All users are created with 0 coins by default
         new_user_record['coins'] = 0
@@ -133,6 +136,11 @@ class UsersDB:
                     }
                 )
         return new_coin_count
+
+    def user_has_cashed_out(userID: str):
+        return db.users.update_one(
+            {'userID':userID},
+            {'$set': {'has_cashed_out': True}})
 
     def cycleSessionID(userID: str) -> str:
         newSessionCode = Util.generate_session_code()

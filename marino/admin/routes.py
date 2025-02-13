@@ -148,6 +148,7 @@ def deduct_coins():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
+    UsersDB.user_has_cashed_out(userID)
     return jsonify({'success':True,"new_coin_count": new_coin_count}), 200
 
 @registration_bp.route("/admin/change_discovery_status", methods=["POST"])
