@@ -98,7 +98,21 @@ def validate_guess():
     if visit_status == 'undiscovered':
         return jsonify(error="You can't guess at a location you have not visited")
 
-    is_correct = (user_guess == loc.puzzleAnswer)
+    # This is where ~~Custom~~Answers~~ get programmed in
+    # If is grayson's location, then it should have a range of answers.
+    c_and_c_range = [2,50]
+    guild_passwords = ['window', 'pinch','shadow','whisper']
+    if loc.slug == 'thieves-guild':
+        is_correct = (user_guess in guild_passwords)
+    elif loc.slug == 'cask-and-cardboard':
+        try:
+            num = int(user_guess)
+            is_correct = (c_and_c_range[0] <= num and num <= c_and_c_range[1])
+        except ValueError:
+            is_correct = False
+    else:
+        is_correct = (user_guess == loc.puzzleAnswer)
+    
     if is_correct:
         LocationsDB.record_visit(
             userID=g.user.userID,
