@@ -366,9 +366,11 @@ class LocationsDB:
         # Convert userID to friendlyName and create the sorted leaderboard list
         sorted_leaderboard = []
         for userID, points in leaderboard.items():
-            user = db.users.find_one({"userID": userID}, {"friendlyName": 1, "_id": 0})
+            user = db.users.find_one({"userID": userID}, {"friendlyName": 1, "admin":1, "_id": 0})
             if user:
-                sorted_leaderboard.append({"friendlyName": user["friendlyName"], "points": points})
+                is_admin = user.get('admin',False)
+                if is_admin == False: # Admins can't show up on the leaderboard
+                    sorted_leaderboard.append({"friendlyName": user["friendlyName"], "points": points})
 
         sorted_leaderboard.sort(key=lambda x: x["points"], reverse=True)
 
