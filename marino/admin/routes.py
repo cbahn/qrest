@@ -24,11 +24,10 @@ def check_login_require_admin():
     if user is None:
         # Cookie missing or invalid. Not logged in.
         session['desired_url'] = request.url # Remember the page they tried to access
-        return redirect(url_for('registration_bp_x.signup'), code=302)
+        return redirect(url_for('registration_bp_x.signup_or_login'), code=302)
 
     g.user = user
     if not user.admin:
-        # TODO make a better error page
         return render_template('unauthorized.jinja2'), 403
     return
 

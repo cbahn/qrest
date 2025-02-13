@@ -8,30 +8,6 @@ from marino.util import Util
 from marino.registration.controller import create_user_d
 import re
 
-def require_login(my_route):
-    @wraps(my_route)
-    def decorated_func(*args, **kwargs):
-        cookie = str(request.cookies.get(Config.COOKIE_NAME))
-
-        # Strip non-allowed characters from string
-        allowed_chars = "A-Z0-9"
-        cookie = re.sub(f"[^{allowed_chars}]", "", cookie)
-        
-        ## back door cookie value for testing
-        if current_app.debug and cookie == "loggedin":
-            g.user = User()
-            return my_route(*args,**kwargs)
-
-        user = UsersDB.lookup(User(sessionID=cookie))
-        if user is not None:
-            g.user = user
-            return my_route(*args, **kwargs)
-        
-        # Cookie missing or invalid. Not logged in.
-        session['desired_url'] = request.url # Remember the page they tried to access
-        return redirect(url_for('registration_bp_x.signup'),code=302)
-    return decorated_func
-
 # Blueprint Configuration
 registration_bp = Blueprint(
     'registration_bp_x',
@@ -39,6 +15,10 @@ registration_bp = Blueprint(
     template_folder='templates',
     static_folder='static'
 )
+
+@registration_bp.route('/hello',methods=['GET'])
+def signup_or_login():
+    return render_template('signup_or_login.jinja2')
 
 @registration_bp.route('/login',methods=['GET'])
 def login():

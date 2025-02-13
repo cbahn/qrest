@@ -1,0 +1,27 @@
+{% extends "unauth_layout.jinja2" %}
+
+{% block content %}
+<main class="container">
+    <h1>Hello!</h1>
+    <h2>Welcome to GACK Quest.</h2>
+    <br>
+    <p>If you'd like to start playing, tap here to make a new account.</p>
+    <a role="button" class="orange-button" href="{{ url_for('registration_bp_x.signup')}}">Make a new Account</a>
+    <br><br>
+    <hr class="thiccc">
+    <br>
+    <p>If you already made an account and a password, click here to login.</p>
+    <a role="button" class="secondary" href="{{ url_for('registration_bp_x.login')}}">I already have an account</a>
+</main>
+
+<style>
+.orange-button {
+    background-color: rgb(173, 110, 15);
+    border-color: rgb(173, 110, 15);
+}
+
+.thiccc {
+    border-top: 3px solid #C2C7D0;
+}
+
+{% endblock %}

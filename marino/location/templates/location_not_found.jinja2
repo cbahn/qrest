@@ -4,13 +4,14 @@
 <!-- Main Content -->
 <main class="container">
     <section id="home">
-        <h1>??? Unknown ???</h1>
+        <h1>404</h1>
+        <h3>Location not found<h3>
         <div class="location-image-container">
         <img src="{{ url_for('static',filename='dangan_map_404.jpg') }}"
         class="square-img"></div>
     </section>
     <section id="details">
-        <p>You haven't discovered this location yet. Search for the QR code for this location!</p>
+        <p>We couldn't find a location using that QR code or link. Try scanning again. If it still doesn't work, contact support.</p>
     </section>
 </main>
 {% endblock %}

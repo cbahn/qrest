@@ -9,11 +9,6 @@ import io
 
 def check_login():
     cookie = request.cookies.get(Config.COOKIE_NAME)
-    
-    ## back door cookie value for testing
-    if current_app.debug and cookie == "loggedin":
-        g.user = User()
-        return
 
     user = UsersDB.lookup(User(sessionID=str(cookie)))
     if user is not None:
@@ -22,7 +17,7 @@ def check_login():
     
     # Cookie missing or invalid. Not logged in.
     session['desired_url'] = request.url # Remember the page they tried to access
-    return redirect(url_for('registration_bp_x.signup'), code=302)
+    return redirect(url_for('registration_bp_x.signup_or_login'), code=302)
 
 # Blueprint Configuration
 registration_bp = Blueprint(

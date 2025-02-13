@@ -8,11 +8,6 @@ import time
 
 def check_login():
     cookie = request.cookies.get(Config.COOKIE_NAME)
-    
-    ## back door cookie value for testing
-    if current_app.debug and cookie == "loggedin":
-        g.user = User()
-        return
 
     user = UsersDB.lookup(User(sessionID=str(cookie)))
     if user is not None:
@@ -21,7 +16,7 @@ def check_login():
     
     # Cookie missing or invalid. Not logged in.
     session['desired_url'] = request.url # Remember the page they tried to access
-    return redirect(url_for('registration_bp_x.signup'), code=302)
+    return redirect(url_for('registration_bp_x.signup_or_login'), code=302)
 
 
 # Blueprint Configuration
@@ -42,15 +37,14 @@ def new_location(loc_code):
     
     loc = LocationsDB.lookup(Location(locationID=loc_code))
     if loc is None:
-        return f"Can't find the location with ID: {loc_code}"
+        return render_template('location_not_found.jinja2')
     
     if LocationsDB.record_visit(
         userID=g.user.userID,
         locationID=loc.locationID,
         visit_type='discovered',
         ):
-        # Set a flash that a new location has been discovered
-        flash("You discovered a new location",'success')
+        flash("You discovered a new location!",'success')
 
     return redirect(url_for('location_bp_x.location', loc_slug=loc.slug))
 
@@ -59,13 +53,13 @@ def location(loc_slug):
     
     loc = LocationsDB.lookup(Location(slug=loc_slug))
     if loc is None:
-        abort(404)
+        return render_template('location_not_found.jinja2')
 
     visit_status = LocationsDB.check_visit(userID=g.user.userID, locationID=loc.locationID)
     
     # Users can't visit an undiscovered location unless they're an admin
-    if visit_status == 'undiscovered' and not g.user.admin:
-        return render_template('undiscovered_location.jinja2')
+    if visit_status == 'undiscovered':
+        return render_template('unvisited_location.jinja2')
     
     if visit_status == 'solved':
         comments = CommentsDB.get_comments_for_location(loc.locationID)
