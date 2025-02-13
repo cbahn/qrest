@@ -3,38 +3,25 @@
 {% block content %}
 <!-- Main Content -->
     <section id="home">
-      {% if visit_status == "discovered" %}
-        <span class="tag tag-discovered">Discovered</span>
-      {% elif visit_status == "solved" %}
-        <span class="tag tag-solved">Solved</span>
-      {% else %}
-        <span class="tag tag-undiscovered">Undiscovered</span>
-      {% endif %}
+      <span class="tag tag-discovered">Discovered</span>
       <h1>{{ loc.fullName }}</h1>
       <style>
-
       .tag {
         padding: 3px 8px;
         font-size: 0.75rem;
         border-radius: 5px 0 0 0;
       }
 
-      .tag-undiscovered {
-        background-color: gray;
-        color: white;
-      }
-
       .tag-discovered {
         background-color: silver;
         color: black;
       }
-
-      .tag-solved {
-        background-color: gold;
-        color: black;
+      progress {
+        width: 100%;
+        height: 8px;
+        margin-top: 10px;
       }
       </style>
-
 
       <img src="{{ url_for('static',filename='uploads/' + loc.imageFile) }}">
         
@@ -43,7 +30,6 @@
         <p style="white-space: pre-wrap;">{{ loc.description}} </p>
         <article>
             <header>{{ loc.puzzleText }}</header>
-              {% if visit_status == 'discovered' %}
                 <form id="puzzle-form">
                     <fieldset style="margin-bottom:0px;" role="group">
                     <input
@@ -60,67 +46,43 @@
                     <input type="submit" value="Submit" />
                     </fieldset>
                 </form>
+                <progress id="loading-bar" style="display:none;" indeterminate></progress>
                 <footer id="feedback" aria-live="polite"></footer>
-              {% elif visit_status == 'solved' %}
-                <input type="text" id="login-code" name="text" class="big-login-code-display" value="******" aria-label="Read-only input" readonly >
-                <input id="reveal-login-code" name="reveal" type="checkbox" role="switch" />
-                Reveal
-              {% endif %}
         </article>
     </section>
 {% endblock %}
 
 {% block scripts %}
 <script>
-{% if visit_status == 'solved' %}
-// JavaScript to handle the reveal-login-code toggle switch
-document.getElementById("reveal-login-code").addEventListener("change", function() {
-    const inputField = document.getElementById("login-code");
-    if (this.checked) {
-        inputField.value = "{{ loc.puzzleAnswer }}";
-    } else {
-        inputField.value = "******";
-    }
-});
-{% endif %}
-
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('puzzle-form');
   const feedbackEl = document.getElementById('feedback');
   const guessInput = document.getElementById('guess_input');
-
+  const loadingBar = document.getElementById('loading-bar');
 
   form.addEventListener('submit', function (event) {
     event.preventDefault();
+    loadingBar.style.display = 'block';
+    feedbackEl.textContent = '';
 
-    // Gather the form data.
     const formData = new FormData(form);
 
-    // Send a POST request to the server.
     fetch('{{ url_for("location_bp_x.validate_guess") }}', {
       method: 'POST',
       body: formData,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      }
+      headers: {'X-Requested-With': 'XMLHttpRequest'}
     })
     .then(response => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
+      if (!response.ok) throw new Error("Network response was not ok");
       return response.json();
     })
     .then(data => {
-      
+      loadingBar.style.display = 'none';
       guessInput.value = '';
       if (data.correct) {
         feedbackEl.textContent = "Correct!";
         feedbackEl.style.color = "green";
-
-        // Reload the page after 7/10 of a second.
-        setTimeout(function() {
-            location.reload();
-        }, 700);
+        setTimeout(() => location.reload(), 700);
       } else if (data.error) {
         feedbackEl.textContent = data.error;
         feedbackEl.style.color = "red";
@@ -130,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     })
     .catch(error => {
+      loadingBar.style.display = 'none';
       console.error("Error:", error);
       feedbackEl.textContent = "There was an error processing your request.";
       feedbackEl.style.color = "red";

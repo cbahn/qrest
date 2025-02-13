@@ -37,3 +37,6 @@ instance/
 venv/
 ENV/
 
+# tests
+tests/
+tests/*

@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, g
-from flask import request, current_app, session, jsonify
+from flask import request, current_app, session, jsonify, abort
 from marino.models import User, Location, Comment
 from marino.db import UsersDB, LocationsDB, CommentsDB
 from marino.config import Config
 import re
+import time
 
 def check_login():
     cookie = request.cookies.get(Config.COOKIE_NAME)
@@ -58,7 +59,7 @@ def location(loc_slug):
     
     loc = LocationsDB.lookup(Location(slug=loc_slug))
     if loc is None:
-        return render_template('undiscovered_location.jinja2')
+        abort(404)
 
     visit_status = LocationsDB.check_visit(userID=g.user.userID, locationID=loc.locationID)
     
@@ -70,8 +71,7 @@ def location(loc_slug):
         comments = CommentsDB.get_comments_for_location(loc.locationID)
         return render_template('solved_location.jinja2',loc=loc, comments=comments)
     
-    print(f"visit_status={visit_status}")
-    return render_template('location.jinja2', loc=loc, visit_status=visit_status)
+    return render_template('discovered_location.jinja2', loc=loc)
 
 @registration_bp.route('/location/validate_guess', methods=['POST'])
 def validate_guess():
@@ -101,6 +101,12 @@ def validate_guess():
     
     if visit_status == 'undiscovered':
         return jsonify(error="You can't guess at a location you have not visited")
+
+    # Sleep for 0.7 seconds
+    # This is to make it slightly more awkward to guess many times in a row
+    # and also slightly more awkward to design a script to guess many times
+    time.sleep(0.7)
+
 
     # This is where ~~Custom~~Answers~~ get programmed in
     # If is grayson's location, then it should have a range of answers.

@@ -7,4 +7,5 @@ EXPOSE 8080
 
 ENV FLASK_EVN production
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "marino:create_app()"]
+# I'm running this on a 32 logical core cpu so I'm going to run with 33 workers
+CMD ["gunicorn", "-w", "33", "-b", "0.0.0.0:8080", "marino:create_app()"]
