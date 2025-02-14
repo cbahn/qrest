@@ -71,7 +71,7 @@ class UsersDB:
         # All users are created as non-admins by default
         new_user_record['admin'] = False
 
-        new_user_record['has_cached_out'] = False
+        new_user_record['has_cashed_out'] = False
 
         # All users are created with 0 coins by default
         new_user_record['coins'] = 0
