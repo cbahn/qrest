@@ -331,7 +331,10 @@ class LocationsDB:
             # Update the existing visit record
             db.visits.update_one(
                 visit_data,
-                {'$set': {'visit_type': new_status}}
+                {'$set': {
+                    'visit_type': new_status,
+                    'timestamp': datetime.datetime.now(tz=ZoneInfo("UTC"))
+                    }}
             )
 
     def get_all_visits():
