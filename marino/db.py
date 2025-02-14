@@ -371,9 +371,9 @@ class LocationsDB:
                 leaderboard[userID] = 0
 
             if visit_type == "discovered":
-                leaderboard[userID] += 2
+                leaderboard[userID] += 1
             elif visit_type == "solved":
-                leaderboard[userID] += 5
+                leaderboard[userID] += 3
 
         # Convert userID to friendlyName and create the sorted leaderboard list
         sorted_leaderboard = []
