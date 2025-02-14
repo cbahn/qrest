@@ -100,20 +100,20 @@ def redirect_to_user(ephemeralID):
     if g.user.admin:
         return redirect(url_for('admin_bp_x.admin_view_user', userID = user.userID), code=302)
     
-    return redirect(url_for('menu_bp_x.view_user', friendlyName = user.friendlyName), code=302)
+    return redirect(url_for('menu_bp_x.user', friendlyName = user.friendlyName), code=302)
 
 @registration_bp.route('/get_coin_count', methods=['GET'])
 def get_coin_count():
     return jsonify({'coin_count': g.user.coins})
 
-@registration_bp.route('/user/<friendly_name>', methods=['GET'])
-def user(friendly_name):
+@registration_bp.route('/user/<friendlyName>', methods=['GET'])
+def user(friendlyName):
     has_cashed_out = g.user.has_cashed_out if g.user.has_cashed_out is not None else False
     if not has_cashed_out:
         flash('You must cash out at least one gackcoin with the admins before you can send coins to other users','info')
         return redirect(url_for('menu_bp_x.index'))
 
-    user = UsersDB.lookup(User(friendlyName=friendly_name))
+    user = UsersDB.lookup(User(friendlyName=friendlyName))
     if user is None:
         flash('User not found.','error')
         return redirect(url_for('menu_bp_x.index'), code=302)

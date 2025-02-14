@@ -6,10 +6,7 @@ pydantic==2.10.6
 qrcode==8.0
 pillow==11.1.0
 reportlab==4.3.0
-# I'm confused if any of these other imports are needed
-# jinja2==3.1.2
-# rjsmin==1.2.3
-# mako==1.1.4
+tzdata==2025.1
 
 # This is only used during testing
 python-dotenv==1.0.1 
@@ -18,7 +15,3 @@ python-dotenv==1.0.1
 # This isn't needed for testing, but
 # the container will fail without it
 gunicorn==22.0.0
-
-# pycryptodome==3.21.0
-
-
