@@ -121,6 +121,8 @@ def user(friendlyName):
 
 @registration_bp.route('/transfer_coins', methods=['POST'])
 def transfer_coins():
+    return jsonify({'error':'Sorry, coin transfers disabled.'})
+                   
     has_cashed_out = g.user.has_cashed_out if g.user.has_cashed_out is not None else False
     if not has_cashed_out:
         return jsonify({'error':'You must cash out at least one gackcoin with gack staff before you are able to transfer coins to other players'})
