@@ -176,50 +176,51 @@ class UsersDB:
 
         with mongo.start_session() as session:
             with session.start_transaction():
-                sender = db.users.find_one({"userID": sender_userID})
-                if sender is None:
-                    raise ValueError(f"Sender with userID '{sender_userID}' not found")
-
-                recipient = db.users.find_one({"friendlyName": recipient_friendlyName})
-                if recipient is None:
-                    raise ValueError(f"Recipient with friendlyName '{recipient_friendlyName}' not found")
-
-                sender_new_coin_count = sender.get('coins', 0) - amount
-                if sender_new_coin_count < 0:
-                    raise ValueError("Sender has insufficient coins")
-
-                recipient_new_coin_count = recipient.get('coins', 0) + amount
-
                 # Create history entries
                 timestamp = datetime.datetime.now(tz=ZoneInfo("UTC"))
+
                 sender_entry = {
                     "timestamp": timestamp,
                     "cause": f"Transfer to {recipient_friendlyName}",
                     "coin_delta": -amount
                 }
+
                 recipient_entry = {
                     "timestamp": timestamp,
                     "cause": f"Transfer from {sender_userID}",
                     "coin_delta": amount
                 }
 
-                # Update sender document
-                db.users.update_one(
-                    {"userID": sender_userID},
+                # Decrement sender's coin count only if they have enough coins
+                response1 = db.users.update_one(
                     {
-                        "$set": {"coins": sender_new_coin_count},
-                        "$push": {"coinHistory": sender_entry}
+                        "userID": sender_userID,
+                        "$gte": { "coins": amount }
+                    },
+                    {
+                        "$inc": { "coins" -amount },
+                        "$push": { "coinHistory": sender_entry }
                     }
                 )
 
-                # Update recipient document
-                db.users.update_one(
-                    {"friendlyName": recipient_friendlyName},
+                # Assert the sender's coin count was actually modified
+                if response1.modified_count == 0:
+                    raise ValueError(f"Sender with userID '{sender_userID}' not found or doesn't have enough coins")
+
+                # Increment the recipient's coin count
+                response2 = db.users.update_one(
+                    { "friendlyName": recipient_friendlyName },
                     {
-                        "$set": {"coins": recipient_new_coin_count},
+                        "$inc": { "coins": amount },
                         "$push": {"coinHistory": recipient_entry}
                     }
                 )
+
+                # Assert the recipient's coin count was modified
+                if response2.modified_count == 0:
+                    raise ValueError(f"Recipient with friendlyName '{recipient_friendlyName}' not found")
+                
+                # TODO: double check logic. I haven't used python in a while
     
     def get_all_users():
         all_users = db.users.find({}, UsersDB.FULL_PROJECTION)
