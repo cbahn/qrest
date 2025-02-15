@@ -71,7 +71,7 @@ class UsersDB:
         # All users are created as non-admins by default
         new_user_record['admin'] = False
 
-        new_user_record['has_cached_out'] = False
+        new_user_record['has_cashed_out'] = False
 
         # All users are created with 0 coins by default
         new_user_record['coins'] = 0
@@ -331,7 +331,10 @@ class LocationsDB:
             # Update the existing visit record
             db.visits.update_one(
                 visit_data,
-                {'$set': {'visit_type': new_status}}
+                {'$set': {
+                    'visit_type': new_status,
+                    'timestamp': datetime.datetime.now(tz=ZoneInfo("UTC"))
+                    }}
             )
 
     def get_all_visits():
@@ -371,9 +374,9 @@ class LocationsDB:
                 leaderboard[userID] = 0
 
             if visit_type == "discovered":
-                leaderboard[userID] += 2
+                leaderboard[userID] += 1
             elif visit_type == "solved":
-                leaderboard[userID] += 5
+                leaderboard[userID] += 3
 
         # Convert userID to friendlyName and create the sorted leaderboard list
         sorted_leaderboard = []

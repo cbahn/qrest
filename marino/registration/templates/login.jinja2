@@ -17,7 +17,8 @@
     <h1>Log in</h1>
 
     <form action="{{url_for('registration_bp_x.new_login')}}" method="POST">
-        <input type="text" name="password" placeholder="Enter your password" required>
+        <input type="password" id="password_input" name="password" placeholder="" required>
+        <p><input type="checkbox" onclick="togglePassword()">Show Password</p>
         <button type="submit" id="submitBtn">Login</button>
     </form>
      <br>
@@ -25,4 +26,17 @@
 
 </main>
 </body>
+
+<script>
+function togglePassword() {
+  var x = document.getElementById("password_input");
+  if (x.type === "password") {
+    x.type = "text";
+  } else {
+    x.type = "password";
+  }
+}
+</script>
+
+
 </html>

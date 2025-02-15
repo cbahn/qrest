@@ -3,17 +3,19 @@
 {% block content %}
 <main class="container">
     <h1>Welcome</h1>
+    {% include "_flash.jinja2" %}
     {% if allow_signups %}
     <p>Pick a name to save your progress and start your adventure.</p>
     
     <form id='new_user_form' action="{{ url_for('registration_bp_x.newuser') }}" method="POST">
         <label for="username">What's your adventuring name?</label>
         <input type="hidden" name="userdata" id="extradata">
-        <input type="text" maxlength="20" id="username" name="new_username" placeholder="Enter a username" required>
+        <input type="text" maxlength="20" id="username" name="new_username" placeholder="" required>
         <small>Usernames only use letters, numbers, and underscores.</small>
         <label for="password">Choose a password. You'll need to remember this in case you get logged out.</label>
-        <input type="text" minlength="2" id="password" name="password" placeholder="Choose a password" required>
-        {% include "_flash.jinja2" %}
+        <input type="password" minlength="2" id="password" name="password" placeholder="" required>
+        <small>Password is case sensitive.</small>
+        <p><input type="checkbox" onclick="togglePassword()">Show Password</p>
         <button type="submit" id="submitBtn" disabled>Create Account</button>
     </form>
     {% else %}
@@ -59,6 +61,14 @@
         document.getElementById("extradata").value = storedValue;
     });
 
+    function togglePassword() {
+    var x = document.getElementById("password");
+    if (x.type === "password") {
+        x.type = "text";
+    } else {
+        x.type = "password";
+    }
+    }
 </script>
 
 {% endblock %}
