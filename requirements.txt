@@ -14,4 +14,4 @@ python-dotenv==1.0.1
 # WSGI
 # This isn't needed for testing, but
 # the container will fail without it
-gunicorn==22.0.0
+gunicorn==23.0.0
